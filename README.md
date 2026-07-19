@@ -11,18 +11,22 @@
 
 <p align="center">
   <a href="https://github.com/coldbricks/SECTOR-305/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/coldbricks/SECTOR-305/actions/workflows/ci.yml/badge.svg" /></a>
-  <a href="https://coldbricks.github.io/SECTOR-305/ost/"><img alt="Play OST" src="https://img.shields.io/badge/OST-▶_Play_in_browser-ff2d7b?labelColor=060a10" /></a>
   <img alt="Node 20+" src="https://img.shields.io/badge/node-20%2B-3c873a" />
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178c6" />
   <img alt="License MIT" src="https://img.shields.io/badge/code-MIT-38beeb" />
 </p>
 
 <p align="center">
-  <a href="https://coldbricks.github.io/SECTOR-305/ost/"><strong>▶ Play the OST</strong></a>
+  <a href="#run-the-watch">Run</a>
   &nbsp;·&nbsp;
-  <a href="#run-the-watch"><strong>Run locally</strong></a>
+  <a href="#original-soundtrack">Soundtrack</a>
   &nbsp;·&nbsp;
-  <a href="#read-deeper"><strong>Docs</strong></a>
+  <a href="#read-deeper">Docs</a>
+</p>
+
+<p align="center">
+  <em>Original score by David Lombardo —</em>
+  <a href="https://coldbricks.github.io/SECTOR-305/ost/">listen in browser</a>
 </p>
 
 > **South Beach swagger at the door. A ruthless instrument on the glass.**
@@ -48,11 +52,11 @@ One coherent instrument for the full watch:
 | Radio | Fictional channel bank + local-adapter seam |
 | Grader | Live hard-fail and coaching feedback |
 | Input | Keyboard-complete checkride path |
-| Score | Title track + 17 scenario beds with radio ducking and a dedicated score desk |
+| Score | Title track + 17 scenario beds with radio ducking and a dedicated [score desk](https://coldbricks.github.io/SECTOR-305/ost/) |
 
 <p align="center">
   <img src="docs/screenshots/01-title-watch-directive.png" alt="Title screen with adaptive watch directive" width="48%" />
-  <img src="docs/screenshots/05-scenario-score-desk.png" alt="Scenario score desk" width="48%" />
+  <a href="https://coldbricks.github.io/SECTOR-305/ost/"><img src="docs/screenshots/05-scenario-score-desk.png" alt="Scenario score desk — open the OST player" width="48%" /></a>
 </p>
 
 ## The loop that remembers
@@ -81,14 +85,14 @@ A clean follow-up does not erase the lesson — it asks you to **hold** the stan
 
 <p align="center">
   <a href="https://coldbricks.github.io/SECTOR-305/ost/">
-    <img src="docs/ost/cover-1500.jpg" alt="SECTOR 305 Original Soundtrack" width="280" />
+    <img src="docs/ost/cover-1500.jpg" alt="SECTOR 305 Original Soundtrack — open player" width="220" />
   </a>
 </p>
 
 <p align="center">
-  <strong>Coldbricks · David Lombardo</strong><br />
+  Coldbricks · David Lombardo<br />
   Recorded July 2026 · Smithtown, New York<br />
-  <a href="https://coldbricks.github.io/SECTOR-305/ost/"><strong>▶ Play title + 17 scenario beds in the browser</strong></a>
+  <a href="https://coldbricks.github.io/SECTOR-305/ost/">Title theme and seventeen scenario beds →</a>
 </p>
 
 In-sim: title performance on the shell, then a rotating watch bed that ducks under dispatch and unit traffic. Score desk handles on/off, prev/next, direct select, and bed level — music never owns the radio path.
