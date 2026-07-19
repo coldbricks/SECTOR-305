@@ -1,0 +1,22 @@
+{
+  "id": "checkride_a07_emergency_hold_v1",
+  "version": "1.0.0",
+  "kind": "checkride",
+  "packId": "miami-a07-police-v0",
+  "seed": 305020,
+  "title": "Emergency traffic — hold the air",
+  "adversarialTags": [
+    "C9"
+  ],
+  "contentNotes": [
+    "fictional",
+    "no-gore",
+    "training-safe"
+  ],
+  "passConditions": {
+    "noHardFails": true
+  },
+  "expectedHardFailsOnFailSession": [
+    "FAIL_RADIO_EMERGENCY_TRAFFIC"
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "schema": "s305.channel_sfx_manifest.v1",
+  "generatedAt": "2026-07-19T08:44:48.323Z",
+  "lab": true,
+  "clipCount": 10,
+  "clips": [
+    {
+      "id": "radio_key_up",
+      "file": "/audio/channel-sfx/radio_key_up.mp3",
+      "status": "lab-winner",
+      "score": 23,
+      "variant": "b"
+    },
+    {
+      "id": "radio_key_down",
+      "file": "/audio/channel-sfx/radio_key_down.mp3",
+      "status": "lab-winner",
+      "score": 15,
+      "variant": "a"
+    },
+    {
+      "id": "radio_squelch_open",
+      "file": "/audio/channel-sfx/radio_squelch_open.mp3",
+      "status": "lab-winner",
+      "score": 29,
+      "variant": "b"
+    },
+    {
+      "id": "radio_squelch_tail",
+      "file": "/audio/channel-sfx/radio_squelch_tail.mp3",
+      "status": "lab-winner",
+      "score": 15,
+      "variant": "a"
+    },
+    {
+      "id": "radio_static_bed",
+      "file": "/audio/channel-sfx/radio_static_bed.mp3",
+      "status": "lab-winner",
+      "score": 24,
+      "variant": "a"
+    },
+    {
+      "id": "radio_crackle_soft",
+      "file": "/audio/channel-sfx/radio_crackle_soft.mp3",
+      "status": "lab-winner",
+      "score": 23,
+      "variant": "b"
+    },
+    {
+      "id": "phone_line_seize",
+      "file": "/audio/channel-sfx/phone_line_seize.mp3",
+      "status": "lab-winner",
+      "score": 23,
+      "variant": "a"
+    },
+    {
+      "id": "phone_line_hangup",
+      "file": "/audio/channel-sfx/phone_line_hangup.mp3",
+      "status": "lab-winner",
+      "score": 29,
+      "variant": "a"
+    },
+    {
+      "id": "phone_line_bed",
+      "file": "/audio/channel-sfx/phone_line_bed.mp3",
+      "status": "lab-winner",
+      "score": 24,
+      "variant": "c"
+    },
+    {
+      "id": "phone_busy_soft",
+      "file": "/audio/channel-sfx/phone_busy_soft.mp3",
+      "status": "lab-winner",
+      "score": 29,
+      "variant": "a"
+    }
+  ]
+}

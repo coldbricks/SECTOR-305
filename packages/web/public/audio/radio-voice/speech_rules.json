@@ -1,0 +1,177 @@
+{
+  "schema": "s305.radio_speech_rules.v1",
+  "notes": "Sample-driven expansion. Templates use {callsign_spoken}, {callsign}, {time_spoken}, {time_hhmm}. Program expands these into full TTS lines — you author patterns, not every clip.",
+  "phonetic": {
+    "default": "LAPD",
+    "LAPD": {
+      "A": "Adam", "B": "Boy", "C": "Charles", "D": "David", "E": "Edward",
+      "F": "Frank", "G": "George", "H": "Henry", "I": "Ida", "J": "John",
+      "K": "King", "L": "Lincoln", "M": "Mary", "N": "Nora", "O": "Ocean",
+      "P": "Paul", "Q": "Queen", "R": "Robert", "S": "Sam", "T": "Tom",
+      "U": "Union", "V": "Victor", "W": "William", "X": "X-Ray", "Y": "Yellow", "Z": "Zebra"
+    },
+    "NATO": {
+      "A": "Alpha", "B": "Bravo", "C": "Charlie", "D": "Delta", "E": "Echo",
+      "F": "Foxtrot", "G": "Golf", "H": "Hotel", "I": "India", "J": "Juliet",
+      "K": "Kilo", "L": "Lima", "M": "Mike", "N": "November", "O": "Oscar",
+      "P": "Papa", "Q": "Quebec", "R": "Romeo", "S": "Sierra", "T": "Tango",
+      "U": "Uniform", "V": "Victor", "W": "Whiskey", "X": "X-ray", "Y": "Yankee", "Z": "Zulu"
+    }
+  },
+  "numerics": {
+    "digit_words": ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"],
+    "time_style": "digit_by_digit",
+    "time_samples": [
+      "0000", "0030", "0600", "0830", "0900", "1015", "1200", "1310",
+      "1430", "1515", "1721", "1800", "1930", "2045", "2121", "2210", "2345"
+    ],
+    "examples": {
+      "2121": "two one two one",
+      "0830": "zero eight three zero",
+      "1515": "one five one five"
+    }
+  },
+  "samples": {
+    "unit_status": [
+      {
+        "id": "copy",
+        "pattern": "{callsign_spoken} copy.",
+        "match": ["{callsign} copy"],
+        "kind": "ACK"
+      },
+      {
+        "id": "enroute",
+        "pattern": "{callsign_spoken} copy, en route.",
+        "match": ["{callsign} copy, en route", "{callsign} en route"],
+        "kind": "ACK"
+      },
+      {
+        "id": "on_scene",
+        "pattern": "{callsign_spoken} on scene.",
+        "match": ["{callsign} on scene"],
+        "kind": "STATUS"
+      },
+      {
+        "id": "clearing",
+        "pattern": "{callsign_spoken} clearing.",
+        "match": ["{callsign} clearing", "{callsign} clear"],
+        "kind": "STATUS"
+      },
+      {
+        "id": "available",
+        "pattern": "{callsign_spoken} available.",
+        "match": ["{callsign} available", "{callsign} AVL"],
+        "kind": "STATUS"
+      },
+      {
+        "id": "back_in_service_time",
+        "pattern": "{callsign_spoken}, back in service {time_spoken}.",
+        "match": [
+          "{callsign}, back in service",
+          "{callsign} back in service {time_hhmm}",
+          "{callsign} BIS {time_hhmm}"
+        ],
+        "kind": "STATUS",
+        "expand_times": true
+      },
+      {
+        "id": "available_time",
+        "pattern": "{callsign_spoken} available {time_spoken}.",
+        "match": ["{callsign} available {time_hhmm}", "{callsign} AVL {time_hhmm}"],
+        "kind": "STATUS",
+        "expand_times": true
+      },
+      {
+        "id": "clear_time",
+        "pattern": "{callsign_spoken} clear {time_spoken}.",
+        "match": ["{callsign} clear {time_hhmm}"],
+        "kind": "STATUS",
+        "expand_times": true
+      },
+      {
+        "id": "on_scene_time",
+        "pattern": "{callsign_spoken} on scene {time_spoken}.",
+        "match": ["{callsign} on scene {time_hhmm}"],
+        "kind": "STATUS",
+        "expand_times": true
+      },
+      {
+        "id": "ten_four",
+        "pattern": "{callsign_spoken}, ten four.",
+        "match": ["{callsign} 10-4", "{callsign} ten four"],
+        "kind": "ACK"
+      },
+      {
+        "id": "code_four",
+        "pattern": "{callsign_spoken} on scene, code four for now.",
+        "match": ["{callsign} code 4", "{callsign} code four"],
+        "kind": "STATUS"
+      },
+      {
+        "id": "enroute_time",
+        "pattern": "{callsign_spoken} en route {time_spoken}.",
+        "match": ["{callsign} en route {time_hhmm}"],
+        "kind": "ACK",
+        "expand_times": true
+      }
+    ],
+    "dispatch_unit": [
+      {
+        "id": "status_check",
+        "pattern": "{callsign_spoken}, status check.",
+        "match": ["{callsign}, status check", "{callsign} status check"],
+        "kind": "QUERY",
+        "voice": "dispatch"
+      },
+      {
+        "id": "copy_available_time",
+        "pattern": "Copy {callsign_spoken}, available {time_spoken}.",
+        "match": ["Copy {callsign}", "available {time_hhmm}"],
+        "kind": "ACK",
+        "voice": "dispatch",
+        "expand_times": true
+      },
+      {
+        "id": "copy_bis_time",
+        "pattern": "Copy {callsign_spoken}, back in service {time_spoken}.",
+        "match": ["Copy {callsign}", "back in service {time_hhmm}"],
+        "kind": "ACK",
+        "voice": "dispatch",
+        "expand_times": true
+      },
+      {
+        "id": "time_check",
+        "pattern": "All units, time check {time_spoken}.",
+        "match": ["time check {time_hhmm}", "time check"],
+        "kind": "SYSTEM",
+        "voice": "dispatch",
+        "expand_times": true,
+        "once_per_time": true
+      },
+      {
+        "id": "show_me",
+        "pattern": "{callsign_spoken}, show me your status.",
+        "match": ["{callsign}, show me", "show me your status"],
+        "kind": "QUERY",
+        "voice": "dispatch"
+      }
+    ],
+    "numeric_atoms": {
+      "enabled": true,
+      "note": "Standalone digit / short number clips for rare freeform assembly + training.",
+      "digits": true,
+      "teens_and_tens": true
+    },
+    "nato_callsign_pack": {
+      "enabled": true,
+      "note": "Parallel NATO spoken forms for the same callsigns (Alpha/Bravo…).",
+      "unit_templates": ["copy", "enroute", "on_scene", "available", "back_in_service_time"],
+      "time_subset": ["0830", "1200", "1515", "1721", "2121"]
+    }
+  },
+  "budget": {
+    "default_time_subset": ["0830", "1200", "1515", "1721", "2121", "0900", "1800", "2345"],
+    "full_uses_all_time_samples": true,
+    "note": "npm run radio:catalog -- --full expands all times; default uses subset to save credits until you full-throttle bake."
+  }
+}

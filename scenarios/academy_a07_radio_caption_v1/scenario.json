@@ -1,0 +1,22 @@
+{
+  "id": "academy_a07_radio_caption_v1",
+  "version": "1.0.0",
+  "kind": "academy",
+  "packId": "miami-a07-police-v0",
+  "seed": 305130,
+  "title": "Academy · Air the safety",
+  "adversarialTags": [
+    "C5"
+  ],
+  "contentNotes": [
+    "fictional",
+    "no-gore",
+    "training-safe"
+  ],
+  "passConditions": {
+    "noHardFails": true
+  },
+  "expectedHardFailsOnFailSession": [
+    "FAIL_SAFETY_NOT_AIRED"
+  ]
+}

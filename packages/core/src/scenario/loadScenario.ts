@@ -9,17 +9,12 @@ import { fileURLToPath } from "node:url";
 import type { DoctrinePack } from "../pack.js";
 import { Runtime } from "../runtime.js";
 import type { Incident, SessionRecord, Unit } from "../types.js";
-import {
-  baseUnitsA07,
-  incidentRobberyBadAddress,
-  incidentTheftReport,
-} from "../fixtures.js";
-import {
-  fridayNightIncidents,
-  fridayNightUnits,
-  FRIDAY_NIGHT_META,
-} from "../watch/fridayNight.js";
+import { FRIDAY_NIGHT_META } from "../watch/fridayNight.js";
 import { loadDefaultPack, defaultPackDir } from "../loadPack.js";
+import {
+  listA07ScenarioIds,
+  materializeA07Scenario,
+} from "../scenarios/a07Library.js";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "..");
 
@@ -48,16 +43,16 @@ export interface MaterializedScenario {
 
 type Builder = (meta: ScenarioMeta) => { units: Unit[]; incidents: Incident[] };
 
-const BUILDERS: Record<string, Builder> = {
-  checkride_a07_ocean_robbery_v1: () => ({
-    units: baseUnitsA07(),
-    incidents: [incidentRobberyBadAddress(), incidentTheftReport()],
-  }),
-  watch_a07_friday_night_v1: () => ({
-    units: fridayNightUnits(),
-    incidents: fridayNightIncidents(),
-  }),
-};
+/** All A07 library ids materialize via a07Library (single source of truth). */
+const BUILDERS: Record<string, Builder> = Object.fromEntries(
+  listA07ScenarioIds().map((id) => [
+    id,
+    () => {
+      const { units, incidents } = materializeA07Scenario(id);
+      return { units, incidents };
+    },
+  ])
+);
 
 export function scenariosRoot(): string {
   return join(repoRoot, "scenarios");

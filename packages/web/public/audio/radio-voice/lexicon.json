@@ -1,0 +1,694 @@
+{
+  "schema": "s305.radio_lexicon.v1",
+  "packId": "miami-a07-police-v0",
+  "sectorId": "SE305-A07",
+  "notes": "Fiction training vocabulary for A07 radio TTS. spoken= what ElevenLabs says; match= caption fragments the app may emit. Callsigns use LAPD phonetic alphabet (A=Adam … Z=Zebra).",
+  "phonetic_alphabet": {
+    "system": "LAPD",
+    "letters": {
+      "A": "Adam",
+      "B": "Boy",
+      "C": "Charles",
+      "D": "David",
+      "E": "Edward",
+      "F": "Frank",
+      "G": "George",
+      "H": "Henry",
+      "I": "Ida",
+      "J": "John",
+      "K": "King",
+      "L": "Lincoln",
+      "M": "Mary",
+      "N": "Nora",
+      "O": "Ocean",
+      "P": "Paul",
+      "Q": "Queen",
+      "R": "Robert",
+      "S": "Sam",
+      "T": "Tom",
+      "U": "Union",
+      "V": "Victor",
+      "W": "William",
+      "X": "X-Ray",
+      "Y": "Yellow",
+      "Z": "Zebra"
+    }
+  },
+  "voices": {
+    "dispatch": {
+      "label": "Dave — A-console (you)",
+      "character": "Dave",
+      "default_voice_id": "B4mQ18VPQVeQGS9ZcnZy",
+      "voice_id_env": "ELEVENLABS_VOICE_DISPATCH",
+      "note": "Owner clone. Primary glass. [calm] [dispatch]",
+      "settings": { "stability": 0.4, "similarity_boost": 0.8, "style": 0.12, "use_speaker_boost": true }
+    },
+    "dispatch_b": {
+      "label": "Sarah — relief / training console",
+      "character": "Sarah",
+      "default_voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "note": "Mature female operator. One of the best dispatch reads. [calm] [dispatch]",
+      "settings": { "stability": 0.43, "similarity_boost": 0.76, "style": 0.14, "use_speaker_boost": true }
+    },
+    "unit_ocean_a": {
+      "label": "Mark — 3A12 Ocean lead",
+      "character": "Mark",
+      "default_voice_id": "UgBBYS2sOqTuMpoF3BR0",
+      "note": "Premium male field. Expensive, worth it. Primary Ocean unit.",
+      "settings": { "stability": 0.45, "similarity_boost": 0.72, "style": 0.2, "use_speaker_boost": true }
+    },
+    "unit_ocean_b": {
+      "label": "3A14 Ocean cover",
+      "character": "field",
+      "default_voice_id": "TxGEqnHWrfWFTfGW9XjX",
+      "note": "Josh — solid US field cover",
+      "settings": { "stability": 0.48, "similarity_boost": 0.7, "style": 0.2, "use_speaker_boost": true }
+    },
+    "unit_collins_a": {
+      "label": "Valley — 3A21 Collins nightlife",
+      "character": "Valley Girl",
+      "default_voice_id": "Fk67DVZyDsJmZYzcob1A",
+      "note": "Fun energy on Collins / beach mid. Still [calm] on air.",
+      "settings": { "stability": 0.46, "similarity_boost": 0.74, "style": 0.22, "use_speaker_boost": true }
+    },
+    "unit_collins_b": {
+      "label": "3A22 Collins",
+      "character": "field",
+      "default_voice_id": "yoZ06aMxZJJ28mfd3POQ",
+      "settings": { "stability": 0.5, "similarity_boost": 0.68, "style": 0.22, "use_speaker_boost": true }
+    },
+    "unit_dt_a": {
+      "label": "3A30 Downtown",
+      "character": "field",
+      "default_voice_id": "CYw3kZ02Hs0563khs1Fj",
+      "settings": { "stability": 0.47, "similarity_boost": 0.73, "style": 0.2, "use_speaker_boost": true }
+    },
+    "unit_dt_b": {
+      "label": "3A31 Downtown",
+      "character": "field",
+      "default_voice_id": "2EiwWnXFnvU5JabPnv8n",
+      "settings": { "stability": 0.44, "similarity_boost": 0.75, "style": 0.28, "use_speaker_boost": true }
+    },
+    "unit_wyn_a": {
+      "label": "3A40 Wynwood",
+      "character": "field",
+      "default_voice_id": "N2lVS1w4EtoT3dr4eOWO",
+      "settings": { "stability": 0.49, "similarity_boost": 0.7, "style": 0.2, "use_speaker_boost": true }
+    },
+    "unit_wyn_b": {
+      "label": "3A41 Wynwood",
+      "character": "field",
+      "default_voice_id": "29vD33N1CtxCmqQRPOHJ",
+      "note": "Drew — US. No Charlie (British).",
+      "settings": { "stability": 0.46, "similarity_boost": 0.72, "style": 0.24, "use_speaker_boost": true }
+    },
+    "unit_sup": {
+      "label": "Mark — 3S1 supervisor (same premium when S1 rolls)",
+      "character": "Mark",
+      "default_voice_id": "UgBBYS2sOqTuMpoF3BR0",
+      "note": "Supervisor presence = Mark. Expensive, intentional.",
+      "settings": { "stability": 0.5, "similarity_boost": 0.78, "style": 0.12, "use_speaker_boost": true }
+    },
+    "unit_traf": {
+      "label": "3T1 traffic",
+      "character": "field",
+      "default_voice_id": "SOYHLrjzK2X1ezoPC6cr",
+      "settings": { "stability": 0.48, "similarity_boost": 0.7, "style": 0.2, "use_speaker_boost": true }
+    },
+    "caller_valley": {
+      "label": "911 caller — Valley (young / nightlife)",
+      "character": "Valley Girl",
+      "default_voice_id": "Fk67DVZyDsJmZYzcob1A",
+      "channel": "phone",
+      "note": "Frantic 911 caller texture. v3 tags [frantic] etc. Training-safe — no gore."
+    },
+    "caller_sarah": {
+      "label": "911 caller — older / shaken adult",
+      "character": "Sarah",
+      "default_voice_id": "EXAVITQu4vr4xnSDxMaL",
+      "channel": "phone",
+      "note": "Mature caller under stress. Not dispatch calm."
+    },
+    "caller_mark": {
+      "label": "911 caller — male witness",
+      "character": "Mark",
+      "default_voice_id": "UgBBYS2sOqTuMpoF3BR0",
+      "channel": "phone",
+      "note": "Male witness / bystander. Keep pressure without shock porn."
+    }
+  },
+  "caller_lines": [
+    {
+      "id": "caller_knife_ran_in",
+      "voice": "caller_valley",
+      "tags": ["frantic", "scared"],
+      "spoken": "He ran in with a knife! Oh my god, he has a knife!",
+      "match": [
+        "maybe a knife",
+        "took a bag, maybe a knife",
+        "weapon",
+        "knife",
+        "Caller says someone took a bag"
+      ],
+      "scenarioIds": ["checkride_a07_ocean_robbery_v1", "*"],
+      "contentNotes": ["weapons CAD text only", "no-gore"]
+    },
+    {
+      "id": "caller_robbery_ip",
+      "voice": "caller_valley",
+      "tags": ["frantic", "panicked"],
+      "spoken": "They're robbing someone right now! Please hurry!",
+      "match": [
+        "Sounds like robbery in progress",
+        "robbery in progress",
+        "Elevate — weapons"
+      ],
+      "scenarioIds": ["checkride_a07_ocean_robbery_v1", "*"]
+    },
+    {
+      "id": "caller_1400_ocean",
+      "voice": "caller_valley",
+      "tags": ["anxious", "breathing hard"],
+      "spoken": "I think it's fourteen hundred Ocean Drive? By the neon place? Please!",
+      "match": [
+        "Caller thinks 1400 Ocean Drive",
+        "1400 Ocean",
+        "neon"
+      ],
+      "scenarioIds": ["checkride_a07_ocean_robbery_v1", "*"]
+    },
+    {
+      "id": "caller_fight_outside",
+      "voice": "caller_valley",
+      "tags": ["frantic"],
+      "spoken": "There's a fight outside the club, people are screaming!",
+      "match": [
+        "fight outside",
+        "neon place Ocean",
+        "loud argument",
+        "frantic"
+      ],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "caller_shots_heard",
+      "voice": "caller_mark",
+      "tags": ["frantic", "urgent"],
+      "spoken": "I heard shots! Multiple shots, Ocean side! I'm not going outside!",
+      "match": ["shots heard", "SHOTS-HEARD", "shots"],
+      "scenarioIds": ["*"],
+      "contentNotes": ["no-gore", "audio is report not recreation"]
+    },
+    {
+      "id": "caller_domestic_help",
+      "voice": "caller_sarah",
+      "tags": ["scared", "whispering"],
+      "spoken": "Please send someone. He's yelling and throwing things. I locked myself in the bathroom.",
+      "match": ["domestic", "DOMESTIC", "throwing"],
+      "scenarioIds": ["*"],
+      "contentNotes": ["domestic training-safe", "no graphic detail"]
+    },
+    {
+      "id": "caller_armed_subject",
+      "voice": "caller_mark",
+      "tags": ["frantic", "urgent"],
+      "spoken": "There's a guy with a gun by the sidewalk! Everyone's running!",
+      "match": ["armed subject", "WEAPONS", "gun"],
+      "scenarioIds": ["*"],
+      "contentNotes": ["weapons flag language only"]
+    },
+    {
+      "id": "caller_crash_injury",
+      "voice": "caller_sarah",
+      "tags": ["stressed", "urgent"],
+      "spoken": "Two cars just crashed on Biscayne! Someone's hurt, please send help!",
+      "match": ["traffic crash", "Biscayne", "injury"],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "caller_welfare_concern",
+      "voice": "caller_sarah",
+      "tags": ["worried"],
+      "spoken": "I haven't heard from my neighbor. Lights are on but no one answers. Can you check?",
+      "match": ["welfare", "WELFARE", "neighbor"],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "caller_theft_phone",
+      "voice": "caller_valley",
+      "tags": ["upset", "annoyed"],
+      "spoken": "Someone stole my phone earlier today. I just want a report, okay?",
+      "match": ["phone theft", "theft report", "THEFT-REPORT"],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "caller_alarm_commercial",
+      "voice": "caller_mark",
+      "tags": ["matter of fact"],
+      "spoken": "Security company. Commercial alarm, warehouse on Northwest Second. No contact with keyholder yet.",
+      "match": ["commercial alarm", "ALARM", "warehouse"],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "caller_port_fence",
+      "voice": "caller_mark",
+      "tags": ["urgent"],
+      "spoken": "There's somebody on the port fence at gate B. Looks like they're trying to get over.",
+      "match": ["port fence", "gate B", "Port perimeter"],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "caller_language_delay",
+      "voice": "caller_sarah",
+      "tags": ["calm", "helpful"],
+      "spoken": "Caller is Spanish primary. Interpreter is coming on the line. Stand by for location.",
+      "match": ["Spanish-primary", "interpreter", "language"],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "caller_loud_music",
+      "voice": "caller_valley",
+      "tags": ["annoyed"],
+      "spoken": "The music is insanely loud, like the whole block. Can you just make them turn it down?",
+      "match": ["loud music", "Loud music", "crowd"],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "caller_assault_ip",
+      "voice": "caller_valley",
+      "tags": ["frantic", "crying"],
+      "spoken": "They're hitting him! Right now! On the corner! Please!",
+      "match": ["assault in progress", "ASSAULT-IP", "hitting"],
+      "scenarioIds": ["*"],
+      "contentNotes": ["no-gore", "CAD nature language"]
+    },
+    {
+      "id": "caller_911_open_distress",
+      "voice": "caller_sarah",
+      "tags": ["anxious", "uncertain"],
+      "spoken": "I don't know where I am. Something's wrong. Please just send someone.",
+      "match": ["911-OPEN", "open nine", "distress"],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "caller_bag_taken",
+      "voice": "caller_valley",
+      "tags": ["frantic", "breathing hard"],
+      "spoken": "He grabbed her bag and took off! I think he had something in his hand!",
+      "match": ["took a bag", "bag", "maybe a knife"],
+      "scenarioIds": ["checkride_a07_ocean_robbery_v1", "*"]
+    },
+    {
+      "id": "caller_wrong_block_guess",
+      "voice": "caller_valley",
+      "tags": ["confused", "anxious"],
+      "spoken": "It's by the neon club? Ocean? I don't know the number, I'm sorry, I'm sorry!",
+      "match": ["neon club", "beach area", "no block"],
+      "scenarioIds": ["*"]
+    }
+  ],
+  "units": [
+    { "id": "u-3a12", "callsign": "3A12", "voice": "unit_ocean_a", "zoneId": "Z-OCEAN" },
+    { "id": "u-3a14", "callsign": "3A14", "voice": "unit_ocean_b", "zoneId": "Z-OCEAN" },
+    { "id": "u-3a21", "callsign": "3A21", "voice": "unit_collins_a", "zoneId": "Z-COLLINS" },
+    { "id": "u-3a22", "callsign": "3A22", "voice": "unit_collins_b", "zoneId": "Z-COLLINS" },
+    { "id": "u-3a30", "callsign": "3A30", "voice": "unit_dt_a", "zoneId": "Z-DOWNTOWN" },
+    { "id": "u-3a31", "callsign": "3A31", "voice": "unit_dt_b", "zoneId": "Z-DOWNTOWN" },
+    { "id": "u-3a40", "callsign": "3A40", "voice": "unit_wyn_a", "zoneId": "Z-WYNWOOD" },
+    { "id": "u-3a41", "callsign": "3A41", "voice": "unit_wyn_b", "zoneId": "Z-WYNWOOD" },
+    { "id": "u-3s1", "callsign": "3S1", "voice": "unit_sup", "zoneId": "Z-OCEAN", "type": "supervisor" },
+    { "id": "u-3t1", "callsign": "3T1", "voice": "unit_traf", "zoneId": "Z-DOWNTOWN", "type": "traffic" }
+  ],
+  "priorities": [
+    { "code": "P0", "spoken": "Priority zero", "match": ["P0", "priority 0", "priority zero"] },
+    { "code": "P1", "spoken": "Priority one", "match": ["P1", "priority 1", "priority one"] },
+    { "code": "P2", "spoken": "Priority two", "match": ["P2", "priority 2"] },
+    { "code": "P3", "spoken": "Priority three", "match": ["P3", "priority 3"] },
+    { "code": "P4", "spoken": "Priority four", "match": ["P4", "priority 4"] },
+    { "code": "P5", "spoken": "Priority five", "match": ["P5", "priority 5"] }
+  ],
+  "natures": [
+    { "code": "ROBBERY-IP", "spoken": "robbery in progress", "match": ["robbery in progress", "ROBBERY-IP", "robbery"] },
+    { "code": "ASSAULT-IP", "spoken": "assault in progress", "match": ["assault in progress", "ASSAULT-IP", "assault"] },
+    { "code": "WEAPONS", "spoken": "armed subject", "match": ["armed subject", "WEAPONS", "weapons"] },
+    { "code": "DOMESTIC", "spoken": "domestic disturbance", "match": ["domestic", "DOMESTIC"] },
+    { "code": "DISTURBANCE", "spoken": "disturbance", "match": ["disturbance", "loud", "DISTURBANCE"] },
+    { "code": "THEFT-REPORT", "spoken": "theft report", "match": ["theft report", "THEFT-REPORT", "theft"] },
+    { "code": "WELFARE", "spoken": "welfare check", "match": ["welfare", "WELFARE"] },
+    { "code": "TRAFFIC-CRASH", "spoken": "traffic crash", "match": ["traffic crash", "TRAFFIC-CRASH", "crash"] },
+    { "code": "ALARM", "spoken": "commercial alarm", "match": ["alarm", "ALARM"] },
+    { "code": "SUSP-PERSON", "spoken": "suspicious person", "match": ["suspicious person", "SUSP-PERSON", "suspicious"] },
+    { "code": "BURG-IP", "spoken": "burglary in progress", "match": ["burglary", "BURG-IP"] },
+    { "code": "SHOTS-HEARD", "spoken": "shots heard", "match": ["shots heard", "SHOTS-HEARD", "shots"] },
+    { "code": "911-OPEN", "spoken": "open nine eleven", "match": ["911", "911-OPEN", "open 911"] }
+  ],
+  "locations": [
+    {
+      "id": "loc_1400_ocean",
+      "spoken": "fourteen hundred block Ocean Drive",
+      "match": ["1400 block Ocean Drive", "1400 Ocean Drive", "1400 Ocean", "fourteen hundred Ocean"],
+      "zoneId": "Z-OCEAN"
+    },
+    {
+      "id": "loc_900_ocean",
+      "spoken": "nine hundred block Ocean Drive",
+      "match": ["900 block Ocean Drive", "900 Ocean"],
+      "zoneId": "Z-OCEAN"
+    },
+    {
+      "id": "loc_600_ocean",
+      "spoken": "six hundred block Ocean Drive",
+      "match": ["600 block Ocean Drive", "600 Ocean"],
+      "zoneId": "Z-OCEAN"
+    },
+    {
+      "id": "loc_200_collins",
+      "spoken": "two hundred block Collins Avenue",
+      "match": ["200 block Collins Avenue", "200 Collins"],
+      "zoneId": "Z-COLLINS"
+    },
+    {
+      "id": "loc_300_collins",
+      "spoken": "three hundred block Collins Avenue",
+      "match": ["300 block Collins Avenue", "300 Collins"],
+      "zoneId": "Z-COLLINS"
+    },
+    {
+      "id": "loc_1100_collins",
+      "spoken": "eleven hundred block Collins Avenue",
+      "match": ["1100 block Collins Avenue", "1100 Collins"],
+      "zoneId": "Z-COLLINS"
+    },
+    {
+      "id": "loc_beach_vague",
+      "spoken": "beach area",
+      "match": ["beach area", "neon club", "by the neon"],
+      "zoneId": "Z-OCEAN"
+    },
+    {
+      "id": "loc_50_ne1",
+      "spoken": "fifty N E first street",
+      "match": ["50 NE 1st Street", "50 NE 1st", "NE 1st"],
+      "zoneId": "Z-DOWNTOWN"
+    },
+    {
+      "id": "loc_biscayne_ne5",
+      "spoken": "Biscayne Boulevard and N E fifth",
+      "match": ["Biscayne Blvd / NE 5th", "Biscayne", "NE 5th"],
+      "zoneId": "Z-DOWNTOWN"
+    },
+    {
+      "id": "loc_nw2_wyn",
+      "spoken": "N W second avenue warehouse district",
+      "match": ["NW 2nd Ave warehouse", "NW 2nd", "Wynwood"],
+      "zoneId": "Z-WYNWOOD"
+    },
+    {
+      "id": "loc_port_gate_b",
+      "spoken": "Port perimeter gate B",
+      "match": ["Port perimeter gate B", "port gate", "gate B", "Z-PORT"],
+      "zoneId": "Z-PORT"
+    },
+    {
+      "id": "loc_washington",
+      "spoken": "Washington Avenue mid beach",
+      "match": ["Washington Avenue", "Washington Ave"],
+      "zoneId": "Z-COLLINS"
+    },
+    {
+      "id": "loc_lincoln",
+      "spoken": "Lincoln Road mall area",
+      "match": ["Lincoln Road", "Lincoln"],
+      "zoneId": "Z-OCEAN"
+    },
+    {
+      "id": "loc_5th_ocean",
+      "spoken": "fifth and Ocean",
+      "match": ["5th and Ocean", "5th Ocean"],
+      "zoneId": "Z-OCEAN"
+    },
+    {
+      "id": "loc_alton",
+      "spoken": "Alton Road corridor",
+      "match": ["Alton Road", "Alton"],
+      "zoneId": "Z-COLLINS"
+    },
+    {
+      "id": "loc_bayfront",
+      "spoken": "Bayfront park area",
+      "match": ["Bayfront", "bayfront"],
+      "zoneId": "Z-DOWNTOWN"
+    },
+    {
+      "id": "loc_omni",
+      "spoken": "Omni area",
+      "match": ["Omni"],
+      "zoneId": "Z-DOWNTOWN"
+    },
+    {
+      "id": "loc_midtown",
+      "spoken": "Midtown Miami",
+      "match": ["Midtown"],
+      "zoneId": "Z-WYNWOOD"
+    }
+  ],
+  "safety_tags": [
+    { "id": "weapon", "spoken": "weapon reported", "match": ["weapon reported", "weapon", "weapons", "armed"] },
+    { "id": "backup", "spoken": "backup requested", "match": ["backup"] },
+    { "id": "multiple", "spoken": "multiple subjects", "match": ["multiple"] },
+    { "id": "injury", "spoken": "injury reported", "match": ["injury"] }
+  ],
+  "channel_phrases": [
+    {
+      "id": "emergency_hold",
+      "voice": "dispatch",
+      "spoken": "All units, emergency traffic, hold the air.",
+      "match": ["emergency traffic", "hold the air", "All units emergency"],
+      "kind": "EMERGENCY"
+    },
+    {
+      "id": "emergency_clear",
+      "voice": "dispatch",
+      "spoken": "All units, emergency traffic clear, resume normal traffic.",
+      "match": ["emergency traffic clear", "resume normal traffic"],
+      "kind": "EMERGENCY"
+    },
+    {
+      "id": "standby",
+      "voice": "dispatch",
+      "spoken": "Units, stand by for assignment.",
+      "match": ["stand by for assignment", "standby for assignment"],
+      "kind": "DISPATCH"
+    },
+    {
+      "id": "air_clear",
+      "voice": "dispatch",
+      "spoken": "Air is clear.",
+      "match": ["air is clear", "air clear"],
+      "kind": "SYSTEM"
+    },
+    {
+      "id": "repeat_last",
+      "voice": "dispatch",
+      "spoken": "Last unit, say again.",
+      "match": ["say again", "repeat"],
+      "kind": "QUERY"
+    },
+    {
+      "id": "port_handoff",
+      "voice": "dispatch",
+      "spoken": "Port edge, note jurisdiction handoff before you launch.",
+      "match": ["jurisdiction handoff", "port edge", "HANDOFF"],
+      "kind": "DISPATCH"
+    },
+    {
+      "id": "reclass_p1",
+      "voice": "dispatch",
+      "spoken": "Be advised, reclass to Priority one, weapon now known.",
+      "match": ["reclass", "weapon now known"],
+      "kind": "UPDATE"
+    }
+  ],
+  "dispatch_recipes": [
+    {
+      "id": "ocean_p1_robbery",
+      "units": ["3A12", "3A14"],
+      "priority": "P1",
+      "nature": "ROBBERY-IP",
+      "location": "loc_1400_ocean",
+      "safety": ["weapon"],
+      "scenarioIds": ["checkride_a07_ocean_robbery_v1"]
+    },
+    {
+      "id": "ocean_p3_disturbance_vague",
+      "units": ["3A12"],
+      "priority": "P3",
+      "nature": "DISTURBANCE",
+      "location": "loc_beach_vague",
+      "safety": [],
+      "scenarioIds": ["checkride_a07_ocean_robbery_v1"]
+    },
+    {
+      "id": "ocean_p1_weapons",
+      "units": ["3A12", "3A14"],
+      "priority": "P1",
+      "nature": "WEAPONS",
+      "location": "loc_1400_ocean",
+      "safety": ["weapon", "backup"],
+      "scenarioIds": ["watch_a07_friday_night_v1", "*"]
+    },
+    {
+      "id": "ocean_p3_loud_900",
+      "units": ["3A12"],
+      "priority": "P3",
+      "nature": "DISTURBANCE",
+      "location": "loc_900_ocean",
+      "safety": [],
+      "scenarioIds": ["watch_a07_friday_night_v1", "*"]
+    },
+    {
+      "id": "collins_p4_theft",
+      "units": ["3A21"],
+      "priority": "P4",
+      "nature": "THEFT-REPORT",
+      "location": "loc_300_collins",
+      "safety": [],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "collins_p2_domestic",
+      "units": ["3A21", "3A22"],
+      "priority": "P2",
+      "nature": "DOMESTIC",
+      "location": "loc_1100_collins",
+      "safety": ["backup"],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "collins_p4_200",
+      "units": ["3A22"],
+      "priority": "P4",
+      "nature": "THEFT-REPORT",
+      "location": "loc_200_collins",
+      "safety": [],
+      "scenarioIds": ["checkride_a07_ocean_robbery_v1", "*"]
+    },
+    {
+      "id": "dt_p3_welfare",
+      "units": ["3A30"],
+      "priority": "P3",
+      "nature": "WELFARE",
+      "location": "loc_50_ne1",
+      "safety": [],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "dt_p2_crash",
+      "units": ["3T1", "3A31"],
+      "priority": "P2",
+      "nature": "TRAFFIC-CRASH",
+      "location": "loc_biscayne_ne5",
+      "safety": ["injury"],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "wyn_p3_alarm",
+      "units": ["3A40"],
+      "priority": "P3",
+      "nature": "ALARM",
+      "location": "loc_nw2_wyn",
+      "safety": [],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "port_p2_susp",
+      "units": ["3A30", "3A31"],
+      "priority": "P2",
+      "nature": "SUSP-PERSON",
+      "location": "loc_port_gate_b",
+      "safety": [],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "ocean_p1_assault",
+      "units": ["3A12", "3A14", "3S1"],
+      "priority": "P1",
+      "nature": "ASSAULT-IP",
+      "location": "loc_5th_ocean",
+      "safety": ["weapon", "backup"],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "ocean_p2_shots",
+      "units": ["3A12", "3A14"],
+      "priority": "P2",
+      "nature": "SHOTS-HEARD",
+      "location": "loc_600_ocean",
+      "safety": ["weapon"],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "lincoln_p3_dist",
+      "units": ["3A14"],
+      "priority": "P3",
+      "nature": "DISTURBANCE",
+      "location": "loc_lincoln",
+      "safety": [],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "alton_p3_welfare",
+      "units": ["3A21"],
+      "priority": "P3",
+      "nature": "WELFARE",
+      "location": "loc_alton",
+      "safety": [],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "bayfront_p2_911",
+      "units": ["3A30", "3A31"],
+      "priority": "P2",
+      "nature": "911-OPEN",
+      "location": "loc_bayfront",
+      "safety": [],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "midtown_p3_susp",
+      "units": ["3A40", "3A41"],
+      "priority": "P3",
+      "nature": "SUSP-PERSON",
+      "location": "loc_midtown",
+      "safety": [],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "omni_p4_theft",
+      "units": ["3A31"],
+      "priority": "P4",
+      "nature": "THEFT-REPORT",
+      "location": "loc_omni",
+      "safety": [],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "washington_p2_domestic",
+      "units": ["3A21", "3A22"],
+      "priority": "P2",
+      "nature": "DOMESTIC",
+      "location": "loc_washington",
+      "safety": ["backup"],
+      "scenarioIds": ["*"]
+    },
+    {
+      "id": "ocean_sup_roll",
+      "units": ["3S1", "3A12"],
+      "priority": "P1",
+      "nature": "WEAPONS",
+      "location": "loc_1400_ocean",
+      "safety": ["weapon", "backup"],
+      "scenarioIds": ["*"]
+    }
+  ]
+}

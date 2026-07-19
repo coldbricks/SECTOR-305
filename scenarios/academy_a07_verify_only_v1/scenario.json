@@ -1,0 +1,22 @@
+{
+  "id": "academy_a07_verify_only_v1",
+  "version": "1.0.0",
+  "kind": "academy",
+  "packId": "miami-a07-police-v0",
+  "seed": 305110,
+  "title": "Academy · Verify before launch",
+  "adversarialTags": [
+    "C1"
+  ],
+  "contentNotes": [
+    "fictional",
+    "no-gore",
+    "training-safe"
+  ],
+  "passConditions": {
+    "noHardFails": true
+  },
+  "expectedHardFailsOnFailSession": [
+    "FAIL_NO_VERIFY"
+  ]
+}

@@ -7,6 +7,7 @@ import {
 import { canTransitionStatus } from "./doctrine/statusMatrix.js";
 import { mulberry32 } from "./rng.js";
 import { DEBRIEF_DISCLAIMER } from "./grade/codes.js";
+import { scoreSoftBand } from "./grade/softBand.js";
 import { renderTemplate } from "./radio/templates.js";
 import { ENGINE_VERSION } from "./schema/common.js";
 import type {
@@ -1543,6 +1544,7 @@ export class Runtime {
       passed: hardFails.length === 0,
       hardFails,
       softMarks,
+      softBand: scoreSoftBand(softMarks),
       notes,
       timeline,
       metrics: {

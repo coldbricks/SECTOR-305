@@ -1,0 +1,21 @@
+{
+  "id": "watch_a07_saturday_pulse_v1",
+  "version": "1.0.0",
+  "kind": "watch",
+  "packId": "miami-a07-police-v0",
+  "seed": 305210,
+  "title": "Saturday pulse — mid-beach stack",
+  "adversarialTags": [
+    "C6"
+  ],
+  "contentNotes": [
+    "fictional",
+    "no-gore",
+    "training-safe"
+  ],
+  "passConditions": {
+    "noHardFails": false
+  },
+  "durationMs": 900000,
+  "minCfs": 6
+}

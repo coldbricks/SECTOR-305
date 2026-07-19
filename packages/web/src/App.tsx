@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Runtime,
-  baseUnitsA07,
-  incidentRobberyBadAddress,
-  incidentTheftReport,
+  A07_SCENARIO_CATALOG,
+  materializeA07Scenario,
   createMasteryProfile,
   recordMasteryWatch,
   type PlayerCommand,
@@ -20,6 +19,8 @@ import {
 } from "@sector305/core";
 import { SectorMap } from "./SectorMap";
 import { consoleAudio } from "./audio/consoleAudio";
+import { radioSpeech } from "./audio/radioSpeech";
+import { channelSfx } from "./audio/channelSfx";
 import { shellMusic } from "./audio/shellMusic";
 import { splashFxBed } from "./audio/splashFxBed";
 import { ShellSplash } from "./components/ShellSplash";
@@ -131,32 +132,57 @@ function browserPack(): DoctrinePack {
   };
 }
 
-function createCheckride(): Runtime {
+const SCENARIO_STORAGE_KEY = "s305.scenarioId";
+
+function readStoredScenarioId(): string {
+  try {
+    const id = localStorage.getItem(SCENARIO_STORAGE_KEY);
+    if (id && A07_SCENARIO_CATALOG.some((s) => s.id === id)) return id;
+  } catch {
+    /* ignore */
+  }
+  return "checkride_a07_ocean_robbery_v1";
+}
+
+function createScenarioRuntime(scenarioId: string): Runtime {
+  const { entry, units, incidents } = materializeA07Scenario(scenarioId);
   return new Runtime({
     pack: browserPack(),
-    scenarioId: "checkride_a07_ocean_robbery_v1",
-    seed: 305001,
-    units: baseUnitsA07(),
-    incidents: [incidentRobberyBadAddress(), incidentTheftReport()],
+    scenarioId: entry.id,
+    seed: entry.seed,
+    units,
+    incidents,
   });
 }
 
 function soundForCommand(c: PlayerCommand): void {
   switch (c.type) {
     case "DispatchUnits":
-      shellMusic.duckForRadio(1700);
-      consoleAudio.play("radioKey");
-      window.setTimeout(() => consoleAudio.play("radioCrackle"), 80);
-      window.setTimeout(() => consoleAudio.play("assign"), 220);
+      // Baked ElevenLabs caption when catalog match; else key-up / roger
+      void radioSpeech.playCaption({
+        caption: c.radioCaption ?? "",
+        kind: "DISPATCH",
+        direction: "dispatch_tx",
+      });
       break;
     case "UnitRadioRx":
-      shellMusic.duckForRadio(1300);
-      consoleAudio.play(c.kind === "ACK" ? "ack" : "radioRx");
+      void radioSpeech.playCaption({
+        caption: c.caption ?? "",
+        kind: c.kind ?? "ACK",
+        direction: "unit_tx",
+      });
       break;
     case "RadioTx":
-    case "RadioTxFreeform":
+      // Template TX — speech after render would need slots; key-up only for now
       shellMusic.duckForRadio(1500);
       consoleAudio.play("radioKey");
+      break;
+    case "RadioTxFreeform":
+      void radioSpeech.playCaption({
+        caption: c.caption,
+        kind: c.kind,
+        direction: "dispatch_tx",
+      });
       break;
     case "ClearIncident":
       consoleAudio.play("clear");
@@ -192,7 +218,8 @@ export function App() {
       : `watch-${Date.now()}-${Math.random().toString(16).slice(2)}`
   );
   const [completedAtIso, setCompletedAtIso] = useState<string | null>(null);
-  const [rt] = useState(() => createCheckride());
+  const [scenarioId, setScenarioId] = useState(() => readStoredScenarioId());
+  const [rt, setRt] = useState(() => createScenarioRuntime(readStoredScenarioId()));
   const [state, setState] = useState<SectorState>(() => rt.snapshot());
   const [selectedId, setSelectedId] = useState<string | null>("cfs-001");
   const [sessionCmds, setSessionCmds] = useState<
@@ -285,6 +312,10 @@ export function App() {
   function cmd(c: PlayerCommand) {
     const atMs = rt.snapshot().clockMs;
     const gradesBefore = rt.snapshot().gradeLog.length;
+    const notesBefore = Object.values(rt.snapshot().incidents).reduce(
+      (n, inc) => n + inc.notes.length,
+      0
+    );
     rt.apply(c);
     const next = rt.snapshot();
     setSessionCmds((prev) => [...prev, { atMs, cmd: c }]);
@@ -296,6 +327,24 @@ export function App() {
       window.setTimeout(() => consoleAudio.play("fail"), 120);
     } else if (newGrades.some((g) => g.severity === "soft")) {
       window.setTimeout(() => consoleAudio.play("ding"), 80);
+    }
+    // New CT / knowable notes → frantic 911 caller bed (after user is on glass)
+    const newCallerNotes: string[] = [];
+    for (const inc of Object.values(next.incidents)) {
+      for (const note of inc.notes) {
+        if (note.author !== "call_taker" && note.author !== "system") continue;
+        if (note.atMs < atMs && c.type !== "Advance") continue;
+        // Prefer notes that just landed at/after prior clock
+        if (note.atMs >= atMs || c.type === "Advance") {
+          newCallerNotes.push(note.text);
+        }
+      }
+    }
+    // De-dupe and play first strong match (don't stack scream-over-scream)
+    const unique = [...new Set(newCallerNotes)].slice(-3);
+    if (unique.length && notesBefore < Object.values(next.incidents).reduce((n, i) => n + i.notes.length, 0)) {
+      const latest = unique[unique.length - 1]!;
+      void radioSpeech.playCallerFromNote(latest);
     }
   }
 
@@ -534,6 +583,9 @@ export function App() {
 
   async function openWatch() {
     await consoleAudio.unlock();
+    // Warm radio/phone buses before glass (manifests + optional baked SFX)
+    void radioSpeech.ensureLoaded();
+    void channelSfx.ensureLoaded();
     splashFxBed.stop();
     // Long cinematic fade of title theme, then boot into glass
     if (musicReady && !musicMuted && !muted) {
@@ -551,7 +603,10 @@ export function App() {
       consoleAudio.play("channelUp");
       setPhase("console");
       window.setTimeout(() => {
-        consoleAudio.play("radioCrackle");
+        // Prefer baked radio crackle; synth fallback inside channelSfx/consoleAudio
+        void channelSfx.play("radio_crackle_soft", 0.32).then((ok) => {
+          if (!ok) consoleAudio.play("radioCrackle");
+        });
         consoleAudio.startAmbient();
       }, 280);
     }, 2800);
@@ -565,6 +620,25 @@ export function App() {
         muted={muted}
         musicMuted={musicMuted}
         mastery={masteryProfile}
+        scenarioId={scenarioId}
+        scenarios={A07_SCENARIO_CATALOG}
+        onSelectScenario={(id) => {
+          try {
+            localStorage.setItem(SCENARIO_STORAGE_KEY, id);
+          } catch {
+            /* ignore */
+          }
+          setScenarioId(id);
+          const nextRt = createScenarioRuntime(id);
+          setRt(nextRt);
+          setState(nextRt.snapshot());
+          setSessionCmds([]);
+          setSelectedId(
+            Object.keys(nextRt.snapshot().incidents)[0] ?? null
+          );
+          setOwnedIds(new Set());
+          consoleAudio.play("ui");
+        }}
         onResetMastery={resetMastery}
         onBegin={() => void openWatch()}
         onToggleSfx={() => void toggleMute()}
@@ -616,6 +690,12 @@ export function App() {
 
           <section className="debrief-section">
             <h2>Coaching · soft marks ({debrief.softMarks.length})</h2>
+            {debrief.softBand ? (
+              <p className="dim-line mono" style={{ marginBottom: "0.5rem" }}>
+                SOFT BAND · {debrief.softBand.label} · weight {debrief.softBand.weight}/
+                {debrief.softBand.ceiling}
+              </p>
+            ) : null}
             {debrief.softMarks.length === 0 ? (
               <p className="dim-line">None.</p>
             ) : (

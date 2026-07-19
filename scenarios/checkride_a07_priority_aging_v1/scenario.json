@@ -1,0 +1,23 @@
+{
+  "id": "checkride_a07_priority_aging_v1",
+  "version": "1.0.0",
+  "kind": "checkride",
+  "packId": "miami-a07-police-v0",
+  "seed": 305010,
+  "title": "Priority aging — do not tunnel the P4",
+  "adversarialTags": [
+    "C2",
+    "C6"
+  ],
+  "contentNotes": [
+    "fictional",
+    "no-gore",
+    "training-safe"
+  ],
+  "passConditions": {
+    "noHardFails": true
+  },
+  "expectedHardFailsOnFailSession": [
+    "FAIL_PRIORITY_AGING"
+  ]
+}

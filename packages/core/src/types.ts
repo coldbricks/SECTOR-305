@@ -71,6 +71,7 @@ export type {
 
 export type { FailCode, SoftCode, GradeCode, GradeDomain } from "./grade/codes.js";
 
+import type { SoftBandScore } from "./grade/softBand.js";
 import type { GradeEvent } from "./schema/gradeEvent.js";
 import type { Incident } from "./schema/incident.js";
 import type { PlayerCommand } from "./schema/playerCommand.js";
@@ -113,6 +114,8 @@ export interface Debrief {
   passed: boolean;
   hardFails: GradeEvent[];
   softMarks: GradeEvent[];
+  /** Coaching product — weight/band; never alone flips hard pass */
+  softBand: SoftBandScore;
   notes: GradeEvent[];
   timeline: Array<{ atMs: number; kind: string; summary: string }>;
   metrics: {

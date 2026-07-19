@@ -1,0 +1,22 @@
+{
+  "id": "academy_a07_status_hygiene_v1",
+  "version": "1.0.0",
+  "kind": "academy",
+  "packId": "miami-a07-police-v0",
+  "seed": 305150,
+  "title": "Academy · Status hygiene",
+  "adversarialTags": [
+    "C3"
+  ],
+  "contentNotes": [
+    "fictional",
+    "no-gore",
+    "training-safe"
+  ],
+  "passConditions": {
+    "noHardFails": true
+  },
+  "expectedHardFailsOnFailSession": [
+    "FAIL_STATUS_DIRTY_CLOSE"
+  ]
+}

@@ -520,6 +520,54 @@ button.danger {
   border-color: transparent;
 }
 
+.splash-scenario-desk {
+  margin: 0.75rem auto 0;
+  max-width: min(28rem, 92vw);
+  padding: 0.65rem 0.85rem 0.75rem;
+  text-align: left;
+  background: rgba(6, 10, 16, 0.72);
+  border: 1px solid rgba(80, 140, 180, 0.28);
+  border-radius: 2px;
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.45);
+}
+
+.splash-scenario-desk .swo-head {
+  margin-bottom: 0.45rem;
+}
+
+.splash-scenario-label {
+  display: block;
+  font-size: 0.52rem;
+  letter-spacing: 0.14em;
+  color: rgba(140, 170, 190, 0.65);
+  margin-bottom: 0.3rem;
+}
+
+.splash-scenario-select {
+  width: 100%;
+  padding: 0.4rem 0.45rem;
+  font-family: "Share Tech Mono", ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  color: #d8e6f0;
+  background: rgba(4, 8, 14, 0.95);
+  border: 1px solid rgba(90, 150, 190, 0.45);
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.splash-scenario-select:focus {
+  outline: 1px solid rgba(0, 220, 255, 0.55);
+  border-color: rgba(0, 220, 255, 0.55);
+}
+
+.splash-scenario-brief {
+  margin: 0.45rem 0 0;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: rgba(180, 200, 214, 0.78);
+}
+
 .splash-begin {
   font-size: 10px;
   font-weight: 700;

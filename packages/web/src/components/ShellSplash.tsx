@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { shellMusic } from "../audio/shellMusic";
 import { splashFxBed } from "../audio/splashFxBed";
 import { consoleAudio } from "../audio/consoleAudio";
-import type { MasteryProfile } from "@sector305/core";
+import type { MasteryProfile, ScenarioCatalogEntry } from "@sector305/core";
 
 type Props = {
   booting: boolean;
@@ -10,6 +10,9 @@ type Props = {
   muted: boolean;
   musicMuted: boolean;
   mastery: MasteryProfile;
+  scenarioId: string;
+  scenarios: ScenarioCatalogEntry[];
+  onSelectScenario: (id: string) => void;
   onBegin: () => void;
   onToggleSfx: () => void;
   onToggleMusic: () => void;
@@ -40,9 +43,15 @@ export function ShellSplash({
   muted,
   musicMuted,
   mastery,
+  scenarioId,
+  scenarios,
+  onSelectScenario,
   onBegin,
   onResetMastery,
 }: Props) {
+  const selected =
+    scenarios.find((s) => s.id === scenarioId) ?? scenarios[0] ?? null;
+  const ordered = [...scenarios].sort((a, b) => a.menuOrder - b.menuOrder);
   const startedRef = useRef(false);
 
   useEffect(() => {
@@ -156,6 +165,32 @@ export function ShellSplash({
             >
               RESET PROFILE
             </button>
+          ) : null}
+        </section>
+
+        <section className="splash-scenario-desk" aria-label="Scenario select">
+          <div className="swo-head mono">
+            <span>SCENARIO CLASS · A07</span>
+            <span>{ordered.length} LOADED</span>
+          </div>
+          <label className="splash-scenario-label mono" htmlFor="scenario-select">
+            SELECT WATCH
+          </label>
+          <select
+            id="scenario-select"
+            className="splash-scenario-select"
+            value={scenarioId}
+            disabled={booting}
+            onChange={(e) => onSelectScenario(e.target.value)}
+          >
+            {ordered.map((s) => (
+              <option key={s.id} value={s.id}>
+                [{s.kind.toUpperCase()}] {s.title}
+              </option>
+            ))}
+          </select>
+          {selected ? (
+            <p className="splash-scenario-brief">{selected.brief}</p>
           ) : null}
         </section>
 

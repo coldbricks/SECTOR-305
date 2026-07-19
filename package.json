@@ -12,7 +12,18 @@
     "dev": "npm run dev -w @sector305/web",
     "typecheck": "npm run typecheck -w @sector305/core && npm run typecheck -w @sector305/web",
     "validate:packs": "npm run validate:packs -w @sector305/core",
-    "test:e2e": "npm run test:e2e -w @sector305/web"
+    "test:e2e": "npm run test:e2e -w @sector305/web",
+    "radio:catalog": "node scripts/build-radio-catalog.mjs",
+    "radio:catalog:full": "node scripts/build-radio-catalog.mjs --full",
+    "radio:tts": "node scripts/build-radio-catalog.mjs && node scripts/elevenlabs-radio.mjs",
+    "radio:tts:full": "node scripts/build-radio-catalog.mjs --full && node scripts/elevenlabs-radio.mjs",
+    "radio:tts:dry": "node scripts/build-radio-catalog.mjs && node scripts/elevenlabs-radio.mjs --dry-run",
+    "radio:tts:full:dry": "node scripts/build-radio-catalog.mjs --full && node scripts/elevenlabs-radio.mjs --dry-run",
+    "radio:tts:force": "node scripts/build-radio-catalog.mjs && node scripts/elevenlabs-radio.mjs --force",
+    "radio:sfx": "node scripts/elevenlabs-sfx.mjs",
+    "radio:sfx:dry": "node scripts/elevenlabs-sfx.mjs --dry-run",
+    "radio:sfx:force": "node scripts/elevenlabs-sfx.mjs --force",
+    "radio:sfx:lab": "node scripts/elevenlabs-sfx-lab.mjs"
   },
   "workspaces": [
     "packages/*"

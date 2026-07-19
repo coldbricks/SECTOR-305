@@ -1,0 +1,22 @@
+{
+  "id": "checkride_a07_traffic_type_v1",
+  "version": "1.0.0",
+  "kind": "checkride",
+  "packId": "miami-a07-police-v0",
+  "seed": 305080,
+  "title": "Traffic crash — use the right unit",
+  "adversarialTags": [
+    "C4"
+  ],
+  "contentNotes": [
+    "fictional",
+    "no-gore",
+    "training-safe"
+  ],
+  "passConditions": {
+    "noHardFails": true
+  },
+  "expectedHardFailsOnFailSession": [
+    "FAIL_UNIT_WRONG_TYPE"
+  ]
+}

@@ -4,8 +4,16 @@ export * from "./runtime.js";
 export * from "./fixtures.js";
 export * from "./rng.js";
 export * from "./grade/codes.js";
+export * from "./grade/softBand.js";
 export * from "./grade/multiset.js";
 export * from "./mastery.js";
+export {
+  A07_SCENARIO_CATALOG,
+  listA07ScenarioIds,
+  getA07CatalogEntry,
+  materializeA07Scenario,
+  type ScenarioCatalogEntry,
+} from "./scenarios/a07Library.js";
 export * from "./doctrine/statusMatrix.js";
 export * from "./doctrine/infoSet.js";
 export * from "./radio/templates.js";

@@ -4,6 +4,7 @@ dist/
 .DS_Store
 .env
 .env.*
+!.env.example
 coverage/
 packages/web/dist/
 packages/core/dist/
@@ -14,3 +15,9 @@ playwright-report/
 
 # Prefer mp3 in-repo; source wav stays local
 packages/web/public/audio/shell-theme.wav
+
+# SFX lab intermediates (winners live in channel-sfx/*.mp3)
+packages/web/public/audio/channel-sfx/variants/
+
+# Local bake fingerprints (optional cache; do not require on clone)
+packages/web/public/audio/**/*.meta.json

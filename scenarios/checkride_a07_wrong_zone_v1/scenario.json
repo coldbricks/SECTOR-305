@@ -1,0 +1,24 @@
+{
+  "id": "checkride_a07_wrong_zone_v1",
+  "version": "1.0.0",
+  "kind": "checkride",
+  "packId": "miami-a07-police-v0",
+  "seed": 305090,
+  "title": "Wrong zone verify trap",
+  "adversarialTags": [
+    "C1",
+    "C10"
+  ],
+  "contentNotes": [
+    "fictional",
+    "no-gore",
+    "training-safe"
+  ],
+  "passConditions": {
+    "noHardFails": true
+  },
+  "expectedHardFailsOnFailSession": [
+    "FAIL_WRONG_LOCATION",
+    "FAIL_NO_VERIFY"
+  ]
+}

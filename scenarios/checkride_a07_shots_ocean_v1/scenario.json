@@ -1,0 +1,20 @@
+{
+  "id": "checkride_a07_shots_ocean_v1",
+  "version": "1.0.0",
+  "kind": "checkride",
+  "packId": "miami-a07-police-v0",
+  "seed": 305060,
+  "title": "Shots heard — Ocean corridor",
+  "adversarialTags": [
+    "C2",
+    "C4"
+  ],
+  "contentNotes": [
+    "fictional",
+    "no-gore",
+    "training-safe"
+  ],
+  "passConditions": {
+    "noHardFails": true
+  }
+}

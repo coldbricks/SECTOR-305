@@ -1,0 +1,22 @@
+{
+  "id": "checkride_a07_dirty_close_v1",
+  "version": "1.0.0",
+  "kind": "checkride",
+  "packId": "miami-a07-police-v0",
+  "seed": 305040,
+  "title": "Dirty close — units still rolling",
+  "adversarialTags": [
+    "C3"
+  ],
+  "contentNotes": [
+    "fictional",
+    "no-gore",
+    "training-safe"
+  ],
+  "passConditions": {
+    "noHardFails": true
+  },
+  "expectedHardFailsOnFailSession": [
+    "FAIL_STATUS_DIRTY_CLOSE"
+  ]
+}
