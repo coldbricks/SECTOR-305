@@ -19,7 +19,7 @@ type Pack = {
   channels: RrChannel[];
 };
 
-/** RadioReference-flavored channel bank (ctid 328 curated). */
+/** Fictional SECTOR 305 channel bank. */
 export function ChannelBank(props: {
   activeAlpha?: string;
   onSelect?: (ch: RrChannel) => void;
@@ -30,7 +30,7 @@ export function ChannelBank(props: {
 
   useEffect(() => {
     const ac = new AbortController();
-    fetch("/radio/ctid328_watch.json", { signal: ac.signal })
+    fetch("/radio/sector305_channels.json", { signal: ac.signal })
       .then((r) => r.json())
       .then((j: Pack) => setPack(j))
       .catch(() => setPack(null));
@@ -39,10 +39,10 @@ export function ChannelBank(props: {
 
   if (!pack) {
     return (
-      <div className="channel-bank">
+      <div className="channel-bank" role="region" aria-label="Fictional channel bank">
         <div className="cb-head">
           <span>CHAN BANK</span>
-          <span className="mono dim">RR · …</span>
+          <span className="mono dim">SIM · …</span>
         </div>
       </div>
     );
@@ -58,10 +58,15 @@ export function ChannelBank(props: {
   });
 
   return (
-    <div className="channel-bank" title={pack.disclaimer}>
+    <div
+      className="channel-bank"
+      role="region"
+      aria-label="Fictional channel bank"
+      title={pack.disclaimer}
+    >
       <div className="cb-head">
         <span>CHAN BANK</span>
-        <span className="mono dim">RR · CTID 328</span>
+        <span className="mono dim">SIM · A07</span>
       </div>
       <div className="cb-filters">
         {(["pri", "tac", "fire", "law", "all"] as const).map((f) => (
@@ -101,7 +106,7 @@ export function ChannelBank(props: {
           );
         })}
       </ul>
-      <div className="cb-foot mono">PUBLIC SCAN DB · TRAINING FICTION ONLY</div>
+      <div className="cb-foot mono">FICTIONAL PLAN · TRAINING ONLY</div>
     </div>
   );
 }

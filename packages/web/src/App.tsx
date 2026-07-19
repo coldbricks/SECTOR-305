@@ -32,6 +32,7 @@ import { TrainingCoach } from "./components/TrainingCoach";
 import { LiveGradeStrip } from "./components/LiveGradeStrip";
 import { CueWindowHud } from "./components/CueWindowHud";
 import { RadioCaptionMeter } from "./components/RadioCaptionMeter";
+import { ScoreControlPanel } from "./components/ScoreControlPanel";
 import {
   HOTKEY_HELP_ROWS,
   useConsoleHotkeys,
@@ -203,6 +204,9 @@ export function App() {
   const [muted, setMuted] = useState(() => consoleAudio.isMuted());
   const [musicMuted, setMusicMuted] = useState(() => shellMusic.isMusicMuted());
   const [musicReady, setMusicReady] = useState(false);
+  const [scoreTitle, setScoreTitle] = useState(() =>
+    shellMusic.getCurrentTrackTitle()
+  );
   /** Dispatcher has taken the call (ACK/select) — suppresses new-call flavor. */
   const [ownedIds, setOwnedIds] = useState<Set<string>>(() => new Set(["cfs-001"]));
   const [watchChannel, setWatchChannel] = useState<RrChannel | null>(null);
@@ -213,6 +217,7 @@ export function App() {
   const [trafficSeen, setTrafficSeen] = useState(false);
   const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
   const [hotkeyHelp, setHotkeyHelp] = useState(false);
+  const [scoreControlsOpen, setScoreControlsOpen] = useState(false);
   const debrief = useMemo(
     () => (phase === "debrief" ? rt.debrief() : null),
     [phase, state, rt]
@@ -232,6 +237,14 @@ export function App() {
     saveMasteryProfile(projectedMastery);
     setMasteryProfile(projectedMastery);
   }, [projectedMastery, masteryProfile]);
+
+  useEffect(
+    () =>
+      shellMusic.subscribe(() => {
+        setScoreTitle(shellMusic.getCurrentTrackTitle());
+      }),
+    []
+  );
 
   // Debrief sting when entering AAR
   useEffect(() => {
@@ -525,7 +538,7 @@ export function App() {
     // Long cinematic fade of title theme, then boot into glass
     if (musicReady && !musicMuted && !muted) {
       if (!shellMusic.snapshot().playing) await shellMusic.play();
-      shellMusic.transitionToWatchBed(4.5);
+      shellMusic.transitionToWatchBed(4.5, state.seed);
     } else {
       shellMusic.disableSlow(0.4);
     }
@@ -735,6 +748,16 @@ export function App() {
             >
               BED
             </button>
+            <button
+              type="button"
+              className={`tb-score-desk ${scoreControlsOpen ? "is-open" : ""}`}
+              aria-label="Score controls"
+              aria-expanded={scoreControlsOpen}
+              onClick={() => setScoreControlsOpen((open) => !open)}
+              title={`Scenario score controls · ${scoreTitle}`}
+            >
+              ♫
+            </button>
             <button onClick={() => cmd({ type: "Advance", ms: 5000 })}>+5s</button>
             <button onClick={() => cmd({ type: "Advance", ms: 30000 })}>+30s</button>
             <button onClick={exportSession}>Export</button>
@@ -753,7 +776,18 @@ export function App() {
         </div>
       </div>
 
-      <LiveGradeStrip gradeLog={state.gradeLog} focus={masteryProfile.focus} />
+      <ScoreControlPanel
+        open={scoreControlsOpen}
+        musicMuted={musicMuted}
+        onClose={() => setScoreControlsOpen(false)}
+        onToggleMusic={() => void toggleShellMusic()}
+      />
+
+      <LiveGradeStrip
+        gradeLog={state.gradeLog}
+        focus={masteryProfile.focus}
+        scoreTitle={scoreTitle}
+      />
 
       {hotkeyHelp ? (
         <div className="hotkey-help" role="dialog" aria-label="Keyboard map">

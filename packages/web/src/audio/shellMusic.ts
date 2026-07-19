@@ -1,3 +1,9 @@
+import {
+  SCENARIO_SCORE_TRACKS,
+  scenarioScoreAt,
+  type ScenarioScoreTrack,
+} from "./scenarioScore";
+
 /**
  * Intro shell theme — full song player for the prestige menu.
  *
@@ -17,6 +23,7 @@ const CANDIDATES = [
 
 const MUSIC_MUTE_KEY = "s305.music.muted";
 const LOOP_KEY = "s305.music.loop";
+const SCORE_CURSOR_KEY = "s305.score.cursor";
 
 export type ShellMusicMeta = {
   title: string;
@@ -42,6 +49,9 @@ export type ShellMusicSnapshot = {
   loop: boolean;
   muted: boolean;
   ended: boolean;
+  mode: MusicMode;
+  trackId: string;
+  trackTitle: string;
 };
 
 type Listener = () => void;
@@ -53,6 +63,7 @@ const DEBRIEF_BED_VOLUME = 0.14;
 
 class ShellMusic {
   private el: HTMLAudioElement | null = null;
+  private activeUrl: string | null = null;
   private resolvedUrl: string | null | undefined = undefined;
   private wanted = false;
   private musicMuted = false;
@@ -65,6 +76,8 @@ class ShellMusic {
   private playAttempt: Promise<boolean> | null = null;
   private fadeSerial = 0;
   private duckRestoreTimer: number | null = null;
+  private trackSwitchTimer: number | null = null;
+  private scenarioTrack: ScenarioScoreTrack | null = null;
 
   private audioCtx: AudioContext | null = null;
   private analyser: AnalyserNode | null = null;
@@ -112,6 +125,10 @@ class ShellMusic {
     return SHELL_TRACK_META;
   }
 
+  getCurrentTrackTitle(): string {
+    return this.scenarioTrack?.title ?? SHELL_TRACK_META.title;
+  }
+
   snapshot(): ShellMusicSnapshot {
     const a = this.el;
     return {
@@ -123,6 +140,9 @@ class ShellMusic {
       loop: this.loop,
       muted: this.musicMuted || this.masterMuted,
       ended: this.ended || !!(a?.ended),
+      mode: this.mode,
+      trackId: this.scenarioTrack?.id ?? "dispatch-in-miami",
+      trackTitle: this.getCurrentTrackTitle(),
     };
   }
 
@@ -179,18 +199,35 @@ class ShellMusic {
     this.disableSlow(1.1);
   }
 
-  /** Continue the authored title performance as a subliminal in-watch bed. */
-  transitionToWatchBed(seconds = 4.5) {
+  /** Cross from the title performance into the next authored scenario score. */
+  transitionToWatchBed(seconds = 4.5, seed = 305001) {
+    const track = this.rotateScenarioTrack(seed);
     this.mode = "watch";
+    this.scenarioTrack = track;
     this.wanted = true;
     this.ended = false;
     this.loop = true;
     this.volume = WATCH_BED_VOLUME;
-    if (this.el) {
-      this.el.loop = true;
-      this.fadeTo(WATCH_BED_VOLUME, seconds);
+    if (this.trackSwitchTimer != null) window.clearTimeout(this.trackSwitchTimer);
+
+    const startScenario = () => {
+      this.trackSwitchTimer = null;
+      const a = this.ensureEl(track.url);
+      a.loop = true;
+      a.volume = 0;
+      if (!this.musicMuted && !this.masterMuted) {
+        void a.play().then(() => this.fadeTo(WATCH_BED_VOLUME, Math.max(0.8, seconds - 1.4))).catch(() => {
+          this.emit();
+        });
+      }
+      this.emit();
+    };
+
+    if (this.el && !this.el.paused) {
+      this.fadeTo(0, Math.min(1.4, seconds * 0.4));
+      this.trackSwitchTimer = window.setTimeout(startScenario, Math.min(1400, seconds * 400));
     } else {
-      void this.play();
+      startScenario();
     }
     this.emit();
   }
@@ -225,9 +262,59 @@ class ShellMusic {
     }, holdMs);
   }
 
+  selectScenarioTrack(trackId: string, fadeSeconds = 0.45): boolean {
+    const track = SCENARIO_SCORE_TRACKS.find((candidate) => candidate.id === trackId);
+    if (!track) return false;
+
+    this.mode = "watch";
+    this.scenarioTrack = track;
+    this.wanted = true;
+    this.ended = false;
+    this.loop = true;
+    if (this.volume > DEBRIEF_BED_VOLUME || this.volume <= 0) {
+      this.volume = WATCH_BED_VOLUME;
+    }
+
+    if (this.trackSwitchTimer != null) window.clearTimeout(this.trackSwitchTimer);
+    const switchTrack = () => {
+      this.trackSwitchTimer = null;
+      const a = this.ensureEl(track.url);
+      a.loop = true;
+      a.volume = 0;
+      if (!this.musicMuted && !this.masterMuted) {
+        void a.play().then(() => this.fadeTo(this.volume, fadeSeconds)).catch(() => this.emit());
+      }
+      this.emit();
+    };
+
+    if (this.el && !this.el.paused) {
+      this.fadeTo(0, 0.22);
+      this.trackSwitchTimer = window.setTimeout(switchTrack, 240);
+    } else {
+      switchTrack();
+    }
+    this.emit();
+    return true;
+  }
+
+  stepScenarioTrack(delta = 1): ScenarioScoreTrack {
+    const currentIndex = this.scenarioTrack
+      ? SCENARIO_SCORE_TRACKS.findIndex((track) => track.id === this.scenarioTrack?.id)
+      : -1;
+    const size = SCENARIO_SCORE_TRACKS.length;
+    const index = ((currentIndex + delta) % size + size) % size;
+    const track = SCENARIO_SCORE_TRACKS[index];
+    this.selectScenarioTrack(track.id);
+    return track;
+  }
+
   /** Long cinematic fade when leaving splash (BEGIN). */
   disableSlow(seconds = 4.5) {
     this.wanted = false;
+    if (this.trackSwitchTimer != null) {
+      window.clearTimeout(this.trackSwitchTimer);
+      this.trackSwitchTimer = null;
+    }
     this.fadeOutAndPause(seconds);
     this.emit();
   }
@@ -250,13 +337,15 @@ class ShellMusic {
   private async startPlayback(): Promise<boolean> {
     this.wanted = true;
     this.ended = false;
-    this.forceUnmute();
-    await this.ensureResolved();
-    if (!this.resolvedUrl) {
+    const url =
+      this.mode === "title" || !this.scenarioTrack
+        ? await this.ensureResolved()
+        : this.scenarioTrack.url;
+    if (!url) {
       this.emit();
       return false;
     }
-    const a = this.ensureEl(this.resolvedUrl);
+    const a = this.ensureEl(url);
     // Play through the element first so audio is guaranteed audible;
     // wire analyser only after play succeeds (optional).
     a.muted = false;
@@ -391,12 +480,11 @@ class ShellMusic {
   }
 
   private ensureEl(url: string): HTMLAudioElement {
+    if (this.el && this.activeUrl === url) {
+      this.el.loop = this.loop;
+      return this.el;
+    }
     if (this.el) {
-      const src = this.el.currentSrc || this.el.src;
-      if (src.includes("shell-theme")) {
-        this.el.loop = this.loop;
-        return this.el;
-      }
       this.el.pause();
       this.el = null;
       this.graphReady = false;
@@ -404,6 +492,7 @@ class ShellMusic {
       this.analyser = null;
     }
     const a = new Audio(url);
+    this.activeUrl = url;
     a.loop = this.loop;
     a.preload = "auto";
     a.volume = 0;
@@ -420,12 +509,25 @@ class ShellMusic {
   }
 
   private syncPlayback() {
-    if (!this.wanted || this.masterMuted || this.musicMuted || !this.resolvedUrl) {
+    const hasActiveTrack = !!this.scenarioTrack || !!this.resolvedUrl;
+    if (!this.wanted || this.masterMuted || this.musicMuted || !hasActiveTrack) {
       this.fadeOutAndPause(0.35);
       this.emit();
       return;
     }
     void this.play();
+  }
+
+  private rotateScenarioTrack(seed: number): ScenarioScoreTrack {
+    let cursor = 0;
+    try {
+      const stored = Number.parseInt(localStorage.getItem(SCORE_CURSOR_KEY) ?? "0", 10);
+      if (Number.isFinite(stored) && stored >= 0) cursor = stored;
+      localStorage.setItem(SCORE_CURSOR_KEY, String(cursor + 1));
+    } catch {
+      /* storage is optional */
+    }
+    return scenarioScoreAt(seed, cursor);
   }
 
   private fadeTo(target: number, seconds: number) {

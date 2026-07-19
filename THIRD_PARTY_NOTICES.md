@@ -16,19 +16,22 @@ Source attribution must remain with any redistributed geographic fixture. Revali
 
 ## Radio data
 
-RadioReference database exports and table data are governed by RadioReference's own terms and are not granted under this repository's MIT license.
+The public repository ships only an independently authored fictional SECTOR 305
+channel plan. Its channel names, identifiers, agencies, talkgroups, and radio
+parameters are invented and are not operational data.
 
-- Do not commit or redistribute premium exports without written permission or an applicable license.
-- Public builds must use an independently authored fictional fixture or a source whose license expressly permits redistribution.
-- Local adapters may load operator-supplied data without making that data part of the repository.
+RadioReference database exports and table data remain governed by
+RadioReference's own terms and are not granted under this repository's MIT
+license. Premium exports are intentionally excluded from the public history.
 
 Reference: <https://www.radioreference.com/terms/>
 
 ## Audio
 
-“Dispatch in Miami” is original title music featuring David Lombardo on lead guitar. Audio files under `packages/web/public/audio/` are separate creative assets and are not licensed under MIT unless a specific audio license says otherwise.
-
-Before public redistribution or a commercial/store release, confirm and document rights for the recording, composition, performances, and master.
+“Dispatch in Miami” and the complete 17-track scenario-score collection are
+original music owned by David Lombardo. Audio files under
+`packages/web/public/audio/` are separate creative assets and are not licensed
+under MIT. See the audio-directory license for the permitted repository use.
 
 ## Product boundary
 

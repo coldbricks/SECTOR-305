@@ -1,19 +1,19 @@
 {
   "id": "se305-special-use-v0",
-  "disclaimer": "Training fiction special-use desk. Channels/nets are public scanner flavor only — not operational task forces.",
+  "disclaimer": "Training-fiction special-use desk. Every channel and net identifier is invented and non-operational.",
   "modules": [
     {
-      "id": "hidta",
-      "short": "HIDTA",
-      "title": "HIDTA nets",
-      "blurb": "High Intensity Drug Trafficking Areas · interagency nets",
+      "id": "interagency",
+      "short": "IAG",
+      "title": "Interagency nets",
+      "blurb": "Unified command · fictional coordination nets",
       "color": "amber",
       "resources": [
-        { "id": "hidta-1", "label": "HIDTA 1", "kind": "net", "detail": "155.015 · 103.5 PL · Net 1", "status": "STANDBY" },
-        { "id": "hidta-2", "label": "HIDTA 2", "kind": "net", "detail": "156.030 · 103.5 PL · Net 2", "status": "STANDBY" },
-        { "id": "hidta-3", "label": "HIDTA 3", "kind": "net", "detail": "155.910 · 103.5 PL · Net 3", "status": "STANDBY" },
-        { "id": "hidta-4", "label": "HIDTA 4", "kind": "tac", "detail": "155.115 · Tac 4", "status": "COLD" },
-        { "id": "hidta-5", "label": "HIDTA 5", "kind": "tac", "detail": "155.925 · Tac 5", "status": "COLD" }
+        { "id": "iag-1", "label": "IAG 1", "kind": "net", "detail": "TG 30571 · Coordination 1", "status": "STANDBY" },
+        { "id": "iag-2", "label": "IAG 2", "kind": "net", "detail": "TG 30572 · Coordination 2", "status": "STANDBY" },
+        { "id": "iag-3", "label": "IAG 3", "kind": "net", "detail": "TG 30573 · Coordination 3", "status": "STANDBY" },
+        { "id": "iag-4", "label": "IAG TAC 1", "kind": "tac", "detail": "TG 30574 · Tactical 1", "status": "COLD" },
+        { "id": "iag-5", "label": "IAG TAC 2", "kind": "tac", "detail": "TG 30575 · Tactical 2", "status": "COLD" }
       ]
     },
     {
@@ -40,7 +40,7 @@
         { "id": "marine-1", "label": "MARINE 1", "kind": "unit", "detail": "Patrol vessel", "status": "AVL" },
         { "id": "marine-2", "label": "MARINE 2", "kind": "unit", "detail": "Patrol vessel", "status": "AVL" },
         { "id": "port-sec", "label": "PORT SEC", "kind": "desk", "detail": "Port authority fiction", "status": "WATCH" },
-        { "id": "intercity", "label": "INTERCITY", "kind": "net", "detail": "155.370 · PD/Marine patch", "status": "STANDBY" },
+        { "id": "intercity", "label": "INTERCITY", "kind": "net", "detail": "TG 30561 · PD/Marine patch", "status": "STANDBY" },
         { "id": "crandon", "label": "CRANDON OR", "kind": "net", "detail": "Ocean Rescue Crandon", "status": "STANDBY" },
         { "id": "haulover", "label": "HAULOVER OR", "kind": "net", "detail": "Ocean Rescue Haulover", "status": "STANDBY" }
       ]
@@ -52,7 +52,7 @@
       "blurb": "MIA fire-rescue division · foam · airside (train)",
       "color": "orange",
       "resources": [
-        { "id": "arff-disp", "label": "MDFR MIA", "kind": "net", "detail": "453.500 · Airport FR", "status": "WATCH" },
+        { "id": "arff-disp", "label": "SE305 ARFF", "kind": "net", "detail": "TG 30581 · Airport FR", "status": "WATCH" },
         { "id": "foam-1", "label": "FOAM 1", "kind": "unit", "detail": "ARFF crash", "status": "STANDBY" },
         { "id": "foam-2", "label": "FOAM 2", "kind": "unit", "detail": "ARFF crash", "status": "STANDBY" },
         { "id": "ars-pad", "label": "ARS PAD", "kind": "desk", "detail": "Air Rescue pad MIA", "status": "STANDBY" }
@@ -68,8 +68,8 @@
         { "id": "evt-cmd", "label": "EVENT CMD", "kind": "desk", "detail": "Event command post", "status": "COLD" },
         { "id": "evt-gate", "label": "GATES", "kind": "desk", "detail": "Access control", "status": "COLD" },
         { "id": "evt-med", "label": "EVENT MED", "kind": "desk", "detail": "Medical tent / EMS", "status": "COLD" },
-        { "id": "tcomm-1", "label": "TCOMM 1", "kind": "net", "detail": "Hard Rock / stadium T-Comm", "status": "COLD" },
-        { "id": "race-tac", "label": "SPEEDWAY", "kind": "net", "detail": "Homestead race tac flavor", "status": "COLD" }
+        { "id": "event-net-1", "label": "EVENT NET 1", "kind": "net", "detail": "Stadium event coordination", "status": "COLD" },
+        { "id": "race-tac", "label": "SPEEDWAY", "kind": "net", "detail": "Race-event tactical", "status": "COLD" }
       ]
     },
     {

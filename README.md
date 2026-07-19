@@ -38,11 +38,24 @@ The console puts the full watch in one coherent instrument:
 - CFS classification, location confidence, safety flags, and radio composition
 - Police, fire, EMS, air, hospital, and special-use presentation boards
 - Last-known unit tracks over a layered Miami GIS sector plate
-- RadioReference-compatible local channel-bank adapter
+- Fictional built-in channel bank with a clean local-adapter seam
 - Live hard-fail and coaching feedback
 - Keyboard-complete checkride path
 - Original title music featuring David Lombardo on lead guitar
-- Low scenario score with automatic radio ducking and a one-click operator control
+- Seventeen-track original scenario score with automatic radio ducking
+- Dedicated score desk: on/off, previous/next, direct track selection, and bed level
+
+## Music that knows when to get out of the way
+
+<p align="center">
+  <img src="docs/screenshots/05-scenario-score-desk.png" alt="SECTOR 305 scenario score desk with seventeen original tracks, bed controls, and automatic radio ducking" width="100%" />
+</p>
+
+The title performance crosses into a rotating watch score when the console
+opens. Seventeen original David Lombardo tracks are leveled for background use,
+looped per watch, and automatically ducked beneath dispatch and unit traffic.
+The score desk exposes the whole catalog without mixing music controls into the
+radio path.
 
 ## The loop that remembers
 
@@ -89,7 +102,7 @@ flowchart LR
 | Sacred replay artifact | A `SessionRecord` stores commands; the engine re-derives state and the debrief. |
 | Adaptive mastery | Persistent findings shape the next objective without turning performance into points. |
 | Restrained presentation | Neon belongs to the shell. The live CAD uses EFIS-like semantic color. |
-| Authentic texture | City GIS atmosphere, imperfect last-known mapping, and local radio-data adapters ground the fiction. |
+| Authentic texture | City GIS atmosphere, imperfect last-known mapping, fictional channels, and an original Miami score ground the fiction. |
 
 ## Architecture
 
@@ -136,7 +149,7 @@ npm run sim -- pass       # clean canonical checkride
 Current local milestone:
 
 - 107 core assertions across 17 test files
-- 9 end-to-end browser scenarios
+- 10 end-to-end browser scenarios
 - Deterministic pass/fail simulation demos
 - Pack validation covering 14 natures and 24 rubric rules
 - Responsive acceptance at 1471px, 1280×720, and 760px
@@ -148,8 +161,9 @@ CI repeats typechecking, core tests, production build, pack validation, both sim
 
 - Geographic atmosphere is curated from [City of Miami GIS Open Data](https://datahub-miamigis.opendata.arcgis.com/) and remains explicitly non-operational.
 - SE305 zones, units, incidents, doctrine, and scenario truth are fictional training content.
-- Third-party radio exports are **not** licensed by this project's MIT license and must not be redistributed without the source owner's permission. Any public release must use a redistribution-safe channel fixture; restricted packs stay local.
-- Original title music: **“Dispatch in Miami”**, featuring David Lombardo on lead guitar. Audio rights are separate from the source-code license.
+- The public channel bank is independently authored fictional training data. Premium third-party radio exports are absent from the public history.
+- Original music: **“Dispatch in Miami”** plus seventeen unique scenario-score masters by David Lombardo.
+- Audio is copyright © 2026 David Lombardo, all rights reserved, and is separate from the source-code license.
 
 See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the publication boundary.
 
@@ -175,4 +189,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) before submitting changes.
 
 ## License
 
-Source code and original documentation are available under the [MIT License](LICENSE). Data and audio assets may carry separate terms; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Source code and original documentation are available under the [MIT License](LICENSE). Music remains copyright © 2026 David Lombardo, all rights reserved; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

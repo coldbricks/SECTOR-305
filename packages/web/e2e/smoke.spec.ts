@@ -14,10 +14,30 @@ test("expected autoplay blocking stays out of the warning channel", async ({ pag
 
 test("the scenario score has an explicit operator control", async ({ page }) => {
   await page.goto("/");
+  const scenarioTrack = page.waitForRequest((request) =>
+    request.url().includes("/audio/scenarios/")
+  );
   await page.getByRole("button", { name: "BEGIN" }).click();
   const score = page.getByRole("button", { name: "Scenario score" });
   await expect(score).toBeVisible({ timeout: 15_000 });
   await expect(score).toHaveAttribute("aria-pressed", "true");
+  await scenarioTrack;
+  await expect(page.getByLabel("Live evaluation")).toContainText("SCORE");
+  await expect(page.getByLabel("Live evaluation")).toContainText(
+    "Miami Cipher"
+  );
+  await page.getByRole("button", { name: "Score controls" }).click();
+  const scoreDesk = page.getByRole("complementary", {
+    name: "Scenario score controls",
+  });
+  await expect(scoreDesk).toBeVisible();
+  await expect(scoreDesk.getByLabel("Scenario score catalog").getByRole("button")).toHaveCount(17);
+  const gloriaRequest = page.waitForRequest((request) =>
+    request.url().includes("/audio/scenarios/gloria-bay.mp3")
+  );
+  await scoreDesk.getByRole("button", { name: /Gloria Bay/ }).click();
+  await gloriaRequest;
+  await expect(scoreDesk).toContainText("Gloria Bay");
   await score.click();
   await expect(score).toHaveAttribute("aria-pressed", "false");
 });
@@ -33,6 +53,16 @@ test("shell → open watch → A-console glass visible", async ({ page }) => {
   await expect(
     page.getByText(/SECTOR PLATE|Unit status|Radio log|IMPERFECT/i).first()
   ).toBeVisible({ timeout: 15_000 });
+});
+
+test("the public channel bank is explicitly fictional", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "BEGIN" }).click();
+  const bank = page.getByRole("region", { name: "Fictional channel bank" });
+  await expect(bank).toBeVisible({ timeout: 15_000 });
+  await expect(bank).toContainText("SIM · A07");
+  await expect(bank).toContainText("SE305 PRI");
+  await expect(bank).not.toContainText(/RadioReference|CTID|453\.1000/);
 });
 
 test("1280x720 keeps the primary CAD workspace usable", async ({ page }) => {

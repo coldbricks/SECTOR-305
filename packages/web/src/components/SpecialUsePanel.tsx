@@ -39,10 +39,10 @@ type Props = {
 
 const STATUS_CYCLE = ["STANDBY", "HOT", "WATCH", "AVL", "COLD", "OPEN"] as const;
 
-/** SPECIAL USE desk — HIDTA, SWAT, marine, ARFF, events, open custom slots. */
+/** SPECIAL USE desk — interagency, SWAT, marine, ARFF, events, custom slots. */
 export function SpecialUsePanel({ clockMs, selectedCfsLabel, onEvent }: Props) {
   const [board, setBoard] = useState<Board | null>(null);
-  const [modId, setModId] = useState<string>("hidta");
+  const [modId, setModId] = useState<string>("interagency");
   const [status, setStatus] = useState<Record<string, string>>({});
   const [active, setActive] = useState<Set<string>>(() => new Set());
   const [log, setLog] = useState<SpecialUseEvent[]>([]);

@@ -10,9 +10,10 @@ type Props = {
   /** Max rows in the rolling feed */
   feedCap?: number;
   focus: MasteryFocus;
+  scoreTitle: string;
 };
 
-export function LiveGradeStrip({ gradeLog, focus, feedCap = 6 }: Props) {
+export function LiveGradeStrip({ gradeLog, focus, scoreTitle, feedCap = 6 }: Props) {
   const hard = gradeLog.filter((g) => g.severity === "hard_fail");
   const soft = gradeLog.filter((g) => g.severity === "soft");
   const feed = gradeLog.slice(-feedCap).reverse();
@@ -53,6 +54,11 @@ export function LiveGradeStrip({ gradeLog, focus, feedCap = 6 }: Props) {
       )}
 
       <div className="lgs-feed mono">
+        <div className="lgs-score" title={`Scenario score by David Lombardo: ${scoreTitle}`}>
+          <span className="lgs-score-k">SCORE</span>
+          <strong>{scoreTitle}</strong>
+          <span className="lgs-score-credit">D. LOMBARDO</span>
+        </div>
         {feed.length === 0 ? (
           <span className="lgs-empty">Waiting for first grade event…</span>
         ) : (
