@@ -8,3 +8,7 @@ coverage/
 packages/web/dist/
 packages/core/dist/
 .vite/
+
+test-results/
+playwright-report/
+
