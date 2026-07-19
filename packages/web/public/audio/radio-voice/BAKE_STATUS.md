@@ -28,3 +28,21 @@ npm run radio:tts
 ```
 
 Skips existing files. `.env` holds API key (gitignored).
+
+## TODO — unit “responding” (DO NOT FORGET)
+
+Units must answer dispatch with **responding**, not only “copy, en route”:
+
+| Spoken (LAPD) | Caption match |
+|---------------|----------------|
+| `three Adam twelve, responding.` | `3A12, responding.` |
+| `three Adam twelve, responding, en route.` | `3A12, responding, en route` |
+
+- Patterns already in **`speech_rules.json`**: `responding`, `responding_enroute`
+- UI **Sim unit ACKs** now emits `{callsign}, responding.`
+- **Next bake must produce** `unit_*_responding.mp3` for every unit (and optional `responding_enroute`)
+
+```powershell
+npm run radio:catalog:full   # expands new patterns
+npm run radio:tts            # bakes missing only
+```

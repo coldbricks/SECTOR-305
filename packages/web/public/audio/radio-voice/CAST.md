@@ -21,6 +21,19 @@ Supporting field: Josh / Sam / Clyde / Callum / Drew / Harry on the other posts.
 
 Callsigns: **LAPD phonetics** — `3A12` → *three Adam twelve*.
 
+### Unit response law (required air)
+
+After dispatch, units answer:
+
+```text
+3A12, responding.
+→ three Adam twelve, responding.
+```
+
+Also allowed: `3A12, responding, en route.`  
+Catalog patterns: `responding` / `responding_enroute` in `speech_rules.json`.  
+Bake on next `npm run radio:tts` pass.
+
 ## 911 callers (phone path)
 
 | Voice | Use |

@@ -468,11 +468,13 @@ export function App() {
     const inc = snap.incidents[selectedId];
     if (!inc) return;
     for (const uid of inc.assignedUnitIds) {
+      const cs = snap.units[uid]?.callsign ?? uid;
+      // House air: "3A12, responding." — bake unit_*_responding next pass
       cmd({
         type: "UnitRadioRx",
         unitId: uid,
         incidentId: selectedId,
-        caption: `${snap.units[uid]?.callsign} copy, en route`,
+        caption: `${cs}, responding.`,
         kind: "ACK",
       });
     }

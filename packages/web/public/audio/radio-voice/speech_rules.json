@@ -46,6 +46,26 @@
         "kind": "ACK"
       },
       {
+        "id": "responding",
+        "pattern": "{callsign_spoken}, responding.",
+        "match": [
+          "{callsign}, responding",
+          "{callsign} responding",
+          "{callsign} is responding"
+        ],
+        "kind": "ACK",
+        "note": "Primary unit acknowledge-on-dispatch style. REQUIRED for sim ACK path."
+      },
+      {
+        "id": "responding_enroute",
+        "pattern": "{callsign_spoken}, responding, en route.",
+        "match": [
+          "{callsign}, responding, en route",
+          "{callsign} responding en route"
+        ],
+        "kind": "ACK"
+      },
+      {
         "id": "on_scene",
         "pattern": "{callsign_spoken} on scene.",
         "match": ["{callsign} on scene"],
