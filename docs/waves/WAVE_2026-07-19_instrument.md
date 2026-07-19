@@ -63,4 +63,4 @@ More that could be done: Playwright M16 keyboard path golden; SessionRecord impo
 Deferred because Phase 1 / polish residual — not required to close this instrument wave. Not WRONG to ship instrument loop first.
 
 ### Closed
-Commit hash: _(filled after commit)_
+Commit hash: `552f994`
