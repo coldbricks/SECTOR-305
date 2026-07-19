@@ -18,19 +18,18 @@ function runFail(): void {
     incidents: [incidentRobberyBadAddress()],
   });
 
-  // Player undercodes, never verifies, single-units, no weapons on radio — should hard fail
+  // Post-cue: player undercodes, never verifies, single-units, omits weapons, and gets no ACK.
   const commands: Array<{ atMs: number; cmd: PlayerCommand }> = [
-    { atMs: 1000, cmd: { type: "SetPriority", incidentId: "cfs-001", priority: "P4" } },
     {
-      atMs: 2000,
+      atMs: 27000,
       cmd: {
         type: "DispatchUnits",
         incidentId: "cfs-001",
         unitIds: ["u-3a12"],
-        radioCaption: "3A12, Priority 4 disturbance, beach area",
+        radioCaption: "3A12, P3 disturbance, beach area",
       },
     },
-    { atMs: 50000, cmd: { type: "Advance", ms: 50000 } },
+    { atMs: 80000, cmd: { type: "NoOp" } },
   ];
   rt.applyAll(commands);
   const d = rt.debrief();
@@ -53,9 +52,9 @@ function runPass(): void {
   });
 
   const commands: Array<{ atMs: number; cmd: PlayerCommand }> = [
-    // Verify location properly
+    // Truth-derived actions occur only after their information-set cues.
     {
-      atMs: 2000,
+      atMs: 27000,
       cmd: {
         type: "VerifyLocation",
         incidentId: "cfs-001",
@@ -69,12 +68,12 @@ function runPass(): void {
       },
     },
     // Reclass to P1 robbery weapons
-    { atMs: 3000, cmd: { type: "SetNature", incidentId: "cfs-001", natureCode: "ROBBERY-IP", natureText: "Robbery in progress" } },
-    { atMs: 3500, cmd: { type: "SetPriority", incidentId: "cfs-001", priority: "P1" } },
-    { atMs: 4000, cmd: { type: "SetFlag", incidentId: "cfs-001", flag: "WEAPONS", value: true } },
-    { atMs: 4100, cmd: { type: "SetFlag", incidentId: "cfs-001", flag: "NEEDS_BACKUP", value: true } },
+    { atMs: 17000, cmd: { type: "SetNature", incidentId: "cfs-001", natureCode: "ROBBERY-IP", natureText: "Robbery in progress" } },
+    { atMs: 17500, cmd: { type: "SetPriority", incidentId: "cfs-001", priority: "P1" } },
+    { atMs: 18000, cmd: { type: "SetFlag", incidentId: "cfs-001", flag: "WEAPONS", value: true } },
+    { atMs: 18500, cmd: { type: "SetFlag", incidentId: "cfs-001", flag: "NEEDS_BACKUP", value: true } },
     {
-      atMs: 5000,
+      atMs: 28000,
       cmd: {
         type: "DispatchUnits",
         incidentId: "cfs-001",
@@ -85,7 +84,7 @@ function runPass(): void {
     },
     // Unit acks before timeout
     {
-      atMs: 8000,
+      atMs: 30000,
       cmd: {
         type: "UnitRadioRx",
         unitId: "u-3a12",
@@ -95,7 +94,7 @@ function runPass(): void {
       },
     },
     {
-      atMs: 9000,
+      atMs: 31000,
       cmd: {
         type: "UnitRadioRx",
         unitId: "u-3a14",
@@ -105,7 +104,7 @@ function runPass(): void {
       },
     },
     {
-      atMs: 20000,
+      atMs: 40000,
       cmd: {
         type: "UnitRadioRx",
         unitId: "u-3a12",
@@ -115,7 +114,7 @@ function runPass(): void {
       },
     },
     {
-      atMs: 25000,
+      atMs: 41000,
       cmd: {
         type: "UnitRadioRx",
         unitId: "u-3a14",
@@ -126,28 +125,28 @@ function runPass(): void {
     },
     // Clear cleanly: units to AVL via clear incident helper
     {
-      atMs: 40000,
+      atMs: 50000,
       cmd: { type: "SetUnitStatus", unitId: "u-3a12", status: "CLR" },
     },
     {
-      atMs: 40100,
+      atMs: 50100,
       cmd: { type: "SetUnitStatus", unitId: "u-3a12", status: "AVL" },
     },
     {
-      atMs: 40200,
+      atMs: 50200,
       cmd: { type: "SetUnitStatus", unitId: "u-3a14", status: "CLR" },
     },
     {
-      atMs: 40300,
+      atMs: 50300,
       cmd: { type: "SetUnitStatus", unitId: "u-3a14", status: "AVL" },
     },
     {
-      atMs: 41000,
+      atMs: 51000,
       cmd: { type: "ClearIncident", incidentId: "cfs-001", disposition: "GOA" },
     },
     // Low priority theft — ok to hold attention later
     {
-      atMs: 45000,
+      atMs: 52000,
       cmd: {
         type: "DispatchUnits",
         incidentId: "cfs-002",
@@ -156,7 +155,7 @@ function runPass(): void {
       },
     },
     {
-      atMs: 46000,
+      atMs: 53000,
       cmd: {
         type: "UnitRadioRx",
         unitId: "u-3a21",
@@ -166,7 +165,7 @@ function runPass(): void {
       },
     },
     {
-      atMs: 50000,
+      atMs: 54000,
       cmd: {
         type: "UnitRadioRx",
         unitId: "u-3a21",

@@ -513,6 +513,7 @@ export function App() {
 
   if (phase === "debrief" && debrief) {
     const stamp = new Date().toISOString().slice(0, 19).replace("T", " ");
+    const nextFinding = debrief.hardFails[0] ?? debrief.softMarks[0];
     return (
       <div className={`debrief prestige-debrief ${debrief.passed ? "pass" : "fail"}`}>
         <div className="debrief-frame">
@@ -607,9 +608,26 @@ export function App() {
             )}
           </section>
 
+          <section className="debrief-next" aria-labelledby="next-watch-title">
+            <div className="dn-kicker">NEXT WATCH</div>
+            <h2 id="next-watch-title">
+              {debrief.passed
+                ? "Hold the standard. Tighten the watch."
+                : nextFinding
+                  ? `Correct ${nextFinding.code}`
+                  : "Run the doctrine cleanly."}
+            </h2>
+            <p>
+              {debrief.passed
+                ? "Run the real geography, radio procedure, and unit workflow again—with less hesitation and cleaner air."
+                : nextFinding?.message ??
+                  "Return to the same watch and correct the first break in the response sequence."}
+            </p>
+          </section>
+
           <div className="actions debrief-actions">
             <button className="primary" onClick={() => window.location.reload()}>
-              New session
+              Run it cleaner
             </button>
             <button onClick={exportSession}>Export SessionRecord</button>
           </div>
@@ -744,7 +762,8 @@ export function App() {
                   const age = (state.clockMs - inc.receivedAtMs) / 1000;
                   const assigned = (inc.assignedUnitIds?.length ?? 0) > 0;
                   return (
-                    <div
+                    <button
+                      type="button"
                       key={inc.id}
                       className={`queue-item lane-${lane} ${selectedId === inc.id ? "active" : ""} ${lane === "pending" ? "is-new" : ""}`}
                       onClick={() => selectCfs(inc.id)}
@@ -763,7 +782,7 @@ export function App() {
                         {" · "}
                         {inc.locationConfidence}
                       </div>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
@@ -771,7 +790,7 @@ export function App() {
           })}
         </div>
 
-        <div className="panel">
+        <div className="panel cfs-panel">
           <h2>CFS detail</h2>
           {!selected ? (
             <p style={{ color: "var(--muted)" }}>Select a CFS</p>

@@ -208,51 +208,43 @@ export function EmsRescuePanel({
             const st = status[u.id] ?? "AVL";
             return (
               <li key={u.id}>
-                <button
-                  type="button"
+                <div
                   className={`ems-row st-${st} ${selectedRescue === u.id ? "on" : ""}`}
-                  onClick={() => {
-                    setSelectedRescue(u.id);
-                    consoleAudio.play("ui");
-                  }}
                 >
-                  <span className="ems-cs mono">{u.callsign}</span>
-                  <span
-                    className={`ems-st mono st-${st}`}
-                    title="Click status to cycle"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      cycleStatus(u.id);
+                  <button
+                    type="button"
+                    className="ems-cs ems-select mono"
+                    aria-pressed={selectedRescue === u.id}
+                    onClick={() => {
+                      setSelectedRescue(u.id);
+                      consoleAudio.play("ui");
                     }}
                   >
+                    {u.callsign}
+                  </button>
+                  <button
+                    type="button"
+                    className={`ems-st mono st-${st}`}
+                    title="Click status to cycle"
+                    onClick={() => cycleStatus(u.id)}
+                  >
                     {st}
-                  </span>
+                  </button>
                   <span className="ems-meta mono">{u.station}</span>
                   <span className="ems-caps">
                     {u.capability.map((c) => (
                       <i key={c}>{c}</i>
                     ))}
                   </span>
-                  <span
+                  <button
+                    type="button"
                     className="ems-tone-btn"
-                    role="button"
-                    tabIndex={0}
                     title="Tone out rescue — DTMF + whistle"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toneRescue(u);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        toneRescue(u);
-                      }
-                    }}
+                    onClick={() => toneRescue(u)}
                   >
                     TONE
-                  </span>
-                </button>
+                  </button>
+                </div>
               </li>
             );
           })}
@@ -265,37 +257,31 @@ export function EmsRescuePanel({
             const div = !!divert[h.id];
             return (
               <li key={h.id}>
-                <button
-                  type="button"
+                <div
                   className={`ems-row hosp ${selectedHospital === h.id ? "on" : ""} ${div ? "divert" : ""}`}
-                  onClick={() => medcomKey(h)}
                   title={`${h.freqMHz} MHz · ${h.tone}`}
                 >
-                  <span className="ems-cs">{h.name}</span>
+                  <button
+                    type="button"
+                    className="ems-cs ems-select"
+                    aria-pressed={selectedHospital === h.id}
+                    onClick={() => medcomKey(h)}
+                  >
+                    {h.name}
+                  </button>
                   <span className="ems-st mono">{h.level}</span>
                   <span className="ems-meta mono">
                     {h.freqMHz.toFixed(4)} · {h.tone}
                   </span>
-                  <span
+                  <button
+                    type="button"
                     className={`ems-divert ${div ? "on" : ""}`}
-                    role="button"
-                    tabIndex={0}
                     title="Toggle divert (training)"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleDivert(h.id);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        toggleDivert(h.id);
-                      }
-                    }}
+                    onClick={() => toggleDivert(h.id)}
                   >
                     {div ? "DIVERT" : "OPEN"}
-                  </span>
-                </button>
+                  </button>
+                </div>
               </li>
             );
           })}

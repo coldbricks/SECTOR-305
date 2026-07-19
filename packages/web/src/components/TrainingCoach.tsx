@@ -21,7 +21,10 @@ type Props = {
 };
 
 export function TrainingCoach(props: Props) {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(() => {
+    if (props.collapsed != null) return !props.collapsed;
+    return !window.matchMedia("(max-width: 760px)").matches;
+  });
   const [manualIdx, setManualIdx] = useState(0);
   const [auto, setAuto] = useState(true);
   const prevAutoIdx = useRef<number | null>(null);

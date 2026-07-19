@@ -79,20 +79,14 @@ export function AgencyDesk({
             </div>
             <div className="agency-pd-list">
               {units.map((u) => (
-                <div
+                <button
+                  type="button"
                   key={u.id}
                   className={`unit-row ${selectedUnitId === u.id ? "active" : ""}`}
-                  role="button"
-                  tabIndex={0}
+                  aria-pressed={selectedUnitId === u.id}
                   onClick={() =>
                     onSelectUnit(u.id === selectedUnitId ? null : u.id)
                   }
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      onSelectUnit(u.id === selectedUnitId ? null : u.id);
-                    }
-                  }}
                 >
                   <span>{u.callsign}</span>
                   <span className={`st-${u.status}`}>{u.status}</span>
@@ -101,7 +95,7 @@ export function AgencyDesk({
                       ? incidents[u.assignedIncidentId]?.cfsNumber
                       : u.zoneId}
                   </span>
-                </div>
+                </button>
               ))}
             </div>
             {pdFooter}

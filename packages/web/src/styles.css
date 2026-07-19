@@ -48,6 +48,29 @@ button:hover {
   border-color: var(--cyan);
 }
 
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid rgba(56, 190, 235, 0.85);
+  outline-offset: 2px;
+  border-color: var(--cyan);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+::selection {
+  background: rgba(56, 190, 235, 0.28);
+  color: #fff;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(56, 190, 235, 0.38) rgba(5, 8, 14, 0.65);
+}
+
 button.primary {
   background: var(--cyan);
   color: #041018;
@@ -1280,8 +1303,32 @@ button.danger {
 .console-grid.dense {
   min-height: 0;
   height: 100%;
-  grid-template-columns: minmax(220px, 0.95fr) minmax(0, 1.2fr) minmax(200px, 0.9fr) minmax(280px, 1.15fr);
+  grid-template-columns: minmax(220px, 0.95fr) minmax(0, 1.2fr) minmax(200px, 0.9fr) minmax(0, 1.15fr);
   grid-template-rows: minmax(0, 1fr) minmax(160px, 28vh);
+}
+
+/* Explicit placement is deliberate: auto-placement made the fourth panel create
+   a phantom row at narrower desktop widths and collapsed the actual CAD desk. */
+.console-grid > .queue-panel {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.console-grid > .cfs-panel {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.console-grid > .agency-panel {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.console-grid > .map-panel {
+  grid-column: 4;
+  grid-row: 1;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .console-grid > .panel,
@@ -1341,6 +1388,11 @@ button.danger {
 }
 
 .queue-item {
+  display: block;
+  width: 100%;
+  color: inherit;
+  text-align: left;
+  font: inherit;
   padding: 7px 8px;
   border: 1px solid transparent;
   border-radius: 3px;
@@ -1418,6 +1470,7 @@ button.danger {
 /* Bottom rail: radio + grades + RR bank + apparatus */
 .bottom-rail {
   grid-column: 1 / -1 !important;
+  grid-row: 2;
   padding: 0 !important;
   overflow: hidden;
   min-height: 0;
@@ -1427,7 +1480,7 @@ button.danger {
 
 .bottom-rail-grid {
   display: grid;
-  grid-template-columns: 1.1fr 0.85fr 1.15fr 0.95fr;
+  grid-template-columns: 1.1fr 0.85fr 1.15fr;
   gap: 1px;
   background: var(--hairline);
   flex: 1;
@@ -1882,8 +1935,31 @@ button.danger {
   border-radius: 0;
   border-left: 2px solid transparent;
   color: var(--muted);
-  cursor: pointer;
+  cursor: default;
   font-size: 9px;
+}
+
+button.ems-row {
+  cursor: pointer;
+}
+
+.ems-row > button {
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 2px;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.ems-row > button:hover {
+  border-color: transparent;
+}
+
+.ems-select {
+  cursor: pointer;
 }
 
 .ems-row.hosp {
@@ -2539,13 +2615,25 @@ button.danger {
   border-left-color: rgba(180, 220, 255, 0.85);
 }
 
-@media (max-width: 1400px) {
+@media (max-width: 1600px) {
   .bottom-rail-grid {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
+    grid-template-columns: 1.05fr 0.9fr 1.15fr;
   }
-  .console-grid.dense {
-    grid-template-columns: 1fr 1.2fr 1fr;
+
+  .console-grid > .map-panel {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    align-self: stretch !important;
+  }
+
+  .console-grid > .map-panel.map-panel-custom-h {
+    overflow: hidden;
+    z-index: auto;
+    box-shadow: none;
   }
 }
 
@@ -4050,9 +4138,15 @@ button.danger {
   display: grid;
   grid-template-columns: 56px 40px 1fr;
   gap: 6px;
+  width: calc(100% + 12px);
   padding: 5px 6px;
   margin: 0 -6px;
+  background: transparent;
+  border: 0;
   border-bottom: 1px solid var(--hairline);
+  color: inherit;
+  font: inherit;
+  text-align: left;
   font-variant-numeric: tabular-nums;
   border-radius: 2px;
   cursor: pointer;
@@ -4306,6 +4400,58 @@ button.danger {
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: var(--cyan);
+}
+
+.debrief-next {
+  position: relative;
+  margin: 1.5rem 0 1rem;
+  padding: 1rem 1.1rem 1rem 1.25rem;
+  overflow: hidden;
+  background:
+    linear-gradient(100deg, rgba(56, 190, 235, 0.11), transparent 72%),
+    rgba(5, 8, 14, 0.82);
+  border: 1px solid rgba(56, 190, 235, 0.32);
+  border-left: 3px solid var(--cyan);
+}
+
+.debrief-next::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 34%;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    135deg,
+    transparent 0 9px,
+    rgba(56, 190, 235, 0.035) 9px 10px
+  );
+}
+
+.dn-kicker {
+  margin-bottom: 0.35rem;
+  font-family: "Share Tech Mono", monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  color: var(--cyan);
+}
+
+.debrief-next h2 {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  letter-spacing: 0.035em;
+  color: var(--text);
+}
+
+.debrief-next p {
+  position: relative;
+  z-index: 1;
+  max-width: 590px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.55;
 }
 
 .debrief-actions {
@@ -4662,5 +4808,121 @@ button.danger {
 @media (max-width: 1100px) {
   .live-grade-strip {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Compact workstation: keep every instrument reachable inside the console's
+   scrolling workspace instead of squeezing four columns into unreadability. */
+@media (max-width: 1120px) {
+  .console-grid.dense {
+    grid-template-columns: minmax(280px, 0.9fr) minmax(420px, 1.25fr);
+    grid-template-rows: 430px 420px 260px;
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    align-content: start;
+  }
+
+  .console-grid > .queue-panel {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .console-grid > .cfs-panel {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .console-grid > .agency-panel {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .console-grid > .map-panel {
+    grid-column: 2;
+    grid-row: 2;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+
+  .console-grid > .bottom-rail {
+    grid-column: 1 / -1 !important;
+    grid-row: 3;
+  }
+
+  .training-coach {
+    max-height: min(380px, calc(100vh - 180px));
+  }
+}
+
+@media (max-width: 760px) {
+  .console {
+    grid-template-rows: auto auto minmax(0, 1fr) 24px;
+  }
+
+  .topbar {
+    padding: 7px 8px;
+  }
+
+  .topbar-zulu {
+    display: none;
+  }
+
+  .tb-actions button {
+    min-height: 34px;
+  }
+
+  .live-grade-strip {
+    max-height: 4.6rem;
+  }
+
+  .console-grid.dense {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 340px 620px 420px 420px 420px;
+  }
+
+  .console-grid > .queue-panel,
+  .console-grid > .cfs-panel,
+  .console-grid > .agency-panel,
+  .console-grid > .map-panel,
+  .console-grid > .bottom-rail {
+    grid-column: 1 !important;
+  }
+
+  .console-grid > .queue-panel { grid-row: 1; }
+  .console-grid > .cfs-panel { grid-row: 2; }
+  .console-grid > .agency-panel { grid-row: 3; }
+  .console-grid > .map-panel { grid-row: 4; }
+  .console-grid > .bottom-rail { grid-row: 5; }
+
+  .bottom-rail-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, minmax(130px, 1fr));
+  }
+
+  .training-coach,
+  .coach-fab {
+    right: 8px;
+    bottom: 30px;
+  }
+
+  .footer {
+    padding: 0 8px;
+    font-size: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

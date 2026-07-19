@@ -56,6 +56,7 @@ class ShellMusic {
   private loop = false;
   private ended = false;
   private listeners = new Set<Listener>();
+  private playAttempt: Promise<boolean> | null = null;
 
   private audioCtx: AudioContext | null = null;
   private analyser: AnalyserNode | null = null;
@@ -182,6 +183,17 @@ class ShellMusic {
   }
 
   async play(): Promise<boolean> {
+    if (this.playAttempt) return this.playAttempt;
+    const attempt = this.startPlayback();
+    this.playAttempt = attempt;
+    try {
+      return await attempt;
+    } finally {
+      if (this.playAttempt === attempt) this.playAttempt = null;
+    }
+  }
+
+  private async startPlayback(): Promise<boolean> {
     this.wanted = true;
     this.ended = false;
     this.forceUnmute();
@@ -201,7 +213,15 @@ class ShellMusic {
       this.emit();
       return true;
     } catch (err) {
-      console.warn("[shellMusic] play blocked", err);
+      const name =
+        err && typeof err === "object" && "name" in err
+          ? String((err as { name?: unknown }).name)
+          : "";
+      // Browsers reject pre-gesture playback by design. Keep the track armed
+      // for ShellSplash's first-interaction retry without polluting test logs.
+      if (name !== "NotAllowedError") {
+        console.warn("[shellMusic] playback failed", err);
+      }
       this.emit();
       return false;
     }
