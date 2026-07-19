@@ -946,8 +946,12 @@ button.danger {
 /* —— Glass (clinical) —— */
 .console {
   height: 100%;
+  min-height: 0;
   display: grid;
-  grid-template-rows: 72px 1fr 28px;
+  /* topbar · live grade strip · main grid · footer
+     (strip must NOT steal the 1fr row — that blanked the map) */
+  grid-template-rows: auto auto minmax(0, 1fr) 28px;
+  overflow: hidden;
 }
 
 .topbar {
@@ -1237,7 +1241,7 @@ button.danger {
 
 @media (max-width: 1100px) {
   .console {
-    grid-template-rows: auto 1fr 28px;
+    grid-template-rows: auto auto minmax(0, 1fr) 28px;
   }
   .topbar {
     grid-template-columns: 1fr;
@@ -1267,13 +1271,24 @@ button.danger {
 }
 
 .console-grid {
+  min-height: 0;
+  height: 100%;
   grid-template-columns: 240px minmax(0, 1.15fr) 260px minmax(280px, 1.05fr);
-  grid-template-rows: 1fr minmax(200px, 28vh);
+  grid-template-rows: minmax(0, 1fr) minmax(160px, 28vh);
 }
 
 .console-grid.dense {
+  min-height: 0;
+  height: 100%;
   grid-template-columns: minmax(220px, 0.95fr) minmax(0, 1.2fr) minmax(200px, 0.9fr) minmax(280px, 1.15fr);
-  grid-template-rows: minmax(0, 1fr) minmax(240px, 32vh);
+  grid-template-rows: minmax(0, 1fr) minmax(160px, 28vh);
+}
+
+.console-grid > .panel,
+.console-grid > .map-panel,
+.console-grid > .agency-panel {
+  min-height: 0;
+  overflow: hidden;
 }
 
 .console-grid.dense .map-panel {
@@ -4201,9 +4216,12 @@ button.danger {
 .live-grade-strip {
   display: grid;
   grid-template-columns: auto 1fr minmax(180px, 32%);
-  gap: 0.45rem 0.75rem;
+  gap: 0.35rem 0.75rem;
   align-items: start;
-  padding: 0.4rem 0.75rem 0.5rem;
+  padding: 0.28rem 0.75rem 0.32rem;
+  max-height: 5.5rem;
+  overflow: hidden;
+  flex-shrink: 0;
   background: linear-gradient(180deg, rgba(4, 10, 18, 0.96), rgba(6, 12, 22, 0.9));
   border-bottom: 1px solid var(--hairline, rgba(120, 180, 220, 0.18));
   font-size: 0.72rem;
