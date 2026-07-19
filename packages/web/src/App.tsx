@@ -16,6 +16,7 @@ import {
   UNIT_STATUSES,
   type DoctrinePack,
 } from "@sector305/core";
+import { SectorMap } from "./SectorMap";
 
 type Phase = "shell" | "console" | "debrief";
 
@@ -489,50 +490,14 @@ export function App() {
         </div>
 
         <div className="panel map-panel">
-          <h2>Imperfect map · SE305-A07</h2>
-          <p className="map-legend">
-            Amber=unverified · Cyan=partial · Green=verified · Red=conflicting · No
-            truth pins
-          </p>
-          <div className="zone-grid">
-            {[
-              { id: "Z-OCEAN", name: "Ocean", x: 70, y: 20 },
-              { id: "Z-COLLINS", name: "Collins", x: 55, y: 35 },
-              { id: "Z-DOWNTOWN", name: "Downtown", x: 25, y: 55 },
-              { id: "Z-WYNWOOD", name: "Wynwood", x: 30, y: 25 },
-              { id: "Z-PORT", name: "Port", x: 45, y: 75 },
-            ].map((z) => {
-              const cfsHere = incidents.filter(
-                (i) =>
-                  i.location.zoneId === z.id &&
-                  i.status !== "CLEARED" &&
-                  i.status !== "CANCELLED"
-              );
-              const conf = cfsHere[0]?.locationConfidence ?? "none";
-              return (
-                <div
-                  key={z.id}
-                  className={`zone-blob conf-${conf}`}
-                  style={{ left: `${z.x}%`, top: `${z.y}%` }}
-                  title={z.id}
-                >
-                  <strong>{z.name}</strong>
-                  <div className="zone-meta">
-                    {cfsHere.length
-                      ? cfsHere.map((c) => c.priority).join(" ")
-                      : "—"}
-                  </div>
-                  {units
-                    .filter((u) => u.zoneId === z.id)
-                    .map((u) => (
-                      <span key={u.id} className={`unit-dot st-${u.status}`}>
-                        {u.callsign}
-                      </span>
-                    ))}
-                </div>
-              );
-            })}
-          </div>
+          <SectorMap
+            incidents={incidents}
+            units={units}
+            selectedId={selectedId}
+            clockMs={state.clockMs}
+            sectorId={state.sectorId}
+            onSelectCfs={setSelectedId}
+          />
         </div>
 
         <div className="panel" style={{ gridColumn: "1 / -1" }}>

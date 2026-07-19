@@ -144,72 +144,370 @@ button.danger {
 }
 
 .console-grid {
-  grid-template-columns: 260px 1fr 280px 260px;
-  grid-template-rows: 1fr 220px;
+  grid-template-columns: 240px minmax(0, 1.15fr) 260px minmax(280px, 1.05fr);
+  grid-template-rows: 1fr minmax(200px, 28vh);
 }
 
 .map-panel {
   position: relative;
-}
-
-.map-legend {
-  color: var(--muted);
-  font-size: 10px;
-  margin: 0 0 8px;
-  line-height: 1.4;
-}
-
-.zone-grid {
-  position: relative;
-  height: calc(100% - 48px);
-  min-height: 180px;
-  background:
-    linear-gradient(180deg, rgba(56, 190, 235, 0.04), transparent 40%),
-    var(--surface);
-  border: 1px solid var(--hairline);
-  border-radius: 4px;
+  padding: 0 !important;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: #04060a;
 }
 
-.zone-blob {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  min-width: 72px;
-  padding: 6px 8px;
-  border-radius: 6px;
-  border: 1px solid var(--hairline);
-  background: rgba(20, 26, 36, 0.92);
-  font-size: 11px;
+/* ─── Tactical sector plate ─── */
+.tactical-plate {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 220px;
+  font-family: "Segoe UI", system-ui, sans-serif;
 }
 
-.zone-blob.conf-unverified {
-  border-color: var(--amber);
-  box-shadow: 0 0 0 1px rgba(255, 179, 30, 0.25);
-}
-.zone-blob.conf-partial {
-  border-color: var(--cyan);
-}
-.zone-blob.conf-verified {
-  border-color: var(--green);
-}
-.zone-blob.conf-conflicting {
-  border-color: var(--red);
-}
-.zone-blob.conf-none {
-  opacity: 0.75;
-}
-
-.zone-meta {
-  color: var(--muted);
+.tactical-chrome {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 6px 10px;
+  background: linear-gradient(180deg, #0e1520 0%, #0a1018 100%);
+  border-bottom: 1px solid rgba(56, 190, 235, 0.2);
   font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.tac-left,
+.tac-mid,
+.tac-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tac-mid {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tac-right {
+  margin-left: auto;
+}
+
+.tac-live {
+  color: var(--red);
+  font-weight: 700;
+  animation: livePulse 1.6s ease-in-out infinite;
+  letter-spacing: 0.08em;
+}
+
+.tac-title {
+  color: var(--text);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.tac-id {
+  color: var(--cyan);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.tac-mode {
+  color: rgba(56, 190, 235, 0.85);
+  border: 1px solid rgba(56, 190, 235, 0.25);
+  padding: 1px 6px;
+  border-radius: 2px;
+  font-size: 9px;
+}
+
+.tac-mode.dim,
+.leg-row.dim {
+  color: var(--muted);
+  border-color: var(--hairline);
+}
+
+.tac-clock {
+  color: var(--amber);
+}
+
+.tac-counts {
+  color: var(--muted);
+}
+
+.mono {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.tactical-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 40%, rgba(12, 40, 60, 0.45), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 20% 70%, rgba(8, 30, 40, 0.5), transparent 50%),
+    #05080e;
+}
+
+.tactical-svg {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 180px;
+  display: block;
+}
+
+/* Zones */
+.zone-poly {
+  fill: rgba(20, 36, 52, 0.55);
+  stroke: none;
+  transition: fill 0.25s ease;
+}
+
+.zone-poly-edge {
+  fill: none;
+  stroke: rgba(56, 190, 235, 0.28);
+  stroke-width: 0.35;
+  stroke-linejoin: round;
+}
+
+.zone-layer.conf-unverified .zone-poly {
+  fill: rgba(255, 179, 30, 0.12);
+}
+.zone-layer.conf-unverified .zone-poly-edge {
+  stroke: rgba(255, 179, 30, 0.75);
+  stroke-width: 0.45;
+  stroke-dasharray: 1.2 0.7;
+}
+
+.zone-layer.conf-partial .zone-poly {
+  fill: rgba(56, 190, 235, 0.1);
+}
+.zone-layer.conf-partial .zone-poly-edge {
+  stroke: rgba(56, 190, 235, 0.7);
+  stroke-width: 0.45;
+}
+
+.zone-layer.conf-verified .zone-poly {
+  fill: rgba(54, 204, 110, 0.08);
+}
+.zone-layer.conf-verified .zone-poly-edge {
+  stroke: rgba(54, 204, 110, 0.55);
+  stroke-width: 0.4;
+}
+
+.zone-layer.conf-conflicting .zone-poly {
+  fill: rgba(255, 59, 48, 0.12);
+}
+.zone-layer.conf-conflicting .zone-poly-edge {
+  stroke: rgba(255, 59, 48, 0.85);
+  stroke-width: 0.5;
+  animation: conflictPulse 1.2s ease-in-out infinite;
+}
+
+.zone-layer.zone-hot .zone-poly-edge {
+  stroke-width: 0.55;
+  filter: drop-shadow(0 0 1.5px rgba(255, 59, 48, 0.35));
+}
+
+.zone-label {
+  fill: rgba(232, 237, 242, 0.72);
+  font-size: 2.4px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+.zone-sub {
+  fill: rgba(122, 130, 142, 0.9);
+  font-size: 1.7px;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+/* CFS marks */
+.cfs-mark {
+  pointer-events: auto;
+}
+.cfs-aura {
+  fill: rgba(56, 190, 235, 0.12);
+  stroke: none;
+}
+.cfs-mark.conf-unverified .cfs-aura {
+  fill: rgba(255, 179, 30, 0.18);
+}
+.cfs-mark.conf-conflicting .cfs-aura {
+  fill: rgba(255, 59, 48, 0.2);
+}
+.cfs-diamond {
+  fill: var(--cyan);
+  stroke: rgba(5, 8, 14, 0.8);
+  stroke-width: 0.15;
+}
+.cfs-mark.pri-P0 .cfs-diamond,
+.cfs-mark.pri-P1 .cfs-diamond {
+  fill: var(--red);
+}
+.cfs-mark.pri-P2 .cfs-diamond {
+  fill: var(--amber);
+}
+.cfs-mark.selected .cfs-select-ring {
+  fill: none;
+  stroke: var(--cyan);
+  stroke-width: 0.25;
+  animation: selectRing 1.4s ease-out infinite;
+}
+
+/* Unit blips */
+.unit-blip {
+  pointer-events: none;
+}
+.unit-core {
+  fill: var(--green);
+  stroke: rgba(5, 8, 14, 0.9);
+  stroke-width: 0.2;
+}
+.unit-blip.st-DIS .unit-core,
+.unit-blip.st-ER .unit-core {
+  fill: var(--amber);
+}
+.unit-blip.st-OS .unit-core {
+  fill: var(--cyan);
+}
+.unit-blip.st-EMR .unit-core {
+  fill: var(--red);
+}
+.unit-blip.st-OOS .unit-core {
+  fill: #555;
+}
+.unit-pulse {
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 0.2;
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: unitPulse 1.5s ease-out infinite;
+}
+.unit-blip.st-EMR .unit-pulse {
+  stroke: var(--red);
+}
+.unit-cs {
+  fill: rgba(232, 237, 242, 0.85);
+  font-size: 1.65px;
+  font-weight: 600;
+  dominant-baseline: middle;
+}
+
+.tactical-legend {
+  flex-shrink: 0;
+  padding: 5px 10px 7px;
+  background: linear-gradient(0deg, #080c12, #0a1018);
+  border-top: 1px solid rgba(56, 190, 235, 0.15);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.leg-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--muted);
   margin-top: 2px;
 }
 
-.unit-dot {
+.led {
   display: inline-block;
-  margin: 2px 3px 0 0;
-  font-size: 9px;
-  font-variant-numeric: tabular-nums;
+  width: 7px;
+  height: 7px;
+  border-radius: 1px;
+  margin-right: 2px;
+  box-shadow: 0 0 4px currentColor;
+}
+.led.conf-unverified {
+  background: var(--amber);
+  color: var(--amber);
+}
+.led.conf-partial {
+  background: var(--cyan);
+  color: var(--cyan);
+}
+.led.conf-verified {
+  background: var(--green);
+  color: var(--green);
+}
+.led.conf-conflicting {
+  background: var(--red);
+  color: var(--red);
+}
+.led.unit-avl {
+  background: var(--green);
+  border-radius: 50%;
+  color: var(--green);
+}
+.led.unit-er {
+  background: var(--amber);
+  border-radius: 50%;
+  color: var(--amber);
+}
+.led.unit-os {
+  background: var(--cyan);
+  border-radius: 50%;
+  color: var(--cyan);
+}
+.led.unit-emr {
+  background: var(--red);
+  border-radius: 50%;
+  color: var(--red);
+}
+
+@keyframes livePulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes unitPulse {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.75;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+@keyframes selectRing {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.8);
+  }
+}
+
+@keyframes conflictPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
 }
 
 .panel {

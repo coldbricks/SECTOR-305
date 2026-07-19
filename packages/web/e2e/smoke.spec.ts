@@ -8,5 +8,8 @@ test("shell → open watch → A-console glass visible", async ({ page }) => {
   await expect(page.getByText(/SE305-PRI|Incident queue|A07/i).first()).toBeVisible({
     timeout: 15_000,
   });
-  await expect(page.getByText(/Imperfect map|Unit status|Radio log/i).first()).toBeVisible();
+  await expect(
+    page.getByText(/SECTOR PLATE|Unit status|Radio log|IMPERFECT/i).first()
+  ).toBeVisible();
 });
+
