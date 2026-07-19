@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SECTOR 305 — Original Soundtrack</title>
+  <meta name="description" content="SECTOR 305 Original Soundtrack · Coldbricks / David Lombardo · Recorded July 2026, Smithtown, New York" />
+  <meta property="og:title" content="SECTOR 305 Original Soundtrack" />
+  <meta property="og:description" content="Music from the public safety training simulation. Coldbricks / David Lombardo." />
+  <meta property="og:image" content="cover-3000.jpg" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect fill='%23060a10' width='64' height='64'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-size='22' fill='%23ff2d7b' font-family='sans-serif' font-weight='700'%3E305%3C/text%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --bg: #060a10;
+      --panel: rgba(8, 14, 22, 0.92);
+      --line: rgba(56, 190, 235, 0.35);
+      --pink: #ff2d7b;
+      --teal: #38beeb;
+      --text: #e8edf2;
+      --muted: #8a95a3;
+      --track: rgba(255, 255, 255, 0.08);
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+    body {
+      background:
+        radial-gradient(1200px 600px at 50% -10%, rgba(56, 190, 235, 0.12), transparent 55%),
+        radial-gradient(900px 500px at 80% 100%, rgba(255, 45, 123, 0.1), transparent 50%),
+        var(--bg);
+    }
+    .wrap {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3.5rem;
+    }
+    header {
+      display: grid;
+      grid-template-columns: minmax(160px, 280px) 1fr;
+      gap: 1.5rem;
+      align-items: end;
+      margin-bottom: 1.75rem;
+    }
+    @media (max-width: 700px) {
+      header { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+    }
+    .cover {
+      width: 100%;
+      max-width: 280px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55), 0 0 40px rgba(56, 190, 235, 0.12);
+      display: block;
+    }
+    .eyebrow {
+      color: var(--pink);
+      letter-spacing: 0.22em;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin: 0 0 0.6rem;
+    }
+    h1 {
+      margin: 0;
+      line-height: 0.95;
+      font-size: clamp(2.4rem, 6vw, 3.6rem);
+      letter-spacing: 0.04em;
+    }
+    h1 span {
+      display: block;
+      background: linear-gradient(120deg, var(--pink), var(--teal));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 1.25em;
+    }
+    .sub {
+      margin: 0.85rem 0 0.35rem;
+      color: var(--teal);
+      letter-spacing: 0.16em;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .meta {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+      margin: 0.4rem 0 0;
+    }
+    .meta strong { color: var(--text); font-weight: 600; }
+    .links {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+    @media (max-width: 700px) { .links { justify-content: center; } }
+    .btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: rgba(56, 190, 235, 0.08);
+      color: var(--text);
+      padding: 0.55rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+      text-decoration: none;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+    }
+    .btn:hover { border-color: var(--teal); background: rgba(56, 190, 235, 0.16); }
+    .btn.primary {
+      background: linear-gradient(120deg, rgba(255, 45, 123, 0.25), rgba(56, 190, 235, 0.22));
+      border-color: rgba(255, 45, 123, 0.45);
+      font-weight: 700;
+    }
+    .btn.primary:hover { transform: translateY(-1px); }
+
+    .player {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 1rem 1.1rem 1.15rem;
+      margin-bottom: 1.25rem;
+      backdrop-filter: blur(8px);
+    }
+    .now {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: baseline;
+      margin-bottom: 0.75rem;
+    }
+    .now-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .now-sub { color: var(--muted); font-size: 0.8rem; margin-top: 0.15rem; }
+    .time {
+      font-variant-numeric: tabular-nums;
+      color: var(--teal);
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+    .seek {
+      width: 100%;
+      appearance: none;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--track);
+      outline: none;
+      margin: 0.35rem 0 0.9rem;
+      cursor: pointer;
+    }
+    .seek::-webkit-slider-thumb {
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--pink);
+      border: 2px solid #fff;
+      box-shadow: 0 0 10px rgba(255, 45, 123, 0.55);
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.55rem;
+    }
+    .ctrl {
+      min-width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text);
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .ctrl.play {
+      min-width: 3.4rem;
+      background: linear-gradient(120deg, rgba(255, 45, 123, 0.35), rgba(56, 190, 235, 0.28));
+      border-color: rgba(255, 45, 123, 0.5);
+      font-weight: 700;
+    }
+    .ctrl:hover { border-color: var(--teal); }
+    .vol {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin-left: auto;
+      color: var(--muted);
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+    }
+    .vol input {
+      width: 100px;
+      accent-color: var(--teal);
+    }
+    .status {
+      margin-top: 0.7rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    .status.err { color: var(--pink); }
+
+    .list {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+      background: rgba(6, 10, 16, 0.75);
+    }
+    .list h2 {
+      margin: 0;
+      padding: 0.85rem 1rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--teal);
+      border-bottom: 1px solid rgba(56, 190, 235, 0.2);
+      background: rgba(56, 190, 235, 0.05);
+    }
+    .track {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 2.4rem 1fr auto;
+      gap: 0.75rem;
+      align-items: center;
+      padding: 0.72rem 1rem;
+      border: 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      background: transparent;
+      color: inherit;
+      text-align: left;
+      cursor: pointer;
+      font: inherit;
+    }
+    .track:last-child { border-bottom: 0; }
+    .track:hover { background: rgba(56, 190, 235, 0.07); }
+    .track.active {
+      background: linear-gradient(90deg, rgba(255, 45, 123, 0.14), rgba(56, 190, 235, 0.08));
+    }
+    .track .n {
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      font-size: 0.8rem;
+    }
+    .track.active .n { color: var(--pink); font-weight: 700; }
+    .track .t { font-weight: 600; font-size: 0.95rem; }
+    .track .d {
+      color: var(--muted);
+      font-size: 0.8rem;
+      font-variant-numeric: tabular-nums;
+    }
+    footer {
+      margin-top: 1.75rem;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.55;
+      text-align: center;
+    }
+    footer a { color: var(--teal); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <img class="cover" src="cover-1500.jpg" alt="SECTOR 305 Original Soundtrack cover" width="1500" height="1500" />
+      <div>
+        <p class="eyebrow">Music from the public safety training simulation</p>
+        <h1>SECTOR <span>305</span></h1>
+        <p class="sub">Original Soundtrack</p>
+        <p class="meta">
+          <strong>Coldbricks · David Lombardo</strong><br />
+          Recorded July 2026 · Smithtown, New York<br />
+          Title theme + 17 scenario beds for the A-console watch.
+        </p>
+        <div class="links">
+          <button type="button" class="btn primary" id="btnPlayHero">▶ Play album</button>
+          <a class="btn" href="https://github.com/coldbricks/SECTOR-305">Repo</a>
+          <a class="btn" href="https://github.com/coldbricks/SECTOR-305#music-that-knows-when-to-get-out-of-the-way">README music</a>
+        </div>
+      </div>
+    </header>
+
+    <section class="player" aria-label="Now playing">
+      <div class="now">
+        <div>
+          <div class="now-title" id="nowTitle">Standby</div>
+          <div class="now-sub" id="nowSub">Select a track or press Play album</div>
+        </div>
+        <div class="time"><span id="cur">0:00</span> / <span id="dur">0:00</span></div>
+      </div>
+      <input class="seek" id="seek" type="range" min="0" max="1000" value="0" aria-label="Seek" />
+      <div class="controls">
+        <button type="button" class="ctrl" id="btnPrev" title="Previous">⏮</button>
+        <button type="button" class="ctrl play" id="btnPlay" title="Play/Pause">▶</button>
+        <button type="button" class="ctrl" id="btnNext" title="Next">⏭</button>
+        <button type="button" class="ctrl" id="btnLoop" title="Loop track">Loop</button>
+        <div class="vol">
+          <span>VOL</span>
+          <input id="vol" type="range" min="0" max="1" step="0.01" value="0.85" aria-label="Volume" />
+        </div>
+      </div>
+      <div class="status" id="status">Hosted from the SECTOR-305 GitHub repo (raw media).</div>
+    </section>
+
+    <section class="list" aria-label="Track list">
+      <h2>Track list · CBX-305-OST</h2>
+      <div id="tracks"></div>
+    </section>
+
+    <footer>
+      © Coldbricks / David Lombardo · All rights reserved · Miami fiction<br />
+      Audio files live in the public repo under
+      <code>packages/web/public/audio/</code>.
+      This page is a lightweight console player for GitHub Pages — not Spotify distribution.
+    </footer>
+  </div>
+
+  <audio id="audio" preload="metadata"></audio>
+
+  <script>
+    // Prefer jsDelivr CDN (cache-friendly) with raw.githubusercontent fallback.
+    const REPO = "coldbricks/SECTOR-305";
+    const REF = "master";
+    const bases = [
+      `https://cdn.jsdelivr.net/gh/${REPO}@${REF}/packages/web/public/audio/`,
+      `https://raw.githubusercontent.com/${REPO}/${REF}/packages/web/public/audio/`,
+    ];
+
+    const catalog = [
+      { id: "shell-theme", title: "Dispatch in Miami", file: "shell-theme.mp3", group: "Title", duration: null },
+      { id: "collins-alert", title: "Collins Alert", file: "scenarios/collins-alert.mp3", duration: 163 },
+      { id: "south-beach-pursuit", title: "South Beach Pursuit", file: "scenarios/south-beach-pursuit.mp3", duration: 163 },
+      { id: "south-beach-alarm", title: "South Beach Alarm", file: "scenarios/south-beach-alarm.mp3", duration: 86 },
+      { id: "mister-three-oh-five", title: "Mister Three Oh Five", file: "scenarios/mister-three-oh-five.mp3", duration: 137 },
+      { id: "miami-cipher", title: "Miami Cipher", file: "scenarios/miami-cipher.mp3", duration: 142 },
+      { id: "vice-grid", title: "Vice Grid", file: "scenarios/vice-grid.mp3", duration: 123 },
+      { id: "chopper-run", title: "Chopper Run", file: "scenarios/chopper-run.mp3", duration: 128 },
+      { id: "gloria-bay", title: "Gloria Bay", file: "scenarios/gloria-bay.mp3", duration: 108 },
+      { id: "calle-ocho-alarm", title: "Calle Ocho Alarm", file: "scenarios/calle-ocho-alarm.mp3", duration: 143 },
+      { id: "mayday-over-miami", title: "Mayday Over Miami", file: "scenarios/mayday-over-miami.mp3", duration: 192 },
+      { id: "biscayne-bay-run", title: "Biscayne Bay Run", file: "scenarios/biscayne-bay-run.mp3", duration: 77 },
+      { id: "biscayne-bay-alert", title: "Biscayne Bay Alert", file: "scenarios/biscayne-bay-alert.mp3", duration: 177 },
+      { id: "miami-command-grid", title: "Miami Command Grid", file: "scenarios/miami-command-grid.mp3", duration: 172 },
+      { id: "miami-fog-command", title: "Miami Fog Command", file: "scenarios/miami-fog-command.mp3", duration: 165 },
+      { id: "miami-grid", title: "Miami Grid", file: "scenarios/miami-grid.mp3", duration: 165 },
+      { id: "miami-grid-1", title: "Miami Grid I", file: "scenarios/miami-grid-1.mp3", duration: 209 },
+      { id: "miami-grid-2", title: "Miami Grid II", file: "scenarios/miami-grid-2.mp3", duration: 355 },
+    ];
+
+    const audio = document.getElementById("audio");
+    const listEl = document.getElementById("tracks");
+    const nowTitle = document.getElementById("nowTitle");
+    const nowSub = document.getElementById("nowSub");
+    const curEl = document.getElementById("cur");
+    const durEl = document.getElementById("dur");
+    const seek = document.getElementById("seek");
+    const status = document.getElementById("status");
+    const btnPlay = document.getElementById("btnPlay");
+    const btnLoop = document.getElementById("btnLoop");
+
+    let index = 0;
+    let baseIdx = 0;
+    let seeking = false;
+
+    function fmt(s) {
+      if (!Number.isFinite(s) || s < 0) return "0:00";
+      const m = Math.floor(s / 60);
+      const sec = Math.floor(s % 60);
+      return `${m}:${String(sec).padStart(2, "0")}`;
+    }
+
+    function urlFor(track) {
+      return bases[baseIdx] + track.file;
+    }
+
+    function setStatus(msg, err) {
+      status.textContent = msg;
+      status.classList.toggle("err", !!err);
+    }
+
+    function renderList() {
+      listEl.innerHTML = "";
+      catalog.forEach((t, i) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "track" + (i === index ? " active" : "");
+        b.innerHTML = `<span class="n">${String(i + 1).padStart(2, "0")}</span>
+          <span class="t">${t.title}</span>
+          <span class="d">${t.duration ? fmt(t.duration) : "—"}</span>`;
+        b.addEventListener("click", () => load(i, true));
+        listEl.appendChild(b);
+      });
+    }
+
+    function load(i, autoplay) {
+      index = (i + catalog.length) % catalog.length;
+      const t = catalog[index];
+      nowTitle.textContent = t.title;
+      nowSub.textContent = "Coldbricks · David Lombardo · SECTOR 305 OST";
+      audio.src = urlFor(t);
+      audio.load();
+      renderList();
+      if (autoplay) {
+        audio.play().then(() => {
+          btnPlay.textContent = "⏸";
+          setStatus(`Streaming: ${t.file}`);
+        }).catch((e) => {
+          setStatus(`Playback blocked or failed — click Play. (${e.message || e})`, true);
+        });
+      }
+    }
+
+    function toggle() {
+      if (!audio.src) {
+        load(0, true);
+        return;
+      }
+      if (audio.paused) {
+        audio.play().then(() => { btnPlay.textContent = "⏸"; }).catch((e) => {
+          setStatus(`Could not play: ${e.message || e}`, true);
+        });
+      } else {
+        audio.pause();
+        btnPlay.textContent = "▶";
+      }
+    }
+
+    btnPlay.addEventListener("click", toggle);
+    document.getElementById("btnPlayHero").addEventListener("click", () => load(index || 0, true));
+    document.getElementById("btnPrev").addEventListener("click", () => load(index - 1, true));
+    document.getElementById("btnNext").addEventListener("click", () => load(index + 1, true));
+    btnLoop.addEventListener("click", () => {
+      audio.loop = !audio.loop;
+      btnLoop.style.borderColor = audio.loop ? "var(--pink)" : "";
+      btnLoop.style.color = audio.loop ? "var(--pink)" : "";
+    });
+    document.getElementById("vol").addEventListener("input", (e) => {
+      audio.volume = Number(e.target.value);
+    });
+    audio.volume = 0.85;
+
+    seek.addEventListener("pointerdown", () => { seeking = true; });
+    seek.addEventListener("pointerup", () => {
+      const t = (Number(seek.value) / 1000) * (audio.duration || 0);
+      audio.currentTime = t;
+      seeking = false;
+    });
+    seek.addEventListener("change", () => {
+      const t = (Number(seek.value) / 1000) * (audio.duration || 0);
+      audio.currentTime = t;
+      seeking = false;
+    });
+
+    audio.addEventListener("timeupdate", () => {
+      curEl.textContent = fmt(audio.currentTime);
+      if (!seeking && audio.duration) {
+        seek.value = String(Math.floor((audio.currentTime / audio.duration) * 1000));
+      }
+    });
+    audio.addEventListener("loadedmetadata", () => {
+      durEl.textContent = fmt(audio.duration);
+    });
+    audio.addEventListener("ended", () => {
+      if (!audio.loop) load(index + 1, true);
+    });
+    audio.addEventListener("play", () => { btnPlay.textContent = "⏸"; });
+    audio.addEventListener("pause", () => { btnPlay.textContent = "▶"; });
+    audio.addEventListener("error", () => {
+      if (baseIdx < bases.length - 1) {
+        baseIdx += 1;
+        setStatus(`Retrying via fallback host…`, true);
+        load(index, !audio.paused);
+        return;
+      }
+      setStatus("Could not load audio. Check that the files are on master in packages/web/public/audio/.", true);
+    });
+
+    renderList();
+    load(0, false);
+  </script>
+</body>
+</html>

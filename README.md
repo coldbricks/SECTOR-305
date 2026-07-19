@@ -11,6 +11,7 @@
 
 <p align="center">
   <a href="https://github.com/coldbricks/SECTOR-305/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/coldbricks/SECTOR-305/actions/workflows/ci.yml/badge.svg" /></a>
+  <a href="https://coldbricks.github.io/SECTOR-305/ost/"><img alt="Play OST" src="https://img.shields.io/badge/OST-▶_Play_in_browser-ff2d7b?labelColor=060a10" /></a>
   <img alt="Node 20+" src="https://img.shields.io/badge/node-20%2B-3c873a" />
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178c6" />
   <img alt="License MIT" src="https://img.shields.io/badge/code-MIT-38beeb" />
@@ -48,7 +49,22 @@ The console puts the full watch in one coherent instrument:
 ## Music that knows when to get out of the way
 
 <p align="center">
-  <img src="docs/screenshots/05-scenario-score-desk.png" alt="SECTOR 305 scenario score desk with seventeen original tracks, bed controls, and automatic radio ducking" width="100%" />
+  <a href="https://coldbricks.github.io/SECTOR-305/ost/">
+    <img src="docs/ost/cover-1500.jpg" alt="SECTOR 305 Original Soundtrack cover — Coldbricks / David Lombardo" width="420" />
+  </a>
+</p>
+
+<p align="center">
+  <strong>SECTOR 305 — Original Soundtrack</strong><br />
+  Coldbricks · David Lombardo · Recorded July 2026 · Smithtown, New York<br />
+  <a href="https://coldbricks.github.io/SECTOR-305/ost/"><strong>▶ Play the OST in your browser</strong></a>
+  · hosted on GitHub Pages from this repo
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/01-title-watch-directive.png" alt="Title watch" width="32%" />
+  <img src="docs/screenshots/02-live-a-console.png" alt="Live A-console" width="32%" />
+  <img src="docs/screenshots/05-scenario-score-desk.png" alt="Scenario score desk" width="32%" />
 </p>
 
 The title performance crosses into a rotating watch score when the console
@@ -56,6 +72,11 @@ opens. Seventeen original David Lombardo tracks are leveled for background use,
 looped per watch, and automatically ducked beneath dispatch and unit traffic.
 The score desk exposes the whole catalog without mixing music controls into the
 radio path.
+
+> **Hosting note:** GitHub README cannot embed a real audio player. The MP3s
+> already live in this repo (`packages/web/public/audio/`). The
+> [OST player](https://coldbricks.github.io/SECTOR-305/ost/) is a small static
+> page on **GitHub Pages** that streams those files — no separate host required.
 
 ## The loop that remembers
 
