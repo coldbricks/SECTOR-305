@@ -21,7 +21,7 @@
 | `packages/web/public/**` | AGENT-INSTRUMENT | instrument |
 | `packages/web/vite.config.ts` | AGENT-INSTRUMENT | instrument |
 | `packages/core/**` | FROZEN this wave | instrument |
-| `packs/**` | FROZEN this wave (except radio_reference.json if present) | instrument |
+| `packs/**` | FROZEN this wave | instrument |
 
 ## Frozen interfaces (wave start)
 
