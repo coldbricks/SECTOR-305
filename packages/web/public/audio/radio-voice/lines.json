@@ -320,6 +320,45 @@
       "plainText": "three Adam twelve copy, en route."
     },
     {
+      "id": "unit_3a12_responding",
+      "voice": "unit_ocean_a",
+      "text": "[calm] three Adam twelve, responding.",
+      "match": [
+        "3A12, responding",
+        "3A12 responding",
+        "3A12 is responding"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding",
+        "phonetic": "LAPD",
+        "callsign": "3A12"
+      },
+      "plainText": "three Adam twelve, responding."
+    },
+    {
+      "id": "unit_3a12_responding_enroute",
+      "voice": "unit_ocean_a",
+      "text": "[calm] three Adam twelve, responding, en route.",
+      "match": [
+        "3A12, responding, en route",
+        "3A12 responding en route"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding_enroute",
+        "phonetic": "LAPD",
+        "callsign": "3A12"
+      },
+      "plainText": "three Adam twelve, responding, en route."
+    },
+    {
       "id": "unit_3a12_on_scene",
       "voice": "unit_ocean_a",
       "text": "[calm] three Adam twelve on scene.",
@@ -2115,6 +2154,45 @@
         "callsign": "3A14"
       },
       "plainText": "three Adam fourteen copy, en route."
+    },
+    {
+      "id": "unit_3a14_responding",
+      "voice": "unit_ocean_b",
+      "text": "[calm] three Adam fourteen, responding.",
+      "match": [
+        "3A14, responding",
+        "3A14 responding",
+        "3A14 is responding"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding",
+        "phonetic": "LAPD",
+        "callsign": "3A14"
+      },
+      "plainText": "three Adam fourteen, responding."
+    },
+    {
+      "id": "unit_3a14_responding_enroute",
+      "voice": "unit_ocean_b",
+      "text": "[calm] three Adam fourteen, responding, en route.",
+      "match": [
+        "3A14, responding, en route",
+        "3A14 responding en route"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding_enroute",
+        "phonetic": "LAPD",
+        "callsign": "3A14"
+      },
+      "plainText": "three Adam fourteen, responding, en route."
     },
     {
       "id": "unit_3a14_on_scene",
@@ -3914,6 +3992,45 @@
       "plainText": "three Adam twenty-one copy, en route."
     },
     {
+      "id": "unit_3a21_responding",
+      "voice": "unit_collins_a",
+      "text": "[calm] three Adam twenty-one, responding.",
+      "match": [
+        "3A21, responding",
+        "3A21 responding",
+        "3A21 is responding"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding",
+        "phonetic": "LAPD",
+        "callsign": "3A21"
+      },
+      "plainText": "three Adam twenty-one, responding."
+    },
+    {
+      "id": "unit_3a21_responding_enroute",
+      "voice": "unit_collins_a",
+      "text": "[calm] three Adam twenty-one, responding, en route.",
+      "match": [
+        "3A21, responding, en route",
+        "3A21 responding en route"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding_enroute",
+        "phonetic": "LAPD",
+        "callsign": "3A21"
+      },
+      "plainText": "three Adam twenty-one, responding, en route."
+    },
+    {
       "id": "unit_3a21_on_scene",
       "voice": "unit_collins_a",
       "text": "[calm] three Adam twenty-one on scene.",
@@ -5709,6 +5826,45 @@
         "callsign": "3A22"
       },
       "plainText": "three Adam twenty-two copy, en route."
+    },
+    {
+      "id": "unit_3a22_responding",
+      "voice": "unit_collins_b",
+      "text": "[calm] three Adam twenty-two, responding.",
+      "match": [
+        "3A22, responding",
+        "3A22 responding",
+        "3A22 is responding"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding",
+        "phonetic": "LAPD",
+        "callsign": "3A22"
+      },
+      "plainText": "three Adam twenty-two, responding."
+    },
+    {
+      "id": "unit_3a22_responding_enroute",
+      "voice": "unit_collins_b",
+      "text": "[calm] three Adam twenty-two, responding, en route.",
+      "match": [
+        "3A22, responding, en route",
+        "3A22 responding en route"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding_enroute",
+        "phonetic": "LAPD",
+        "callsign": "3A22"
+      },
+      "plainText": "three Adam twenty-two, responding, en route."
     },
     {
       "id": "unit_3a22_on_scene",
@@ -7508,6 +7664,45 @@
       "plainText": "three Adam thirty copy, en route."
     },
     {
+      "id": "unit_3a30_responding",
+      "voice": "unit_dt_a",
+      "text": "[calm] three Adam thirty, responding.",
+      "match": [
+        "3A30, responding",
+        "3A30 responding",
+        "3A30 is responding"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding",
+        "phonetic": "LAPD",
+        "callsign": "3A30"
+      },
+      "plainText": "three Adam thirty, responding."
+    },
+    {
+      "id": "unit_3a30_responding_enroute",
+      "voice": "unit_dt_a",
+      "text": "[calm] three Adam thirty, responding, en route.",
+      "match": [
+        "3A30, responding, en route",
+        "3A30 responding en route"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding_enroute",
+        "phonetic": "LAPD",
+        "callsign": "3A30"
+      },
+      "plainText": "three Adam thirty, responding, en route."
+    },
+    {
       "id": "unit_3a30_on_scene",
       "voice": "unit_dt_a",
       "text": "[calm] three Adam thirty on scene.",
@@ -9303,6 +9498,45 @@
         "callsign": "3A31"
       },
       "plainText": "three Adam thirty-one copy, en route."
+    },
+    {
+      "id": "unit_3a31_responding",
+      "voice": "unit_dt_b",
+      "text": "[calm] three Adam thirty-one, responding.",
+      "match": [
+        "3A31, responding",
+        "3A31 responding",
+        "3A31 is responding"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding",
+        "phonetic": "LAPD",
+        "callsign": "3A31"
+      },
+      "plainText": "three Adam thirty-one, responding."
+    },
+    {
+      "id": "unit_3a31_responding_enroute",
+      "voice": "unit_dt_b",
+      "text": "[calm] three Adam thirty-one, responding, en route.",
+      "match": [
+        "3A31, responding, en route",
+        "3A31 responding en route"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding_enroute",
+        "phonetic": "LAPD",
+        "callsign": "3A31"
+      },
+      "plainText": "three Adam thirty-one, responding, en route."
     },
     {
       "id": "unit_3a31_on_scene",
@@ -11102,6 +11336,45 @@
       "plainText": "three Adam forty copy, en route."
     },
     {
+      "id": "unit_3a40_responding",
+      "voice": "unit_wyn_a",
+      "text": "[calm] three Adam forty, responding.",
+      "match": [
+        "3A40, responding",
+        "3A40 responding",
+        "3A40 is responding"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding",
+        "phonetic": "LAPD",
+        "callsign": "3A40"
+      },
+      "plainText": "three Adam forty, responding."
+    },
+    {
+      "id": "unit_3a40_responding_enroute",
+      "voice": "unit_wyn_a",
+      "text": "[calm] three Adam forty, responding, en route.",
+      "match": [
+        "3A40, responding, en route",
+        "3A40 responding en route"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding_enroute",
+        "phonetic": "LAPD",
+        "callsign": "3A40"
+      },
+      "plainText": "three Adam forty, responding, en route."
+    },
+    {
       "id": "unit_3a40_on_scene",
       "voice": "unit_wyn_a",
       "text": "[calm] three Adam forty on scene.",
@@ -12897,6 +13170,45 @@
         "callsign": "3A41"
       },
       "plainText": "three Adam forty-one copy, en route."
+    },
+    {
+      "id": "unit_3a41_responding",
+      "voice": "unit_wyn_b",
+      "text": "[calm] three Adam forty-one, responding.",
+      "match": [
+        "3A41, responding",
+        "3A41 responding",
+        "3A41 is responding"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding",
+        "phonetic": "LAPD",
+        "callsign": "3A41"
+      },
+      "plainText": "three Adam forty-one, responding."
+    },
+    {
+      "id": "unit_3a41_responding_enroute",
+      "voice": "unit_wyn_b",
+      "text": "[calm] three Adam forty-one, responding, en route.",
+      "match": [
+        "3A41, responding, en route",
+        "3A41 responding en route"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding_enroute",
+        "phonetic": "LAPD",
+        "callsign": "3A41"
+      },
+      "plainText": "three Adam forty-one, responding, en route."
     },
     {
       "id": "unit_3a41_on_scene",
@@ -14696,6 +15008,45 @@
       "plainText": "three Sam one copy, en route."
     },
     {
+      "id": "unit_3s1_responding",
+      "voice": "unit_sup",
+      "text": "[calm] three Sam one, responding.",
+      "match": [
+        "3S1, responding",
+        "3S1 responding",
+        "3S1 is responding"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding",
+        "phonetic": "LAPD",
+        "callsign": "3S1"
+      },
+      "plainText": "three Sam one, responding."
+    },
+    {
+      "id": "unit_3s1_responding_enroute",
+      "voice": "unit_sup",
+      "text": "[calm] three Sam one, responding, en route.",
+      "match": [
+        "3S1, responding, en route",
+        "3S1 responding en route"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding_enroute",
+        "phonetic": "LAPD",
+        "callsign": "3S1"
+      },
+      "plainText": "three Sam one, responding, en route."
+    },
+    {
       "id": "unit_3s1_on_scene",
       "voice": "unit_sup",
       "text": "[calm] three Sam one on scene.",
@@ -16491,6 +16842,45 @@
         "callsign": "3T1"
       },
       "plainText": "three Tom one copy, en route."
+    },
+    {
+      "id": "unit_3t1_responding",
+      "voice": "unit_traf",
+      "text": "[calm] three Tom one, responding.",
+      "match": [
+        "3T1, responding",
+        "3T1 responding",
+        "3T1 is responding"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding",
+        "phonetic": "LAPD",
+        "callsign": "3T1"
+      },
+      "plainText": "three Tom one, responding."
+    },
+    {
+      "id": "unit_3t1_responding_enroute",
+      "voice": "unit_traf",
+      "text": "[calm] three Tom one, responding, en route.",
+      "match": [
+        "3T1, responding, en route",
+        "3T1 responding en route"
+      ],
+      "kind": "ACK",
+      "scenarioIds": [
+        "*"
+      ],
+      "meta": {
+        "sample": "responding_enroute",
+        "phonetic": "LAPD",
+        "callsign": "3T1"
+      },
+      "plainText": "three Tom one, responding, en route."
     },
     {
       "id": "unit_3t1_on_scene",
@@ -29169,11 +29559,11 @@
     }
   ],
   "stats": {
-    "lineCount": 1495,
-    "charEstimate": 89800,
+    "lineCount": 1515,
+    "charEstimate": 90656,
     "sampleMatrix": {
-      "lineCount": 1411,
-      "charEstimate": 67978,
+      "lineCount": 1431,
+      "charEstimate": 68694,
       "timesUsed": 17,
       "full": true,
       "units": 10
