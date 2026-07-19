@@ -13,6 +13,9 @@ packages/core/dist/
 test-results/
 playwright-report/
 
+# Local OST cover bake scratch (shipped assets live under docs/ost/)
+exports/
+
 # Prefer mp3 in-repo; source wav stays local
 packages/web/public/audio/shell-theme.wav
 
