@@ -45,6 +45,11 @@ export type ShellMusicSnapshot = {
 };
 
 type Listener = () => void;
+type MusicMode = "title" | "watch" | "debrief";
+
+const TITLE_VOLUME = 0.78;
+const WATCH_BED_VOLUME = 0.055;
+const DEBRIEF_BED_VOLUME = 0.14;
 
 class ShellMusic {
   private el: HTMLAudioElement | null = null;
@@ -52,11 +57,14 @@ class ShellMusic {
   private wanted = false;
   private musicMuted = false;
   private masterMuted = false;
-  private volume = 0.78;
+  private volume = TITLE_VOLUME;
+  private mode: MusicMode = "title";
   private loop = false;
   private ended = false;
   private listeners = new Set<Listener>();
   private playAttempt: Promise<boolean> | null = null;
+  private fadeSerial = 0;
+  private duckRestoreTimer: number | null = null;
 
   private audioCtx: AudioContext | null = null;
   private analyser: AnalyserNode | null = null;
@@ -169,6 +177,52 @@ class ShellMusic {
 
   disable() {
     this.disableSlow(1.1);
+  }
+
+  /** Continue the authored title performance as a subliminal in-watch bed. */
+  transitionToWatchBed(seconds = 4.5) {
+    this.mode = "watch";
+    this.wanted = true;
+    this.ended = false;
+    this.loop = true;
+    this.volume = WATCH_BED_VOLUME;
+    if (this.el) {
+      this.el.loop = true;
+      this.fadeTo(WATCH_BED_VOLUME, seconds);
+    } else {
+      void this.play();
+    }
+    this.emit();
+  }
+
+  /** Let the score return gently under the after-action review. */
+  transitionToDebriefBed(seconds = 1.8) {
+    this.mode = "debrief";
+    this.wanted = true;
+    this.loop = true;
+    this.volume = DEBRIEF_BED_VOLUME;
+    if (this.el) {
+      this.el.loop = true;
+      if (this.el.paused && !this.musicMuted && !this.masterMuted) {
+        void this.play();
+      } else {
+        this.fadeTo(DEBRIEF_BED_VOLUME, seconds);
+      }
+    } else {
+      void this.play();
+    }
+    this.emit();
+  }
+
+  /** Protect dispatch and unit traffic by pushing the bed below radio audio. */
+  duckForRadio(holdMs = 1300) {
+    if (this.mode === "title" || this.musicMuted || this.masterMuted || !this.el) return;
+    if (this.duckRestoreTimer != null) window.clearTimeout(this.duckRestoreTimer);
+    this.fadeTo(Math.max(0.008, this.volume * 0.2), 0.1);
+    this.duckRestoreTimer = window.setTimeout(() => {
+      this.duckRestoreTimer = null;
+      this.fadeTo(this.volume, 0.7);
+    }, holdMs);
   }
 
   /** Long cinematic fade when leaving splash (BEGIN). */
@@ -377,11 +431,12 @@ class ShellMusic {
   private fadeTo(target: number, seconds: number) {
     const a = this.el;
     if (!a) return;
+    const serial = ++this.fadeSerial;
     const start = a.volume;
     const t0 = performance.now();
     const ms = Math.max(50, seconds * 1000);
     const step = (now: number) => {
-      if (!this.el) return;
+      if (!this.el || serial !== this.fadeSerial) return;
       const u = Math.min(1, (now - t0) / ms);
       this.el.volume = start + (target - start) * u;
       if (u < 1) requestAnimationFrame(step);
@@ -392,6 +447,7 @@ class ShellMusic {
   private fadeOutAndPause(seconds: number) {
     const a = this.el;
     if (!a) return;
+    const serial = ++this.fadeSerial;
     const start = a.volume;
     if (start < 0.01) {
       a.pause();
@@ -400,7 +456,7 @@ class ShellMusic {
     const t0 = performance.now();
     const ms = Math.max(50, seconds * 1000);
     const step = (now: number) => {
-      if (!this.el) return;
+      if (!this.el || serial !== this.fadeSerial) return;
       const u = Math.min(1, (now - t0) / ms);
       this.el.volume = start * (1 - u);
       if (u < 1) requestAnimationFrame(step);

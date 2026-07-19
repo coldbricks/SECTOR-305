@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { SectorState } from "@sector305/core";
+import type { MasteryFocus, SectorState } from "@sector305/core";
 import {
   OCEAN_WALKTHROUGH,
   firstIncompleteStep,
@@ -18,6 +18,7 @@ type Props = {
   trafficSeen: boolean;
   onAdvanceSim?: (ms: number) => void;
   collapsed?: boolean;
+  focus: MasteryFocus;
 };
 
 export function TrainingCoach(props: Props) {
@@ -123,6 +124,12 @@ export function TrainingCoach(props: Props) {
           />
         </span>
         {complete ? " · PATH COMPLETE" : ""}
+      </div>
+
+      <div className={`coach-mastery mode-${props.focus.mode}`}>
+        <span className="coach-mastery-k mono">WATCH FOCUS · {props.focus.label}</span>
+        <strong>{props.focus.title}</strong>
+        <p>{props.focus.brief}</p>
       </div>
 
       <div className="coach-chip mono">

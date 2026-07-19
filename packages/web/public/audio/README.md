@@ -28,7 +28,9 @@ Edit `SHELL_TRACK_META` in `src/audio/shellMusic.ts` if title/credit text should
 - Prestige shell **listening deck**: play / pause / restart / seek / volume / optional loop
 - Spectrum visualizer + rotating “while you listen” prompts
 - Starts after a user gesture (browser autoplay policy)
-- **OPEN WATCH** fades the song out into boot SFX + glass ambient
+- **BEGIN** transitions the song into an ultra-low watch bed beneath boot SFX + glass ambient
+- The watch bed ducks automatically under dispatch and unit radio traffic
+- The console **BED** control lets the operator disable scenario music independently
 - SFX mute and theme mute are separate
 - Missing file → deck shows standby copy, no crash
 

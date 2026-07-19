@@ -1,76 +1,178 @@
-# SECTOR 305
+<p align="center">
+  <img src="docs/screenshots/01-title-watch-directive.png" alt="SECTOR 305 title screen with adaptive watch directive" width="100%" />
+</p>
 
-**Certification-grade fictional Miami A-console PSAP trainer.**
+<h1 align="center">SECTOR 305</h1>
 
-> South Beach swag on the shell. Ruthless instrument on the glass. Complex systems. Not arcade. Not shit.
+<p align="center">
+  <strong>Miami on the map. Console on the glass.</strong><br />
+  A doctrine-driven fictional PSAP dispatch simulator where process—not spectacle—decides the watch.
+</p>
 
-**Status:** Phase 0 **instrument exit accepted** — pure sim core, **75** automated tests (64-cell status matrix, sacred replay, busy watch, infoset C10), CLI checkride fail/pass, A-console with imperfect map + SessionRecord export. See `docs/COVERAGE_TABLE.md` + `docs/CRITIC_ROUNDS.md`.
+<p align="center">
+  <a href="https://github.com/coldbricks/SECTOR-305/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/coldbricks/SECTOR-305/actions/workflows/ci.yml/badge.svg" /></a>
+  <img alt="Node 20+" src="https://img.shields.io/badge/node-20%2B-3c873a" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-strict-3178c6" />
+  <img alt="License MIT" src="https://img.shields.io/badge/code-MIT-38beeb" />
+</p>
 
-```
-C:\Users\coldb\SECTOR-305
-```
+> **South Beach swagger at the door. A ruthless instrument on the glass.**
 
-## Disclaimer
+## What the hell is this?
 
-Training simulation only. **Not** a substitute for agency training. **Not** affiliated with Miami-Dade or any PSAP. **Not** APCO/NENA/IAED certification. Completing in-product tracks grants **no** real credential. All geography and incidents are fictional.
+SECTOR 305 is a deterministic emergency-communications training simulation set inside a fictional Miami-area public-safety answering point. You work the A-console: own the queue, verify imperfect locations, classify priority, build the response, protect airtime, obtain readbacks, maintain unit status, and leave a defensible record.
 
-## Quick start
+The simulation does not grade whether the story had a heroic ending. It grades whether your process held together under pressure.
 
-```bash
-cd C:\Users\coldb\SECTOR-305
-npm install
-npm test
-npm run sim -w @sector305/core -- fail
-npm run sim -w @sector305/core -- pass
-npm run dev -w @sector305/web
-```
+This is not an arcade city-management game, a production CAD, or an official certification product. It is a deep fictional training instrument built to make operational discipline playable.
 
-- Tests: state machine + golden pass/fail/aging + deterministic replay  
-- UI: http://localhost:3050 — shell → A-console → debrief  
-- Intentional fail: undercode, no verify, single unit, no weapons on radio, no readback  
+## The glass
 
-## Class (read this)
+<p align="center">
+  <img src="docs/screenshots/02-live-a-console.png" alt="SECTOR 305 live A-console with incident queue, CFS detail, unit board, radio bank, GIS sector plate, live grader, and adaptive focus" width="100%" />
+</p>
 
-This is an **open PSAP console training instrument**, not a 911 Operator-style city game and not a production CAD.
+The console puts the full watch in one coherent instrument:
 
-See [docs/ADVERSARIAL_VOLLEY.md](docs/ADVERSARIAL_VOLLEY.md) and [docs/FULL_PRODUCT_ROADMAP.md](docs/FULL_PRODUCT_ROADMAP.md).
+- Priority-and-age incident queue with imperfect information
+- CFS classification, location confidence, safety flags, and radio composition
+- Police, fire, EMS, air, hospital, and special-use presentation boards
+- Last-known unit tracks over a layered Miami GIS sector plate
+- RadioReference-compatible local channel-bank adapter
+- Live hard-fail and coaching feedback
+- Keyboard-complete checkride path
+- Original title music featuring David Lombardo on lead guitar
+- Low scenario score with automatic radio ducking and a one-click operator control
 
-## Docs
+## The loop that remembers
 
-| Doc | Purpose |
-|-----|---------|
-| [CLAUDE.md](CLAUDE.md) | Agent law / Phase 0 freeze |
-| [docs/BRIEF.md](docs/BRIEF.md) | Product brief |
-| [docs/DOCTRINE.md](docs/DOCTRINE.md) | House SOP (fictional, machine-aligned) |
-| [docs/RUBRIC.md](docs/RUBRIC.md) | Fail codes |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Stack |
-| [docs/CONTENT_POLICY.md](docs/CONTENT_POLICY.md) | Trauma / IP / ethics |
-| [docs/WEAKNESS_CLOSURE.md](docs/WEAKNESS_CLOSURE.md) | How self-audit gaps were closed |
-| [docs/FULL_PRODUCT_ROADMAP.md](docs/FULL_PRODUCT_ROADMAP.md) | 0 → full product |
+SECTOR 305 carries performance forward without points, streak bait, or fake credentials. Every completed watch updates a local mastery record. Doctrine findings become operational domains—location, priority, assignment, status, radio, tempo, documentation, safety, multi-call awareness, and information constraints.
 
-## Repo layout
-
-```
-packs/miami-a07-police-v0/   doctrine pack (JSON)
-packages/core/               pure TS runtime + tests + CLI
-packages/web/                React A-console
-scenarios/                   checkride metadata
-docs/                        law + roadmap
-```
-
-## For telecommunicators / reviewers
-
-We want adversarial review. Open an issue with `doctrine-bug` or `grade-false-positive`. Argue the cutoffs — that means the instrument is real enough to argue with.
-
-## For Claude Code
+The next launch arrives with one explicit objective:
 
 ```text
-Read CLAUDE.md, docs/DOCTRINE.md, docs/RUBRIC.md, docs/FULL_PRODUCT_ROADMAP.md.
-Extend Phase 0: external scenario loader, C1–C10 goldens, map panel.
-Do not enable STT. Do not neon the live CAD.
-npm test must stay green.
+WATCH DIRECTIVE · LOCATION
+Verify before you launch.
 ```
+
+A clean follow-up watch does not erase the lesson. It converts the objective into retention: prove that the discipline still holds under pressure.
+
+```mermaid
+flowchart LR
+  A["Imperfect call enters the queue"] --> B["Operator acts on knowable information"]
+  B --> C["Deterministic runtime + live grader"]
+  C --> D["Clinical after-action review"]
+  D --> E["Persistent next-watch objective"]
+  E --> A
+```
+
+## Pass clean—or learn exactly why you did not
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/03-checkride-pass.png" alt="Passing SECTOR 305 checkride debrief" /></td>
+    <td width="50%"><img src="docs/screenshots/04-adaptive-correction.png" alt="Failed SECTOR 305 checkride with doctrine findings" /></td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Qualified</strong><br />Zero hard fails. The next watch asks you to hold the standard.</td>
+    <td align="center"><strong>Corrective</strong><br />Evidence-backed failures become the next watch's operating focus.</td>
+  </tr>
+</table>
+
+## Why it hits differently
+
+| System | What it means in the watch |
+|---|---|
+| Deterministic simulation kernel | The same seed and command stream reproduce the same evaluation. |
+| Information-set fairness | Hidden scenario truth cannot grade you until the relevant cue becomes knowable. |
+| Doctrine packs | Priority, statuses, assignment, radio, location, and rubric law are data-driven. |
+| Sacred replay artifact | A `SessionRecord` stores commands; the engine re-derives state and the debrief. |
+| Adaptive mastery | Persistent findings shape the next objective without turning performance into points. |
+| Restrained presentation | Neon belongs to the shell. The live CAD uses EFIS-like semantic color. |
+| Authentic texture | City GIS atmosphere, imperfect last-known mapping, and local radio-data adapters ground the fiction. |
+
+## Architecture
+
+```text
+packs/*                       fictional doctrine and rubric data
+        ↓
+packages/core                pure TypeScript runtime · no DOM · seeded clock
+        ↓
+PlayerCommand → SectorState → GradeEvent → Debrief
+        ↓                         ↓
+packages/web                 SessionRecord replay + adaptive mastery
+React console · GIS plate · audio director · Playwright acceptance
+```
+
+The core rule is simple: replaying a `SessionRecord` headlessly must reproduce the same hard-fail multiset as the UI session.
+
+## Run the watch
+
+Requirements: Node.js 20 or newer.
+
+```bash
+git clone https://github.com/coldbricks/SECTOR-305.git
+cd SECTOR-305
+npm install
+npm run dev
+```
+
+Open [http://127.0.0.1:3050](http://127.0.0.1:3050), let the title track breathe, then select **BEGIN**.
+
+Useful commands:
+
+```bash
+npm test                  # core invariants and doctrine behavior
+npm run test:e2e          # full browser acceptance
+npm run typecheck         # strict TypeScript
+npm run build             # production build
+npm run validate:packs    # doctrine-pack validation
+npm run sim -- fail       # intentional five-finding checkride
+npm run sim -- pass       # clean canonical checkride
+```
+
+## Verification posture
+
+Current local milestone:
+
+- 107 core assertions across 17 test files
+- 9 end-to-end browser scenarios
+- Deterministic pass/fail simulation demos
+- Pack validation covering 14 natures and 24 rubric rules
+- Responsive acceptance at 1471px, 1280×720, and 760px
+- Native keyboard controls, focus visibility, reduced-motion support, and protected radio intelligibility
+
+CI repeats typechecking, core tests, production build, pack validation, both simulations, and Playwright acceptance.
+
+## Data, audio, and attribution
+
+- Geographic atmosphere is curated from [City of Miami GIS Open Data](https://datahub-miamigis.opendata.arcgis.com/) and remains explicitly non-operational.
+- SE305 zones, units, incidents, doctrine, and scenario truth are fictional training content.
+- Third-party radio exports are **not** licensed by this project's MIT license and must not be redistributed without the source owner's permission. Any public release must use a redistribution-safe channel fixture; restricted packs stay local.
+- Original title music: **“Dispatch in Miami”**, featuring David Lombardo on lead guitar. Audio rights are separate from the source-code license.
+
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the publication boundary.
+
+## Safety and honesty
+
+SECTOR 305 is a fictional training simulation. It is not affiliated with the City of Miami, Miami-Dade County, any PSAP, RadioReference, APCO, NENA, or IAED. It is not a substitute for agency policy, supervised training, or production dispatch software. Completing an in-product track grants no real credential.
+
+## Read deeper
+
+- [Product brief](docs/BRIEF.md)
+- [Architecture](docs/ARCHITECTURE.md)
+- [Doctrine](docs/DOCTRINE.md)
+- [Rubric](docs/RUBRIC.md)
+- [Content policy](docs/CONTENT_POLICY.md)
+- [Adversarial design review](docs/ADVERSARIAL_VOLLEY.md)
+- [Product roadmap](docs/FULL_PRODUCT_ROADMAP.md)
+
+## Contributing
+
+The highest-value contribution is adversarial operational review. If a grade is unfair, a doctrine rule is incoherent, or the console teaches the wrong habit, open an issue with reproducible evidence and the relevant scenario clock.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) before submitting changes.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+Source code and original documentation are available under the [MIT License](LICENSE). Data and audio assets may carry separate terms; see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).

@@ -12,6 +12,16 @@ test("expected autoplay blocking stays out of the warning channel", async ({ pag
   expect(warnings.filter((warning) => warning.includes("[shellMusic]"))).toEqual([]);
 });
 
+test("the scenario score has an explicit operator control", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "BEGIN" }).click();
+  const score = page.getByRole("button", { name: "Scenario score" });
+  await expect(score).toBeVisible({ timeout: 15_000 });
+  await expect(score).toHaveAttribute("aria-pressed", "true");
+  await score.click();
+  await expect(score).toHaveAttribute("aria-pressed", "false");
+});
+
 test("shell → open watch → A-console glass visible", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByText("305").first()).toBeVisible();
@@ -110,8 +120,38 @@ test("canonical UI checkride reaches a passing debrief", async ({ page }) => {
 
   await expect(page.getByRole("heading", { name: "CHECKRIDE · PASS" })).toBeVisible();
   await expect(page.getByText("None recorded.")).toBeVisible();
-  await expect(page.getByText("NEXT WATCH", { exact: true })).toBeVisible();
+  await expect(page.getByText(/^NEXT WATCH · STANDARD$/)).toBeVisible();
   await expect(page.getByRole("button", { name: "Run it cleaner" })).toBeVisible();
+});
+
+test("a failed watch becomes a persistent next-watch objective", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "BEGIN" }).click();
+  await expect(page.getByRole("heading", { name: "CFS detail" })).toBeVisible({
+    timeout: 15_000,
+  });
+
+  await page.getByRole("button", { name: "+30s", exact: true }).click();
+  await page.getByRole("button", { name: "Dispatch 1× (risk)" }).click();
+  await page.getByRole("button", { name: "End / Debrief" }).click();
+
+  await expect(page.getByRole("heading", { name: "CHECKRIDE · FAIL" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Verify before you launch" })).toBeVisible();
+  await page.getByRole("button", { name: "Run it cleaner" }).click();
+
+  await expect(page.getByLabel("Next watch objective")).toContainText("LOCATION");
+  await expect(page.getByLabel("Next watch objective")).toContainText(
+    "Verify before you launch"
+  );
+
+  await page.getByRole("button", { name: "BEGIN" }).click();
+  await expect(page.getByLabel("Live evaluation")).toContainText("LOCATION", {
+    timeout: 15_000,
+  });
+  await page.reload();
+  await page.getByRole("button", { name: "Reset adaptive profile" }).click();
+  await expect(page.getByLabel("Next watch objective")).toContainText("BASELINE");
 });
 
 test("single-column console starts with a compact coach", async ({ page }) => {

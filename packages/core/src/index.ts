@@ -5,6 +5,7 @@ export * from "./fixtures.js";
 export * from "./rng.js";
 export * from "./grade/codes.js";
 export * from "./grade/multiset.js";
+export * from "./mastery.js";
 export * from "./doctrine/statusMatrix.js";
 export * from "./doctrine/infoSet.js";
 export * from "./radio/templates.js";

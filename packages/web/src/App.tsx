@@ -4,6 +4,8 @@ import {
   baseUnitsA07,
   incidentRobberyBadAddress,
   incidentTheftReport,
+  createMasteryProfile,
+  recordMasteryWatch,
   type PlayerCommand,
   type PriorityCode,
   type SectorState,
@@ -35,6 +37,10 @@ import {
   useConsoleHotkeys,
 } from "./hooks/useConsoleHotkeys";
 import { HELO_LAYER_ID, TRAF_LAYER_ID } from "./geo/miamiBasemap";
+import {
+  loadMasteryProfile,
+  saveMasteryProfile,
+} from "./training/masteryStore";
 
 /** CAD-style stack flavor for queue rows. */
 type QueueLane = "pending" | "owned" | "working" | "hold" | "cleared";
@@ -137,12 +143,19 @@ function createCheckride(): Runtime {
 function soundForCommand(c: PlayerCommand): void {
   switch (c.type) {
     case "DispatchUnits":
+      shellMusic.duckForRadio(1700);
       consoleAudio.play("radioKey");
       window.setTimeout(() => consoleAudio.play("radioCrackle"), 80);
       window.setTimeout(() => consoleAudio.play("assign"), 220);
       break;
     case "UnitRadioRx":
+      shellMusic.duckForRadio(1300);
       consoleAudio.play(c.kind === "ACK" ? "ack" : "radioRx");
+      break;
+    case "RadioTx":
+    case "RadioTxFreeform":
+      shellMusic.duckForRadio(1500);
+      consoleAudio.play("radioKey");
       break;
     case "ClearIncident":
       consoleAudio.play("clear");
@@ -171,6 +184,13 @@ function soundForCommand(c: PlayerCommand): void {
 
 export function App() {
   const [phase, setPhase] = useState<Phase>("shell");
+  const [masteryProfile, setMasteryProfile] = useState(() => loadMasteryProfile());
+  const [watchId] = useState(() =>
+    typeof crypto.randomUUID === "function"
+      ? crypto.randomUUID()
+      : `watch-${Date.now()}-${Math.random().toString(16).slice(2)}`
+  );
+  const [completedAtIso, setCompletedAtIso] = useState<string | null>(null);
   const [rt] = useState(() => createCheckride());
   const [state, setState] = useState<SectorState>(() => rt.snapshot());
   const [selectedId, setSelectedId] = useState<string | null>("cfs-001");
@@ -197,12 +217,31 @@ export function App() {
     () => (phase === "debrief" ? rt.debrief() : null),
     [phase, state, rt]
   );
+  const projectedMastery = useMemo(() => {
+    if (!debrief || !completedAtIso) return masteryProfile;
+    return recordMasteryWatch(
+      masteryProfile,
+      debrief,
+      watchId,
+      completedAtIso
+    );
+  }, [debrief, completedAtIso, masteryProfile, watchId]);
+
+  useEffect(() => {
+    if (projectedMastery === masteryProfile) return;
+    saveMasteryProfile(projectedMastery);
+    setMasteryProfile(projectedMastery);
+  }, [projectedMastery, masteryProfile]);
 
   // Debrief sting when entering AAR
   useEffect(() => {
     if (phase !== "debrief" || !debrief) return;
     consoleAudio.stopAmbient();
     consoleAudio.play(debrief.passed ? "pass" : "fail");
+    const scoreTimer = window.setTimeout(() => {
+      shellMusic.transitionToDebriefBed();
+    }, 450);
+    return () => window.clearTimeout(scoreTimer);
   }, [phase, debrief?.passed]);
 
   // Open channel hiss while glass is live
@@ -314,6 +353,13 @@ export function App() {
     }
   }
 
+  function resetMastery() {
+    const next = createMasteryProfile();
+    saveMasteryProfile(next);
+    setMasteryProfile(next);
+    consoleAudio.play("ui");
+  }
+
   async function radioTest() {
     await consoleAudio.unlock();
     if (consoleAudio.isMuted()) {
@@ -405,6 +451,7 @@ export function App() {
   const endDebrief = useCallback(() => {
     consoleAudio.stopAmbient();
     consoleAudio.play("ui");
+    setCompletedAtIso((current) => current ?? new Date().toISOString());
     setPhase("debrief");
   }, []);
 
@@ -478,7 +525,7 @@ export function App() {
     // Long cinematic fade of title theme, then boot into glass
     if (musicReady && !musicMuted && !muted) {
       if (!shellMusic.snapshot().playing) await shellMusic.play();
-      shellMusic.disableSlow(4.5);
+      shellMusic.transitionToWatchBed(4.5);
     } else {
       shellMusic.disableSlow(0.4);
     }
@@ -504,6 +551,8 @@ export function App() {
         musicReady={musicReady}
         muted={muted}
         musicMuted={musicMuted}
+        mastery={masteryProfile}
+        onResetMastery={resetMastery}
         onBegin={() => void openWatch()}
         onToggleSfx={() => void toggleMute()}
         onToggleMusic={() => void toggleShellMusic()}
@@ -513,7 +562,7 @@ export function App() {
 
   if (phase === "debrief" && debrief) {
     const stamp = new Date().toISOString().slice(0, 19).replace("T", " ");
-    const nextFinding = debrief.hardFails[0] ?? debrief.softMarks[0];
+    const nextFocus = projectedMastery.focus;
     return (
       <div className={`debrief prestige-debrief ${debrief.passed ? "pass" : "fail"}`}>
         <div className="debrief-frame">
@@ -608,21 +657,18 @@ export function App() {
             )}
           </section>
 
-          <section className="debrief-next" aria-labelledby="next-watch-title">
-            <div className="dn-kicker">NEXT WATCH</div>
-            <h2 id="next-watch-title">
-              {debrief.passed
-                ? "Hold the standard. Tighten the watch."
-                : nextFinding
-                  ? `Correct ${nextFinding.code}`
-                  : "Run the doctrine cleanly."}
-            </h2>
-            <p>
-              {debrief.passed
-                ? "Run the real geography, radio procedure, and unit workflow again—with less hesitation and cleaner air."
-                : nextFinding?.message ??
-                  "Return to the same watch and correct the first break in the response sequence."}
-            </p>
+          <section
+            className={`debrief-next mode-${nextFocus.mode}`}
+            aria-labelledby="next-watch-title"
+          >
+            <div className="dn-kicker">NEXT WATCH · {nextFocus.label}</div>
+            <h2 id="next-watch-title">{nextFocus.title}</h2>
+            <p>{nextFocus.brief}</p>
+            <div className="dn-ledger mono">
+              PROFILE · {projectedMastery.watchesCompleted} WATCH
+              {projectedMastery.watchesCompleted === 1 ? "" : "ES"} OBSERVED ·{" "}
+              {projectedMastery.cleanWatches} CLEAN
+            </div>
           </section>
 
           <div className="actions debrief-actions">
@@ -679,6 +725,16 @@ export function App() {
             >
               R/T
             </button>
+            <button
+              type="button"
+              className={`tb-score ${musicMuted ? "is-muted" : ""}`}
+              aria-label="Scenario score"
+              aria-pressed={!musicMuted}
+              onClick={() => void toggleShellMusic()}
+              title="Low scenario music bed; ducks automatically under radio traffic"
+            >
+              BED
+            </button>
             <button onClick={() => cmd({ type: "Advance", ms: 5000 })}>+5s</button>
             <button onClick={() => cmd({ type: "Advance", ms: 30000 })}>+30s</button>
             <button onClick={exportSession}>Export</button>
@@ -697,7 +753,7 @@ export function App() {
         </div>
       </div>
 
-      <LiveGradeStrip gradeLog={state.gradeLog} />
+      <LiveGradeStrip gradeLog={state.gradeLog} focus={masteryProfile.focus} />
 
       {hotkeyHelp ? (
         <div className="hotkey-help" role="dialog" aria-label="Keyboard map">
@@ -1026,6 +1082,7 @@ export function App() {
         {phase === "console" && (
           <TrainingCoach
             state={state}
+            focus={masteryProfile.focus}
             selectedId={selectedId}
             ownedIds={ownedIds}
             fireDispatches={fireLog.length}

@@ -2,15 +2,18 @@ import { useEffect, useRef } from "react";
 import { shellMusic } from "../audio/shellMusic";
 import { splashFxBed } from "../audio/splashFxBed";
 import { consoleAudio } from "../audio/consoleAudio";
+import type { MasteryProfile } from "@sector305/core";
 
 type Props = {
   booting: boolean;
   musicReady: boolean;
   muted: boolean;
   musicMuted: boolean;
+  mastery: MasteryProfile;
   onBegin: () => void;
   onToggleSfx: () => void;
   onToggleMusic: () => void;
+  onResetMastery: () => void;
 };
 
 /** Blinking hotspots over the wall map (screen-space %). */
@@ -36,7 +39,9 @@ export function ShellSplash({
   musicReady,
   muted,
   musicMuted,
+  mastery,
   onBegin,
+  onResetMastery,
 }: Props) {
   const startedRef = useRef(false);
 
@@ -126,6 +131,33 @@ export function ShellSplash({
           MIAMI FICTION · CONSOLE A07 · IMPERFECT LAST-KNOWN
         </div>
         <div className="splash-track-credit">Lead guitar — David Lombardo</div>
+
+        <section
+          className={`splash-watch-objective mode-${mastery.focus.mode}`}
+          aria-label="Next watch objective"
+        >
+          <div className="swo-head mono">
+            <span>WATCH DIRECTIVE</span>
+            <span>{mastery.focus.label}</span>
+          </div>
+          <strong>{mastery.focus.title}</strong>
+          <p>{mastery.focus.brief}</p>
+          <div className="swo-ledger mono">
+            {mastery.watchesCompleted === 0
+              ? "FIRST WATCH · ADAPTIVE PROFILE ARMED"
+              : `${mastery.watchesCompleted} WATCH${mastery.watchesCompleted === 1 ? "" : "ES"} OBSERVED · ${mastery.cleanWatches} CLEAN`}
+          </div>
+          {mastery.watchesCompleted > 0 ? (
+            <button
+              type="button"
+              className="swo-reset"
+              aria-label="Reset adaptive profile"
+              onClick={onResetMastery}
+            >
+              RESET PROFILE
+            </button>
+          ) : null}
+        </section>
 
         <button
           type="button"

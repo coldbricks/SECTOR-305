@@ -1,0 +1,39 @@
+name: Product defect
+description: Report a reproducible simulation, interface, audio, or replay defect.
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Do not include real incident data, PII, credentials, or restricted operational information."
+  - type: input
+    id: commit
+    attributes:
+      label: Version or commit
+      placeholder: "0adbeb8"
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: Include scenario, seed, simulated clock, and exact actions.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Sanitized SessionRecord, grade code, logs, or screenshots.

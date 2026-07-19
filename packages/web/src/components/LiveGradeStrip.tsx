@@ -3,15 +3,16 @@
  * Doctrine before chrome: hard fails visible immediately, soft marks as coaching.
  */
 
-import type { GradeEvent } from "@sector305/core";
+import type { GradeEvent, MasteryFocus } from "@sector305/core";
 
 type Props = {
   gradeLog: GradeEvent[];
   /** Max rows in the rolling feed */
   feedCap?: number;
+  focus: MasteryFocus;
 };
 
-export function LiveGradeStrip({ gradeLog, feedCap = 6 }: Props) {
+export function LiveGradeStrip({ gradeLog, focus, feedCap = 6 }: Props) {
   const hard = gradeLog.filter((g) => g.severity === "hard_fail");
   const soft = gradeLog.filter((g) => g.severity === "soft");
   const feed = gradeLog.slice(-feedCap).reverse();
@@ -43,9 +44,10 @@ export function LiveGradeStrip({ gradeLog, feedCap = 6 }: Props) {
         </div>
       ) : (
         <div className="lgs-banner clean mono">
-          <span className="lgs-banner-k">EVAL</span>
+          <span className="lgs-banner-k">FOCUS</span>
+          <span className="lgs-banner-code">{focus.label}</span>
           <span className="lgs-banner-msg">
-            No hard fails yet · process grades live
+            {focus.title} · no hard fails yet
           </span>
         </div>
       )}
