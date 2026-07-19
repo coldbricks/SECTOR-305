@@ -18,7 +18,7 @@ import {
 } from "@sector305/core";
 import { SectorMap } from "./SectorMap";
 
-type Phase = "shell" | "console" | "debrief";
+type Phase = "shell" | "booting" | "console" | "debrief";
 
 const NATURES = (
   naturesJson as { natures: { code: string; label: string; defaultPriority: string }[] }
@@ -145,33 +145,74 @@ export function App() {
   );
   const units = Object.values(state.units);
 
-  if (phase === "shell") {
+  function openWatch() {
+    setPhase("booting");
+    window.setTimeout(() => setPhase("console"), 1600);
+  }
+
+  if (phase === "shell" || phase === "booting") {
     return (
-      <div className="shell">
-        <div className="shell-card">
-          <div className="tag">Miami fiction · A-console</div>
-          <h1>SECTOR 305</h1>
-          <p>
-            Certification-grade training instrument. South Beach at the door.
-            Clinical glass on the job. Process fails — not story points.
+      <div className={`shell prestige ${phase === "booting" ? "is-booting" : ""}`}>
+        <div className="shell-bg" aria-hidden>
+          <div className="shell-grid" />
+          <div className="shell-scan" />
+          <div className="shell-glow pink" />
+          <div className="shell-glow cyan" />
+        </div>
+        <div className="shell-card prestige-card">
+          <div className="shell-card-edge" />
+          <div className="tag">
+            <span className="tag-dot" /> Miami fiction · A-console · S305
+          </div>
+          <div className="wordmark">
+            <span className="wm-sector">SECTOR</span>
+            <span className="wm-num">305</span>
+          </div>
+          <p className="tagline">
+            Complexity that grades you. Graphics that don’t apologize.
           </p>
-          <p style={{ marginTop: "1rem" }}>
-            Checkride: Ocean corridor robbery — bad initial address, priority
-            flip, backup, weapons, readbacks.
+          <p className="lede">
+            Certification-grade PSAP training instrument. South Beach on the
+            shell. Ruthless glass on the watch. Process fails — not story
+            points.
           </p>
+          <div className="mission-strip">
+            <div className="mission-item">
+              <span className="mi-k">CHECKRIDE</span>
+              <span className="mi-v">Ocean corridor · robbery IP</span>
+            </div>
+            <div className="mission-item">
+              <span className="mi-k">LOAD</span>
+              <span className="mi-v">C1 · C2 · C4 · C5 · C10</span>
+            </div>
+            <div className="mission-item">
+              <span className="mi-k">CONSOLE</span>
+              <span className="mi-v">DADE A07 · SE305-PRI</span>
+            </div>
+          </div>
           <div className="row">
             <button
-              className="primary"
-              onClick={() => {
-                setPhase("console");
-              }}
+              className="primary prestige-cta"
+              disabled={phase === "booting"}
+              onClick={openWatch}
             >
-              OPEN WATCH · A07
+              {phase === "booting" ? "LINKING SECTOR…" : "OPEN WATCH · A07"}
             </button>
           </div>
-          <p className="disclaimer" style={{ marginTop: "1.5rem" }}>
-            Not a real telecommunicator certification. Fictional PSAP. Not
-            affiliated with any agency or APCO/NENA/IAED.
+          {phase === "booting" && (
+            <div className="boot-rail" aria-live="polite">
+              <div className="boot-line">AUTH · TRAINEE SESSION</div>
+              <div className="boot-line">PACK · miami-a07-police-v0</div>
+              <div className="boot-line">PLATE · IMPERFECT LAST-KNOWN</div>
+              <div className="boot-line accent">CHANNEL · SE305-PRI UP</div>
+              <div className="boot-bar">
+                <span />
+              </div>
+            </div>
+          )}
+          <p className="disclaimer" style={{ marginTop: "1.25rem" }}>
+            Training fiction only. Not a real telecommunicator certification.
+            Not affiliated with any agency or APCO/NENA/IAED.
           </p>
         </div>
       </div>
@@ -179,59 +220,117 @@ export function App() {
   }
 
   if (phase === "debrief" && debrief) {
+    const stamp = new Date().toISOString().slice(0, 19).replace("T", " ");
     return (
-      <div className={`debrief ${debrief.passed ? "pass" : "fail"}`}>
-        <h1>{debrief.passed ? "CHECKRIDE PASS" : "CHECKRIDE FAIL"}</h1>
-        <p>
-          Scenario {debrief.scenarioId} · seed {debrief.seed} · t=
-          {(debrief.clockMs / 1000).toFixed(1)}s
-        </p>
-        <h2>Hard fails ({debrief.hardFails.length})</h2>
-        {debrief.hardFails.length === 0 ? (
-          <p style={{ color: "var(--green)" }}>None.</p>
-        ) : (
-          <ul className="fail-list">
-            {debrief.hardFails.map((f) => (
-              <li key={f.id}>
-                <strong>{f.code}</strong> — {f.message}
-              </li>
-            ))}
-          </ul>
-        )}
-        <h2>Soft marks ({debrief.softMarks.length})</h2>
-        <ul className="fail-list">
-          {debrief.softMarks.map((f) => (
-            <li key={f.id} style={{ borderColor: "var(--amber)" }}>
-              <strong>{f.code}</strong> — {f.message}
-            </li>
-          ))}
-        </ul>
-        <h2>Metrics</h2>
-        <pre>{JSON.stringify(debrief.metrics, null, 2)}</pre>
-        <div className="actions">
-          <button onClick={() => window.location.reload()}>New session</button>
+      <div className={`debrief prestige-debrief ${debrief.passed ? "pass" : "fail"}`}>
+        <div className="debrief-frame">
+          <header className="debrief-header">
+            <div>
+              <div className="dh-kicker">S305 · AFTER-ACTION · TRAINING</div>
+              <h1>{debrief.passed ? "CHECKRIDE · PASS" : "CHECKRIDE · FAIL"}</h1>
+            </div>
+            <div className={`dh-stamp ${debrief.passed ? "ok" : "bad"}`}>
+              {debrief.passed ? "QUALIFIED" : "NOT QUALIFIED"}
+            </div>
+          </header>
+          <div className="debrief-meta mono">
+            <span>SCENARIO {debrief.scenarioId}</span>
+            <span>SEED {debrief.seed}</span>
+            <span>T+{(debrief.clockMs / 1000).toFixed(1)}s</span>
+            <span>EXPORT {stamp}Z</span>
+          </div>
+
+          <section className="debrief-section">
+            <h2>Critical findings · hard fails ({debrief.hardFails.length})</h2>
+            {debrief.hardFails.length === 0 ? (
+              <p className="ok-line">None recorded.</p>
+            ) : (
+              <ul className="fail-list">
+                {debrief.hardFails.map((f) => (
+                  <li key={f.id}>
+                    <div className="fail-code">{f.code}</div>
+                    <div className="fail-msg">{f.message}</div>
+                    <div className="fail-meta mono">
+                      +{(f.atMs / 1000).toFixed(1)}s · {f.rubricId}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <section className="debrief-section">
+            <h2>Coaching · soft marks ({debrief.softMarks.length})</h2>
+            {debrief.softMarks.length === 0 ? (
+              <p className="dim-line">None.</p>
+            ) : (
+              <ul className="fail-list soft">
+                {debrief.softMarks.map((f) => (
+                  <li key={f.id}>
+                    <div className="fail-code">{f.code}</div>
+                    <div className="fail-msg">{f.message}</div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <section className="debrief-section">
+            <h2>Watch metrics</h2>
+            <div className="metric-grid">
+              <div className="metric">
+                <span className="mk">INCIDENTS</span>
+                <span className="mv">{debrief.metrics.incidentsTotal}</span>
+              </div>
+              <div className="metric">
+                <span className="mk">CLEARED</span>
+                <span className="mv">{debrief.metrics.incidentsCleared}</span>
+              </div>
+              <div className="metric">
+                <span className="mk">DISPATCH</span>
+                <span className="mv">{debrief.metrics.dispatches}</span>
+              </div>
+              <div className="metric">
+                <span className="mk">RADIO TX</span>
+                <span className="mv">{debrief.metrics.radioTx}</span>
+              </div>
+            </div>
+          </section>
+
+          <div className="actions debrief-actions">
+            <button className="primary" onClick={() => window.location.reload()}>
+              New session
+            </button>
+            <button onClick={exportSession}>Export SessionRecord</button>
+          </div>
+          <p className="disclaimer">{debrief.disclaimer}</p>
         </div>
-        <p className="disclaimer">{debrief.disclaimer}</p>
       </div>
     );
   }
 
   return (
-    <div className="console">
+    <div className="console prestige-console">
       <div className="topbar">
-        <span className="id">
-          {state.consoleId} · {state.sectorId}
-        </span>
-        <span>SE305-PRI</span>
-        <span className="clock">
+        <div className="tb-brand">
+          <span className="tb-live">●</span>
+          <span className="id">
+            {state.consoleId} · {state.sectorId}
+          </span>
+        </div>
+        <span className="tb-chip">SE305-PRI</span>
+        <span className="tb-chip dim">CHECKRIDE</span>
+        <span className="clock mono">
           SIM {(state.clockMs / 1000).toFixed(1)}s · seed {state.seed}
         </span>
-        <button onClick={() => cmd({ type: "Advance", ms: 5000 })}>+5s</button>
-        <button onClick={() => cmd({ type: "Advance", ms: 30000 })}>+30s</button>
-        <button onClick={exportSession}>Export SessionRecord</button>
-        <button className="danger" onClick={() => setPhase("debrief")}>
-          End / Debrief
-        </button>
+        <div className="tb-actions">
+          <button onClick={() => cmd({ type: "Advance", ms: 5000 })}>+5s</button>
+          <button onClick={() => cmd({ type: "Advance", ms: 30000 })}>+30s</button>
+          <button onClick={exportSession}>Export</button>
+          <button className="danger" onClick={() => setPhase("debrief")}>
+            End / Debrief
+          </button>
+        </div>
       </div>
 
       <div className="grid console-grid">

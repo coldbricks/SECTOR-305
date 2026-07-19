@@ -2,14 +2,15 @@ import { test, expect } from "@playwright/test";
 
 test("shell → open watch → A-console glass visible", async ({ page }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: "SECTOR 305" })).toBeVisible();
-  await expect(page.getByText(/certification-grade/i)).toBeVisible();
+  await expect(page.getByText("305").first()).toBeVisible();
+  await expect(page.getByText(/certification-grade|Complexity that grades/i)).toBeVisible();
   await page.getByRole("button", { name: /OPEN WATCH/i }).click();
-  await expect(page.getByText(/SE305-PRI|Incident queue|A07/i).first()).toBeVisible({
+  await expect(page.getByText(/SE305-PRI|Incident queue|A07|SECTOR PLATE/i).first()).toBeVisible({
     timeout: 15_000,
   });
   await expect(
     page.getByText(/SECTOR PLATE|Unit status|Radio log|IMPERFECT/i).first()
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 15_000 });
 });
+
 
