@@ -21,9 +21,10 @@ export type RadioSpeechKind =
   | "UPDATE"
   | "SYSTEM"
   | "CALLER"
+  | "TRAINER"
   | string;
 
-export type ChannelBus = "radio" | "phone";
+export type ChannelBus = "radio" | "phone" | "trainer";
 
 interface RadioClip {
   id: string;
@@ -31,6 +32,7 @@ interface RadioClip {
   voice: string;
   kind: string;
   text: string;
+  plainText?: string;
   match: string[];
   scenarioIds: string[];
   channel?: string;
@@ -161,22 +163,38 @@ class RadioSpeech {
   findClip(caption: string, kind?: RadioSpeechKind): RadioClip | null {
     const key = normalizeCaption(caption);
     if (!key) return null;
+    // Direct id hit (trainer_welcome, disp_ocean_p1_robbery, …)
+    const byId = this.clips.find((c) => c.id === caption || normalizeCaption(c.id) === key);
+    if (byId) {
+      if (!kind) return byId;
+      if (byId.kind === kind) return byId;
+      if (kind === "TRAINER" && (byId.kind === "TRAINER" || byId.channel === "trainer"))
+        return byId;
+      if (kind === "CALLER" && (byId.kind === "CALLER" || byId.channel === "phone"))
+        return byId;
+    }
     let pool = this.clips;
     if (kind === "CALLER") {
       const callers = this.clips.filter(
         (c) => c.kind === "CALLER" || c.channel === "phone"
       );
       if (callers.length) pool = callers;
+    } else if (kind === "TRAINER") {
+      const trainers = this.clips.filter(
+        (c) => c.kind === "TRAINER" || c.channel === "trainer"
+      );
+      if (trainers.length) pool = trainers;
     }
-    const candidates = pool.filter((c) =>
-      c.match.some((m) => {
+    const candidates = pool.filter((c) => {
+      const texts = [c.text, c.plainText, ...(c.match ?? [])].filter(Boolean) as string[];
+      return texts.some((m) => {
         const nm = normalizeCaption(m);
         return nm === key || key.includes(nm) || nm.includes(key);
-      })
-    );
+      });
+    });
     if (!candidates.length) return null;
     const exact = candidates.find((c) =>
-      c.match.some((m) => normalizeCaption(m) === key)
+      (c.match ?? []).some((m) => normalizeCaption(m) === key)
     );
     return exact ?? candidates[0]!;
   }
@@ -539,10 +557,45 @@ class RadioSpeech {
     });
   }
 
+  /** Academy coach — Dave trainer voice, clean (not radio, not 911). */
+  async playTrainer(
+    text: string
+  ): Promise<{ played: boolean; clipId: string | null; durationMs: number }> {
+    return this.playCaption({
+      caption: text,
+      kind: "TRAINER",
+      direction: "trainer",
+    });
+  }
+
+  /** Play a known clip by id (e.g. trainer_welcome). */
+  async playClipById(
+    clipId: string,
+    opts?: { kind?: RadioSpeechKind; direction?: "dispatch_tx" | "unit_tx" | "phone" | "trainer" }
+  ): Promise<{ played: boolean; clipId: string | null; durationMs: number }> {
+    await this.ensureLoaded();
+    const clip = this.clips.find((c) => c.id === clipId);
+    if (!clip) {
+      return { played: false, clipId: null, durationMs: 0 };
+    }
+    // Caption = clip id so findClip hits the direct-id path
+    return this.playCaption({
+      caption: clipId,
+      kind: opts?.kind ?? (clip.kind as RadioSpeechKind) ?? "TRAINER",
+      direction:
+        opts?.direction ??
+        (clip.channel === "phone"
+          ? "phone"
+          : clip.channel === "trainer" || clip.kind === "TRAINER"
+            ? "trainer"
+            : "dispatch_tx"),
+    });
+  }
+
   async playCaption(opts: {
     caption: string;
     kind?: RadioSpeechKind;
-    direction?: "dispatch_tx" | "unit_tx" | "phone";
+    direction?: "dispatch_tx" | "unit_tx" | "phone" | "trainer";
   }): Promise<{ played: boolean; clipId: string | null; durationMs: number }> {
     if (!this.enabled || consoleAudio.isMuted()) {
       return { played: false, clipId: null, durationMs: 0 };
@@ -552,23 +605,37 @@ class RadioSpeech {
     await consoleAudio.unlock();
 
     const clip = this.findClip(opts.caption, opts.kind);
+    const isTrainer =
+      opts.kind === "TRAINER" ||
+      opts.direction === "trainer" ||
+      clip?.kind === "TRAINER" ||
+      clip?.channel === "trainer";
     const isPhone =
-      opts.kind === "CALLER" ||
-      opts.direction === "phone" ||
-      clip?.kind === "CALLER" ||
-      clip?.channel === "phone";
+      !isTrainer &&
+      (opts.kind === "CALLER" ||
+        opts.direction === "phone" ||
+        clip?.kind === "CALLER" ||
+        clip?.channel === "phone");
     const isUnit =
       !isPhone &&
+      !isTrainer &&
       (opts.direction === "unit_tx" ||
         opts.kind === "ACK" ||
         opts.kind === "STATUS");
     const radioRole: RadioRole = isUnit ? "field" : "console";
-    const bus: ChannelBus = isPhone ? "phone" : "radio";
+    const bus: ChannelBus = isTrainer
+      ? "trainer"
+      : isPhone
+        ? "phone"
+        : "radio";
 
     if (bus === "radio") {
       void this.playRadioKeyFx(radioRole);
-    } else {
+    } else if (bus === "phone") {
       void this.playPhonePickupFx();
+    } else {
+      // Trainer: soft UI only — clear headset, not RF
+      consoleAudio.play("ui");
     }
 
     if (!clip) {
@@ -606,10 +673,15 @@ class RadioSpeech {
 
     const withStatic =
       bus === "radio" && this.shouldHaveRadioStatic(clip.id, radioRole);
+    // Trainer: light console chain, never static (clear coach voice)
     const chain =
       bus === "phone"
         ? this.buildPhoneChannel(ctx)
-        : this.buildRadioChannel(ctx, radioRole, withStatic);
+        : this.buildRadioChannel(
+            ctx,
+            bus === "trainer" ? "console" : radioRole,
+            bus === "radio" ? withStatic : false
+          );
 
     this.activeDisconnects.push(chain.disconnect);
 
@@ -634,8 +706,10 @@ class RadioSpeech {
 
     if (bus === "phone") {
       this.schedulePhoneLine(chain.noiseGain, t0, tEnd);
-      // Soft phone line bed under call (if baked); synth noise still runs
       void channelSfx.startBed("phone_line_bed", 0.08);
+    } else if (bus === "trainer") {
+      // Clean coach path — minimal noise bed
+      chain.noiseGain.gain.setValueAtTime(0.0001, t0);
     } else {
       this.scheduleRadioSquelch(
         chain.noiseGain,
@@ -671,7 +745,7 @@ class RadioSpeech {
       );
       channelSfx.stopBed();
       if (bus === "phone") void this.playPhoneHangupFx();
-      else void this.playRadioUnkeyFx();
+      else if (bus === "radio") void this.playRadioUnkeyFx();
     };
 
     this.stopTimer = window.setTimeout(() => {

@@ -197,11 +197,33 @@ function buildContentLines(lex, letters) {
     });
   }
 
+  // Academy trainer (Dave) — coach HUD / walkthrough
+  for (const t of lex.trainer_lines ?? []) {
+    const tagPrefix = (t.tags ?? ["calm", "friendly"])
+      .map((x) => `[${String(x).replace(/[\[\]]/g, "")}]`)
+      .join(" ");
+    push({
+      id: t.id,
+      voice: t.voice || "trainer",
+      text: `${tagPrefix} ${t.spoken}`.trim(),
+      match: t.match ?? [t.spoken],
+      kind: "TRAINER",
+      channel: "trainer",
+      scenarioIds: t.scenarioIds ?? ["*"],
+      meta: { tags: t.tags ?? [] },
+    });
+  }
+
   return lines;
 }
 
 function withDeliveryTags(line) {
-  if (line.kind === "CALLER" || line.channel === "phone") {
+  if (
+    line.kind === "CALLER" ||
+    line.channel === "phone" ||
+    line.kind === "TRAINER" ||
+    line.channel === "trainer"
+  ) {
     const plainText = line.text
       .replace(/\[[^\]]+\]/g, " ")
       .replace(/\s+/g, " ")

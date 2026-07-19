@@ -8,6 +8,7 @@ import {
   type CoachContext,
 } from "../training/oceanWalkthrough";
 import { consoleAudio } from "../audio/consoleAudio";
+import { radioSpeech } from "../audio/radioSpeech";
 
 type Props = {
   state: SectorState;
@@ -63,6 +64,23 @@ export function TrainingCoach(props: Props) {
     }
     prevAutoIdx.current = autoIdx;
   }, [autoIdx, auto]);
+
+  // Dave trainer voice when the coach step changes (baked clip by id)
+  const lastSpokenStep = useRef<string | null>(null);
+  useEffect(() => {
+    if (!open || !step) return;
+    if (lastSpokenStep.current === step.id) return;
+    lastSpokenStep.current = step.id;
+    const clipId = step.trainerClipId;
+    if (clipId) {
+      void radioSpeech.playClipById(clipId, {
+        kind: "TRAINER",
+        direction: "trainer",
+      });
+    } else {
+      void radioSpeech.playTrainer(`${step.title}. ${step.body}`);
+    }
+  }, [open, step?.id, step?.trainerClipId, step?.title, step?.body]);
 
   if (!open) {
     return (

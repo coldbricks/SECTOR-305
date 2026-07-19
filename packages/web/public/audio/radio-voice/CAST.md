@@ -4,7 +4,7 @@ Fiction channel. Not a real PSAP. Voices chosen for *listenability under load*.
 
 | Air name | Voice ID | Role on the glass |
 |----------|----------|-------------------|
-| **Dave** | `B4mQ18VPQVeQGS9ZcnZy` | **You.** Primary A-console dispatch. |
+| **Dave** | `B4mQ18VPQVeQGS9ZcnZy` | **You.** Primary A-console dispatch **+ Academy trainer/coach**. |
 | **Sarah** | `EXAVITQu4vr4xnSDxMaL` | Relief / training console. Mature operator gold. |
 | **Mark** | `UgBBYS2sOqTuMpoF3BR0` | **3A12** Ocean lead + **3S1** when supervisor rolls. Premium, spend it. |
 | **Valley** | `Fk67DVZyDsJmZYzcob1A` | **3A21** Collins nightlife — fun without breaking radio discipline. |

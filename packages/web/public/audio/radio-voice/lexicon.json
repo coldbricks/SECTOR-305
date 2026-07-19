@@ -43,6 +43,14 @@
       "note": "Owner clone. Primary glass. [calm] [dispatch]",
       "settings": { "stability": 0.4, "similarity_boost": 0.8, "style": 0.12, "use_speaker_boost": true }
     },
+    "trainer": {
+      "label": "Dave — Academy trainer / coach",
+      "character": "Dave",
+      "default_voice_id": "B4mQ18VPQVeQGS9ZcnZy",
+      "voice_id_env": "ELEVENLABS_VOICE_TRAINER",
+      "note": "Same owner clone. Coach HUD and academy walkthrough. [calm] [friendly]",
+      "settings": { "stability": 0.42, "similarity_boost": 0.82, "style": 0.18, "use_speaker_boost": true }
+    },
     "dispatch_b": {
       "label": "Sarah — relief / training console",
       "character": "Sarah",
@@ -137,6 +145,104 @@
       "note": "Male witness / bystander. Keep pressure without shock porn."
     }
   },
+  "trainer_lines": [
+    {
+      "id": "trainer_welcome",
+      "voice": "trainer",
+      "tags": ["calm", "friendly"],
+      "spoken": "Welcome to A07 glass. Imperfect map, real process. Own the queue, wait for cues, then launch clean.",
+      "match": ["Welcome to A07 glass", "Ocean corridor checkride"],
+      "kind": "TRAINER"
+    },
+    {
+      "id": "trainer_own_the_call",
+      "voice": "trainer",
+      "tags": ["calm", "firm"],
+      "spoken": "Own the call. Pending screams until someone takes it. Select the CFS so it moves to owned.",
+      "match": ["Own the call", "PENDING → OWNED"],
+      "kind": "TRAINER"
+    },
+    {
+      "id": "trainer_wait_cues",
+      "voice": "trainer",
+      "tags": ["calm"],
+      "spoken": "Let the story arrive. Weapons and nature become knowable around fifteen seconds. Address around twenty-five. Do not launch P1 on vibes.",
+      "match": ["Let the story arrive", "T+15s", "knowable"],
+      "kind": "TRAINER"
+    },
+    {
+      "id": "trainer_reclass",
+      "voice": "trainer",
+      "tags": ["calm", "firm"],
+      "spoken": "Reclass nature and priority. Robbery in progress is P1. Undercoding after the cues are knowable fails the ride.",
+      "match": ["Reclass nature", "ROBBERY-IP", "Undercoding"],
+      "kind": "TRAINER"
+    },
+    {
+      "id": "trainer_flags",
+      "voice": "trainer",
+      "tags": ["calm"],
+      "spoken": "Flag weapons and backup when the call needs them. House law wants depth on high risk.",
+      "match": ["Flag WEAPONS", "backup"],
+      "kind": "TRAINER"
+    },
+    {
+      "id": "trainer_verify",
+      "voice": "trainer",
+      "tags": ["calm", "firm"],
+      "spoken": "Verify before you launch. High acuity does not fly on an unverified location.",
+      "match": ["Verify before", "1400 Ocean", "location confidence"],
+      "kind": "TRAINER"
+    },
+    {
+      "id": "trainer_dispatch",
+      "voice": "trainer",
+      "tags": ["calm", "dispatch"],
+      "spoken": "Build the caption, air the safety, send two. Unit, priority, nature, location, weapons. Then key it.",
+      "match": ["Dispatch 2", "air the safety", "caption"],
+      "kind": "TRAINER"
+    },
+    {
+      "id": "trainer_readback",
+      "voice": "trainer",
+      "tags": ["calm", "firm"],
+      "spoken": "Get the readback. P1 without unit ACK in the window is a hard fail. Sim the ACKs if you need them.",
+      "match": ["readback", "unit ACK", "NO_READBACK"],
+      "kind": "TRAINER"
+    },
+    {
+      "id": "trainer_clear",
+      "voice": "trainer",
+      "tags": ["calm"],
+      "spoken": "Close clean. Units clear, disposition on, then debrief. Process over story.",
+      "match": ["Clear GOA", "debrief", "disposition"],
+      "kind": "TRAINER"
+    },
+    {
+      "id": "trainer_good_work",
+      "voice": "trainer",
+      "tags": ["calm", "happy"],
+      "spoken": "Solid work. That is how A07 runs. Hit end debrief when you are ready.",
+      "match": ["Solid work", "checkride pass", "QUALIFIED"],
+      "kind": "TRAINER"
+    },
+    {
+      "id": "trainer_hold_air",
+      "voice": "trainer",
+      "tags": ["calm", "firm"],
+      "spoken": "Emergency traffic is open. Hold routine. Protect the air.",
+      "match": ["emergency traffic", "hold the air"],
+      "kind": "TRAINER"
+    },
+    {
+      "id": "trainer_concurrency",
+      "voice": "trainer",
+      "tags": ["calm", "urgent"],
+      "spoken": "Two highs pending. Do not tunnel the cold theft. Work the board.",
+      "match": ["concurrency", "two highs", "tunnel"],
+      "kind": "TRAINER"
+    }
+  ],
   "caller_lines": [
     {
       "id": "caller_knife_ran_in",
