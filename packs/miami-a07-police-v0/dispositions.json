@@ -1,0 +1,71 @@
+{
+  "schema": "s305.dispositions.v1",
+  "packId": "miami-a07-police-v0",
+  "requiredOnClear": true,
+  "failCodeIfMissing": "FAIL_NO_DISPOSITION",
+  "dispositions": [
+    {
+      "code": "RPT",
+      "label": "Report taken",
+      "definition": "Written or electronic report completed; incident documented for records.",
+      "clearsIncident": true,
+      "requiresNarrative": true
+    },
+    {
+      "code": "GOA",
+      "label": "Gone on arrival",
+      "definition": "Subject or problem gone before unit arrival; no contact.",
+      "clearsIncident": true,
+      "requiresNarrative": false
+    },
+    {
+      "code": "UTL",
+      "label": "Unable to locate",
+      "definition": "Units unable to locate address, subject, or event after reasonable search.",
+      "clearsIncident": true,
+      "requiresNarrative": true
+    },
+    {
+      "code": "ADV",
+      "label": "Advised",
+      "definition": "Parties advised; no report or arrest; civil or informational outcome.",
+      "clearsIncident": true,
+      "requiresNarrative": false
+    },
+    {
+      "code": "ARR",
+      "label": "Arrest",
+      "definition": "One or more subjects arrested; booking path outside Phase 0 depth.",
+      "clearsIncident": true,
+      "requiresNarrative": true
+    },
+    {
+      "code": "UNF",
+      "label": "Unfounded",
+      "definition": "Investigation determined no offense or event as reported.",
+      "clearsIncident": true,
+      "requiresNarrative": true
+    },
+    {
+      "code": "CAN",
+      "label": "Cancelled",
+      "definition": "Cancelled prior to or after dispatch by complainant, supervisor, or false alarm determination.",
+      "clearsIncident": true,
+      "requiresNarrative": false
+    },
+    {
+      "code": "DUP",
+      "label": "Duplicate",
+      "definition": "Duplicate of another CFS; link required in narrative or linkedIncidentId.",
+      "clearsIncident": true,
+      "requiresNarrative": true
+    },
+    {
+      "code": "REF",
+      "label": "Referred other agency",
+      "definition": "Referred to another agency or jurisdiction (including port handoff fiction).",
+      "clearsIncident": true,
+      "requiresNarrative": true
+    }
+  ]
+}

@@ -1,0 +1,167 @@
+{
+  "schema": "s305.radio_templates.v1",
+  "packId": "miami-a07-police-v0",
+  "channelPrimary": "SE305-PRI",
+  "plainLanguage": true,
+  "readbackTimeoutMs": 45000,
+  "slotsClosedSet": [
+    "to_units",
+    "from_console",
+    "priority",
+    "nature",
+    "location",
+    "cross_street",
+    "safety",
+    "cfs_number",
+    "status",
+    "direction",
+    "description",
+    "reason",
+    "channel"
+  ],
+  "emergencyTraffic": {
+    "openTemplateId": "EMERGENCY_TRAFFIC_OPEN",
+    "clearTemplateId": "EMERGENCY_TRAFFIC_CLEAR",
+    "routineTxFailCode": "FAIL_RADIO_EMERGENCY_TRAFFIC",
+    "allowedKindsDuringHold": ["EMERGENCY_TRAFFIC_CLEAR", "STATUS_QUERY", "DISPATCH_ASSIGN"]
+  },
+  "templates": [
+    {
+      "id": "DISPATCH_ASSIGN",
+      "kind": "dispatch",
+      "required_slots": ["to_units", "priority", "nature", "location"],
+      "optional_slots": ["safety", "cross_street", "cfs_number", "description", "from_console", "channel"],
+      "caption_pattern": "{to_units}, {priority} {nature}, {location}{safety_clause}",
+      "requires_readback_when": {
+        "priorities": ["P0", "P1"],
+        "orTruthAcuityAtLeast": "P1"
+      },
+      "preempt_level": "high",
+      "missingRequiredFailCode": "FAIL_RADIO_FORMAT",
+      "safetyOmitFailCode": "FAIL_SAFETY_NOT_AIRED"
+    },
+    {
+      "id": "DISPATCH_ADD_UNIT",
+      "kind": "dispatch",
+      "required_slots": ["to_units", "cfs_number", "location"],
+      "optional_slots": ["priority", "nature", "safety", "reason", "from_console"],
+      "caption_pattern": "{to_units}, add on {cfs_number}, {location}{safety_clause}",
+      "requires_readback_when": {
+        "priorities": ["P0", "P1"]
+      },
+      "preempt_level": "high",
+      "missingRequiredFailCode": "FAIL_RADIO_FORMAT"
+    },
+    {
+      "id": "DISPATCH_CANCEL",
+      "kind": "dispatch",
+      "required_slots": ["to_units", "cfs_number", "reason"],
+      "optional_slots": ["from_console", "channel"],
+      "caption_pattern": "{to_units}, cancel {cfs_number}, {reason}",
+      "requires_readback_when": {
+        "priorities": ["P0"]
+      },
+      "preempt_level": "medium",
+      "missingRequiredFailCode": "FAIL_RADIO_FORMAT"
+    },
+    {
+      "id": "DISPATCH_REASSIGN",
+      "kind": "dispatch",
+      "required_slots": ["to_units", "cfs_number", "priority", "nature", "location"],
+      "optional_slots": ["safety", "reason", "from_console"],
+      "caption_pattern": "{to_units}, reassign {cfs_number}, {priority} {nature}, {location}{safety_clause}",
+      "requires_readback_when": {
+        "priorities": ["P0", "P1"]
+      },
+      "preempt_level": "high",
+      "missingRequiredFailCode": "FAIL_RADIO_FORMAT"
+    },
+    {
+      "id": "STATUS_QUERY",
+      "kind": "status",
+      "required_slots": ["to_units"],
+      "optional_slots": ["cfs_number", "from_console", "channel"],
+      "caption_pattern": "{to_units}, status",
+      "requires_readback_when": {},
+      "preempt_level": "low",
+      "missingRequiredFailCode": "FAIL_RADIO_FORMAT"
+    },
+    {
+      "id": "STATUS_CORRECTION",
+      "kind": "status",
+      "required_slots": ["to_units", "status"],
+      "optional_slots": ["cfs_number", "location", "from_console", "reason"],
+      "caption_pattern": "{to_units}, show you {status}{location_clause}",
+      "requires_readback_when": {},
+      "preempt_level": "medium",
+      "missingRequiredFailCode": "FAIL_RADIO_FORMAT"
+    },
+    {
+      "id": "READBACK_PROMPT",
+      "kind": "readback",
+      "required_slots": ["to_units"],
+      "optional_slots": ["cfs_number", "location", "priority", "from_console"],
+      "caption_pattern": "{to_units}, acknowledge",
+      "requires_readback_when": {
+        "always": true
+      },
+      "preempt_level": "high",
+      "missingRequiredFailCode": "FAIL_RADIO_FORMAT",
+      "timeoutFailCode": "FAIL_NO_READBACK",
+      "wrongAckFailCode": "FAIL_READBACK_WRONG"
+    },
+    {
+      "id": "EMERGENCY_TRAFFIC_OPEN",
+      "kind": "emergency",
+      "required_slots": ["channel", "reason"],
+      "optional_slots": ["to_units", "location", "from_console"],
+      "caption_pattern": "Emergency traffic, {channel}, {reason}",
+      "requires_readback_when": {},
+      "preempt_level": "full",
+      "missingRequiredFailCode": "FAIL_RADIO_FORMAT"
+    },
+    {
+      "id": "EMERGENCY_TRAFFIC_CLEAR",
+      "kind": "emergency",
+      "required_slots": ["channel"],
+      "optional_slots": ["reason", "from_console"],
+      "caption_pattern": "Emergency traffic clear, {channel}",
+      "requires_readback_when": {},
+      "preempt_level": "full",
+      "missingRequiredFailCode": "FAIL_RADIO_FORMAT"
+    },
+    {
+      "id": "BOLO",
+      "kind": "broadcast",
+      "required_slots": ["description", "direction"],
+      "optional_slots": ["location", "safety", "nature", "channel", "from_console", "cfs_number"],
+      "caption_pattern": "BOLO, {description}, last {direction}{location_clause}{safety_clause}",
+      "requires_readback_when": {},
+      "preempt_level": "medium",
+      "missingRequiredFailCode": "FAIL_RADIO_FORMAT",
+      "softIncompleteCode": "SOFT_BOLO_INCOMPLETE"
+    },
+    {
+      "id": "WELFARE_CHECK_DISPATCH",
+      "kind": "dispatch",
+      "required_slots": ["to_units", "location", "nature"],
+      "optional_slots": ["priority", "description", "cross_street", "cfs_number", "from_console"],
+      "caption_pattern": "{to_units}, {priority_or_prompt} welfare check, {location}{description_clause}",
+      "requires_readback_when": {
+        "priorities": ["P0", "P1"]
+      },
+      "preempt_level": "low",
+      "missingRequiredFailCode": "FAIL_RADIO_FORMAT"
+    },
+    {
+      "id": "GENERAL_BROADCAST",
+      "kind": "broadcast",
+      "required_slots": ["description"],
+      "optional_slots": ["channel", "from_console", "location", "reason"],
+      "caption_pattern": "All units, {description}",
+      "requires_readback_when": {},
+      "preempt_level": "low",
+      "missingRequiredFailCode": "FAIL_RADIO_FORMAT"
+    }
+  ]
+}

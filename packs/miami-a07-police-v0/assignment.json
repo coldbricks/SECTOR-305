@@ -1,0 +1,149 @@
+{
+  "schema": "s305.assignment.v1",
+  "packId": "miami-a07-police-v0",
+  "minBackupUnitsP1": 2,
+  "minBackupUnitsP0": 3,
+  "allowOosAssign": false,
+  "allowNonAssignableAssign": false,
+  "requireVerifiedOrPartialForP1": true,
+  "requireVerifiedOrPartialForP0": false,
+  "closestOnlyForbidden": true,
+  "unitTypes": [
+    {
+      "code": "patrol",
+      "label": "Patrol",
+      "description": "General duty marked unit; default responder for most natures."
+    },
+    {
+      "code": "supervisor",
+      "label": "Supervisor",
+      "description": "Sergeant or field supervisor; preferred on P0 and multi-unit violence."
+    },
+    {
+      "code": "traffic",
+      "label": "Traffic",
+      "description": "Traffic specialist; preferred on TRAFFIC-CRASH when available."
+    },
+    {
+      "code": "k9",
+      "label": "K9",
+      "description": "Canine unit; preferred on BURG-IP and armed-subject tracks when available."
+    }
+  ],
+  "scoringWeights": {
+    "zoneMatch": 40,
+    "typeFit": 30,
+    "assignable": 100,
+    "statusAvailableBonus": 25,
+    "alreadyAssignedLowerPriorityDivertCost": -35,
+    "supervisorRequiredBonus": 20,
+    "languageCapabilitySoft": 5,
+    "distanceProxyZoneHop": -10
+  },
+  "scoreNotes": "Assignment score uses type + status + zone + backup needs. Closest-green-icon alone is forbidden. Non-assignable statuses always score -infinity / hard reject.",
+  "backupRules": [
+    {
+      "id": "p0_officer_emergency",
+      "when": { "priorityIn": ["P0"] },
+      "minUnits": 3,
+      "failCode": "FAIL_NO_BACKUP",
+      "preferTypes": ["patrol", "supervisor", "k9"]
+    },
+    {
+      "id": "p1_weapons_violence",
+      "when": {
+        "priorityIn": ["P1"],
+        "anyOf": [
+          { "weaponsLikely": true },
+          { "natureIn": ["ROBBERY-IP", "ASSAULT-IP", "WEAPONS", "BURG-IP", "SHOTS-HEARD"] }
+        ]
+      },
+      "minUnits": 2,
+      "failCode": "FAIL_NO_BACKUP",
+      "preferTypes": ["patrol", "supervisor"]
+    },
+    {
+      "id": "domestic_backup",
+      "when": { "natureIn": ["DOMESTIC"] },
+      "minUnits": 2,
+      "failCode": "FAIL_NO_BACKUP",
+      "preferTypes": ["patrol", "supervisor"]
+    },
+    {
+      "id": "nature_flag_requires_backup",
+      "when": { "requiresBackup": true },
+      "minUnitsFromNature": true,
+      "failCode": "FAIL_NO_BACKUP"
+    }
+  ],
+  "typePreferences": [
+    {
+      "natureIn": ["TRAFFIC-CRASH"],
+      "preferredTypes": ["traffic", "patrol"],
+      "softFailIfPatrolWhenTrafficAvailable": "SOFT_UNIT_SUBOPTIMAL_TYPE"
+    },
+    {
+      "natureIn": ["BURG-IP", "WEAPONS"],
+      "preferredTypes": ["patrol", "k9", "supervisor"],
+      "softFailIfSuboptimal": "SOFT_UNIT_SUBOPTIMAL_TYPE"
+    },
+    {
+      "priorityIn": ["P0"],
+      "preferredTypes": ["patrol", "supervisor"],
+      "softFailIfSuboptimal": "SOFT_UNIT_SUBOPTIMAL_TYPE"
+    }
+  ],
+  "jurisdictionRules": [
+    {
+      "zoneId": "Z-OCEAN",
+      "jurisdictionId": "CITY-BEACH",
+      "assignHardFailOutside": false,
+      "softMarkCrossJurisdiction": "SOFT_MAP_OVERTRUST"
+    },
+    {
+      "zoneId": "Z-COLLINS",
+      "jurisdictionId": "CITY-BEACH",
+      "assignHardFailOutside": false
+    },
+    {
+      "zoneId": "Z-DOWNTOWN",
+      "jurisdictionId": "CITY-MIA",
+      "assignHardFailOutside": false
+    },
+    {
+      "zoneId": "Z-WYNWOOD",
+      "jurisdictionId": "CITY-MIA",
+      "assignHardFailOutside": false
+    },
+    {
+      "zoneId": "Z-PORT",
+      "jurisdictionId": "PORT",
+      "assignHardFailOutside": false,
+      "hardFailIfNoHandoffLog": "FAIL_JURISDICTION",
+      "requiresHandoffNote": true,
+      "handoffNoteFailCode": "FAIL_JURISDICTION"
+    }
+  ],
+  "assignRejects": [
+    {
+      "condition": "status_not_assignable",
+      "failCode": "FAIL_UNIT_NOT_ASSIGNABLE"
+    },
+    {
+      "condition": "unit_oos",
+      "failCode": "FAIL_UNIT_NOT_ASSIGNABLE"
+    },
+    {
+      "condition": "double_assign_conflict_same_unit_two_p0_p1",
+      "failCode": "FAIL_DOUBLE_ASSIGN_CONFLICT"
+    },
+    {
+      "condition": "required_type_impossible_and_pack_flags_hard",
+      "failCode": "FAIL_UNIT_WRONG_TYPE"
+    },
+    {
+      "condition": "divert_without_log",
+      "failCode": "FAIL_DIVERT_WITHOUT_LOG"
+    }
+  ]
+}

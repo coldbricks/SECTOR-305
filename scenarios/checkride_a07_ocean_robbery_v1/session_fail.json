@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "scenarioId": "checkride_a07_ocean_robbery_v1",
+  "packId": "miami-a07-police-v0",
+  "packVersion": "0.2.0",
+  "seed": 305001,
+  "commands": [
+    {
+      "atMs": 1000,
+      "cmd": {
+        "type": "SetPriority",
+        "incidentId": "cfs-001",
+        "priority": "P4"
+      }
+    },
+    {
+      "atMs": 2000,
+      "cmd": {
+        "type": "DispatchUnits",
+        "incidentId": "cfs-001",
+        "unitIds": [
+          "u-3a12"
+        ],
+        "radioCaption": "3A12, Priority 4 disturbance, beach area"
+      }
+    },
+    {
+      "atMs": 50000,
+      "cmd": {
+        "type": "Advance",
+        "ms": 50000
+      }
+    }
+  ]
+}

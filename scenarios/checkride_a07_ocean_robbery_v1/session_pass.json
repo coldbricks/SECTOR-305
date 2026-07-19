@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "scenarioId": "checkride_a07_ocean_robbery_v1_pass",
+  "packId": "miami-a07-police-v0",
+  "packVersion": "0.2.0",
+  "seed": 305001,
+  "commands": [
+    {
+      "atMs": 2000,
+      "cmd": {
+        "type": "VerifyLocation",
+        "incidentId": "cfs-001",
+        "confidence": "verified",
+        "location": {
+          "freeform": "1400 block Ocean Drive",
+          "block": "1400",
+          "street": "Ocean Drive",
+          "zoneId": "Z-OCEAN"
+        }
+      }
+    },
+    {
+      "atMs": 3000,
+      "cmd": {
+        "type": "SetNature",
+        "incidentId": "cfs-001",
+        "natureCode": "ROBBERY-IP",
+        "natureText": "Robbery in progress"
+      }
+    },
+    {
+      "atMs": 3500,
+      "cmd": {
+        "type": "SetPriority",
+        "incidentId": "cfs-001",
+        "priority": "P1"
+      }
+    },
+    {
+      "atMs": 4000,
+      "cmd": {
+        "type": "SetFlag",
+        "incidentId": "cfs-001",
+        "flag": "WEAPONS",
+        "value": true
+      }
+    },
+    {
+      "atMs": 4100,
+      "cmd": {
+        "type": "SetFlag",
+        "incidentId": "cfs-001",
+        "flag": "NEEDS_BACKUP",
+        "value": true
+      }
+    },
+    {
+      "atMs": 5000,
+      "cmd": {
+        "type": "DispatchUnits",
+        "incidentId": "cfs-001",
+        "unitIds": [
+          "u-3a12",
+          "u-3a14"
+        ],
+        "radioCaption": "3A12, 3A14, P1 robbery in progress, 1400 block Ocean Drive, weapon reported"
+      }
+    },
+    {
+      "atMs": 8000,
+      "cmd": {
+        "type": "UnitRadioRx",
+        "unitId": "u-3a12",
+        "incidentId": "cfs-001",
+        "caption": "3A12 copy, en route",
+        "kind": "ACK"
+      }
+    },
+    {
+      "atMs": 9000,
+      "cmd": {
+        "type": "UnitRadioRx",
+        "unitId": "u-3a14",
+        "incidentId": "cfs-001",
+        "caption": "3A14 en route",
+        "kind": "ACK"
+      }
+    },
+    {
+      "atMs": 20000,
+      "cmd": {
+        "type": "UnitRadioRx",
+        "unitId": "u-3a12",
+        "incidentId": "cfs-001",
+        "caption": "3A12 on scene",
+        "kind": "STATUS"
+      }
+    },
+    {
+      "atMs": 21000,
+      "cmd": {
+        "type": "UnitRadioRx",
+        "unitId": "u-3a14",
+        "incidentId": "cfs-001",
+        "caption": "3A14 on scene",
+        "kind": "STATUS"
+      }
+    },
+    {
+      "atMs": 40000,
+      "cmd": {
+        "type": "SetUnitStatus",
+        "unitId": "u-3a12",
+        "status": "CLR"
+      }
+    },
+    {
+      "atMs": 40100,
+      "cmd": {
+        "type": "SetUnitStatus",
+        "unitId": "u-3a12",
+        "status": "AVL"
+      }
+    },
+    {
+      "atMs": 40200,
+      "cmd": {
+        "type": "SetUnitStatus",
+        "unitId": "u-3a14",
+        "status": "CLR"
+      }
+    },
+    {
+      "atMs": 40300,
+      "cmd": {
+        "type": "SetUnitStatus",
+        "unitId": "u-3a14",
+        "status": "AVL"
+      }
+    },
+    {
+      "atMs": 41000,
+      "cmd": {
+        "type": "ClearIncident",
+        "incidentId": "cfs-001",
+        "disposition": "GOA"
+      }
+    }
+  ]
+}

@@ -1,0 +1,159 @@
+{
+  "schema": "s305.rubric_soft.v1",
+  "packId": "miami-a07-police-v0",
+  "severity": "soft",
+  "maxSoftWeight": null,
+  "notes": "Soft marks never flip checkride alone unless maxSoftWeight is set by scenario/pack override. Debrief lists all soft marks for coaching.",
+  "rules": [
+    {
+      "id": "SOFT_PRIORITY_LOW",
+      "code": "SOFT_PRIORITY_LOW",
+      "severity": "soft",
+      "domain": "PRI",
+      "weight": 3,
+      "message": "Mild undercode without weapons/IP knowable",
+      "ruleRef": "priority.soft_undercode",
+      "linkedChallenges": ["C2"]
+    },
+    {
+      "id": "SOFT_RADIO_FORMAT",
+      "code": "SOFT_RADIO_FORMAT",
+      "severity": "soft",
+      "domain": "RAD",
+      "weight": 2,
+      "message": "Missing non-critical radio elements (optional slots expected by style)",
+      "ruleRef": "radio.soft_format",
+      "linkedChallenges": ["C5"]
+    },
+    {
+      "id": "SOFT_RADIO_WORDY",
+      "code": "SOFT_RADIO_WORDY",
+      "severity": "soft",
+      "domain": "RAD",
+      "weight": 1,
+      "message": "Radio transmission excessively wordy versus plain-language brevity",
+      "ruleRef": "radio.brevity",
+      "linkedChallenges": ["C5"]
+    },
+    {
+      "id": "SOFT_SLOW_KEY",
+      "code": "SOFT_SLOW_KEY",
+      "severity": "soft",
+      "domain": "TIM",
+      "weight": 2,
+      "message": "Slow key-up / delayed first action under moderate pressure",
+      "ruleRef": "timer.soft_response",
+      "linkedChallenges": ["C6"]
+    },
+    {
+      "id": "SOFT_DOWNGRADE_WHILE_ROLLING",
+      "code": "SOFT_DOWNGRADE_WHILE_ROLLING",
+      "severity": "soft",
+      "domain": "PRI",
+      "weight": 4,
+      "message": "Priority downgraded while unit ER/OS with documented reason",
+      "ruleRef": "priority.downgrade_rolling",
+      "linkedChallenges": ["C2"]
+    },
+    {
+      "id": "SOFT_NOTE_THIN",
+      "code": "SOFT_NOTE_THIN",
+      "severity": "soft",
+      "domain": "DOC",
+      "weight": 3,
+      "message": "Narrative thin on weapons reclass or critical update",
+      "ruleRef": "cad.note_quality",
+      "linkedChallenges": ["C2"]
+    },
+    {
+      "id": "SOFT_UNIT_SUBOPTIMAL_TYPE",
+      "code": "SOFT_UNIT_SUBOPTIMAL_TYPE",
+      "severity": "soft",
+      "domain": "ASN",
+      "weight": 2,
+      "message": "Assignable unit used but preferred type available (e.g. patrol when traffic AVL)",
+      "ruleRef": "assignment.type_soft",
+      "linkedChallenges": ["C4"]
+    },
+    {
+      "id": "SOFT_STATUS_QUERY_LATE",
+      "code": "SOFT_STATUS_QUERY_LATE",
+      "severity": "soft",
+      "domain": "STA",
+      "weight": 2,
+      "message": "Status query later than expected after stale warning",
+      "ruleRef": "unit.status_query_soft",
+      "linkedChallenges": ["C3"]
+    },
+    {
+      "id": "SOFT_LANGUAGE_NO_ATTEMPT",
+      "code": "SOFT_LANGUAGE_NO_ATTEMPT",
+      "severity": "soft",
+      "domain": "DOC",
+      "weight": 3,
+      "message": "Language barrier present; no interpreter/language-line attempt logged",
+      "ruleRef": "language.attempt",
+      "linkedChallenges": ["C8"]
+    },
+    {
+      "id": "SOFT_STACK_REASON_THIN",
+      "code": "SOFT_STACK_REASON_THIN",
+      "severity": "soft",
+      "domain": "TIM",
+      "weight": 2,
+      "message": "Hold/stack allowed but reason documentation thin",
+      "ruleRef": "cfs.hold_reason_soft",
+      "linkedChallenges": ["C6"]
+    },
+    {
+      "id": "SOFT_MAP_OVERTRUST",
+      "code": "SOFT_MAP_OVERTRUST",
+      "severity": "soft",
+      "domain": "LOC",
+      "weight": 2,
+      "message": "Treated approximate map blob as precise pin",
+      "ruleRef": "location.map_trust",
+      "linkedChallenges": ["C1"]
+    },
+    {
+      "id": "SOFT_CALLBACK_NOT_LOGGED",
+      "code": "SOFT_CALLBACK_NOT_LOGGED",
+      "severity": "soft",
+      "domain": "DOC",
+      "weight": 2,
+      "message": "Callback or complainant contact not logged when expected",
+      "ruleRef": "cad.callback_log",
+      "linkedChallenges": ["C1"]
+    },
+    {
+      "id": "SOFT_BOLO_INCOMPLETE",
+      "code": "SOFT_BOLO_INCOMPLETE",
+      "severity": "soft",
+      "domain": "RAD",
+      "weight": 2,
+      "message": "BOLO missing useful optional detail (clothing, vehicle, direction quality)",
+      "ruleRef": "radio.bolo_soft",
+      "linkedChallenges": ["C9"]
+    },
+    {
+      "id": "SOFT_TIMER_WARNING_IGNORED",
+      "code": "SOFT_TIMER_WARNING_IGNORED",
+      "severity": "soft",
+      "domain": "TIM",
+      "weight": 3,
+      "message": "Acknowledged timer warning band entered without corrective action",
+      "ruleRef": "timer.warning_soft",
+      "linkedChallenges": ["C6"]
+    },
+    {
+      "id": "SOFT_CONCURRENCY_TUNNEL",
+      "code": "SOFT_CONCURRENCY_TUNNEL",
+      "severity": "soft",
+      "domain": "MUL",
+      "weight": 4,
+      "message": "Tunnel vision on one CFS while another lower-acuity also needs attention",
+      "ruleRef": "concurrency.tunnel_soft",
+      "linkedChallenges": ["C6"]
+    }
+  ]
+}
