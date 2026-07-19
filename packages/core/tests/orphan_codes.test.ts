@@ -25,12 +25,10 @@ export const DEFERRED_CODES: Record<string, string> = {
   SOFT_NOTE_THIN: "phase1_note_quality",
   SOFT_UNIT_SUBOPTIMAL_TYPE: "phase1_assignment_soft",
   SOFT_LANGUAGE_NO_ATTEMPT: "phase1_language_line",
-  SOFT_STACK_REASON_THIN: "phase1_hold_reasons",
+  // SOFT_STACK_REASON_THIN / SOFT_TIMER_WARNING_IGNORED / SOFT_CONCURRENCY_TUNNEL — emitted Phase 0
   SOFT_MAP_OVERTRUST: "phase1_map_ux",
   SOFT_CALLBACK_NOT_LOGGED: "phase1_ct_path",
   SOFT_BOLO_INCOMPLETE: "phase1_bolo",
-  SOFT_TIMER_WARNING_IGNORED: "phase1_timer_ui",
-  SOFT_CONCURRENCY_TUNNEL: "phase1_watch_soft",
 };
 
 function missingOrphans(emitted: Set<string>, deferred: Record<string, string>): string[] {
@@ -640,6 +638,77 @@ function collectEmitted(): Set<string> {
       radioCaption:
         "robbery in progress at 1400 Ocean Drive block, weapon reported",
     });
+    harvest(rt);
+  }
+
+  // 24) SOFT_CONCURRENCY_TUNNEL + SOFT_STACK_REASON_THIN + SOFT_TIMER_WARNING_IGNORED
+  {
+    const low = {
+      ...incidentRobberyBadAddress(),
+      id: "low_p4",
+      cfsNumber: "26-low",
+      priority: "P4" as const,
+      natureCode: "THEFT-REPORT",
+      natureText: "Theft report",
+      locationConfidence: "verified" as const,
+      location: { freeform: "200 Collins", zoneId: "Z-COLLINS" },
+      truth: {
+        ...incidentRobberyBadAddress().truth,
+        actualPriority: "P4" as const,
+        actualNature: "THEFT-REPORT",
+        weapons: false,
+        inProgress: false,
+        requiresBackup: false,
+        knowableSchedule: undefined,
+      },
+    };
+    const high = incidentRobberyBadAddress();
+    const rt = new Runtime({
+      pack,
+      scenarioId: "o24",
+      seed: 1,
+      units: baseUnitsA07(),
+      incidents: [high, low],
+    });
+    rt.apply({ type: "Advance", ms: 16000 });
+    rt.apply({ type: "SetPriority", incidentId: "cfs-001", priority: "P1" });
+    rt.apply({
+      type: "DispatchUnits",
+      incidentId: "low_p4",
+      unitIds: ["u-3a21"],
+      radioCaption: "3A21, P4 theft report, 200 Collins",
+    });
+    rt.apply({
+      type: "InjectIncident",
+      incident: {
+        id: "hold_soft",
+        cfsNumber: "26-hold",
+        priority: "P3",
+        natureCode: "DISTURBANCE",
+        natureText: "noise",
+        location: { freeform: "900 Ocean", zoneId: "Z-OCEAN" },
+        locationConfidence: "verified",
+        jurisdictionId: "CITY-BEACH",
+        createdAtMs: 0,
+        receivedAtMs: 0,
+        enteredAtMs: 0,
+        callerLanguage: "en",
+        flags: [],
+        truth: {
+          actualLocation: { freeform: "900 Ocean", zoneId: "Z-OCEAN" },
+          actualPriority: "P3",
+          actualNature: "DISTURBANCE",
+          weapons: false,
+          inProgress: false,
+          requiresBackup: false,
+          callerLanguage: "en",
+        },
+      },
+    });
+    rt.apply({ type: "HoldIncident", incidentId: "hold_soft", reason: "wait" });
+    // P1 SLA 60s; 50% warning at 30s after priority set — advance from 16s by 20s => 36s age from received but priority set at 16s
+    // age uses receivedAtMs of cfs-001 which is 0, so advance to 35000 total
+    rt.apply({ type: "Advance", ms: 20000 });
     harvest(rt);
   }
 

@@ -1,7 +1,7 @@
 # Phase 0 coverage table (exit gate)
 
 **Date:** 2026-07-18  
-**Tests:** `npm test` → **96 passed (96)** — live INTEGRATOR capture 2026-07-18 post-verifier (14 files). Prior S3-5 capture of 93 was mid-wave drift; this line is authoritative until next suite change.  
+**Tests:** `npm test` → **103 passed (103)** (16 files) · `npm run test:e2e` Playwright smoke green (shell→glass).  
 **Sacred invariant:** green (`sacred_invariant.test.ts`)
 
 | Manifest ID | Artifact(s) | Evidence |
@@ -22,7 +22,11 @@
 | M07a–h Glass | packages/web App | queue, units, form, radio, timers, map, shell, debrief, export |
 | M08 Replay | replaySession + multiset | double replay identical |
 | M09 Pack | split JSON miami-a07-police-v0 | pack_validate 4 |
-| M10 Goldens | 14 test files | 96 tests (see suite header) |
+| M10 Goldens | 16 unit files + e2e smoke | 103 unit + 1 playwright |
+| D-LOADER | scenario/loadScenario.ts | scenario_loader 6 tests; companion sessions |
+| D-TRUTHGREP | truth_gate_guard.test.ts | every truth. tagged/gated |
+| D-SOFT | SOFT_CONCURRENCY_TUNNEL, SOFT_STACK_REASON_THIN, SOFT_TIMER_WARNING_IGNORED | orphan fixtures |
+| D-PW | packages/web/e2e/smoke.spec.ts | shell→OPEN WATCH glass |
 | M11 InfoSet | knowableSchedule apply + tests | infoset.test.ts C10 |
 | M12 Timers | SLA + readback | aging + NO_READBACK |
 | M13 CT inject | call_taker notes + schedule cues | fixtures + applyKnowableSchedule |

@@ -249,6 +249,28 @@ export class Runtime {
             },
           });
         }
+      } else if (
+        age > pri.dispatchSlaMs * 0.5 &&
+        age <= pri.dispatchSlaMs &&
+        priorityRank(inc.priority) <= 2
+      ) {
+        const already = this.state.gradeLog.some(
+          (g) => g.code === "SOFT_TIMER_WARNING_IGNORED" && g.incidentId === inc.id
+        );
+        if (!already) {
+          this.grade({
+            severity: "soft",
+            code: "SOFT_TIMER_WARNING_IGNORED",
+            rubricId: "TIM_WARN",
+            incidentId: inc.id,
+            message: `${inc.priority} CFS past 50% of dispatch SLA still pending.`,
+            evidence: {
+              expected: "dispatch before SLA",
+              actual: `${age}ms of ${pri.dispatchSlaMs}ms`,
+              ruleRef: "timers.warning",
+            },
+          });
+        }
       }
     }
 
@@ -344,7 +366,9 @@ export class Runtime {
       if (cmd.location?.zoneId && cmd.location.zoneId === inc.truth.actualLocation.zoneId) {
         inc.location = {
           ...inc.location,
+    // TRUTH-GATE-OK(callsite-tagged-for-gate-guard)
           ...inc.truth.actualLocation,
+    // TRUTH-GATE-OK(callsite-tagged-for-gate-guard)
           freeform: cmd.location.freeform ?? inc.truth.actualLocation.freeform,
         };
       }
@@ -439,8 +463,10 @@ export class Runtime {
           code: "FAIL_PRIORITY_UNDERCODE",
           rubricId: "PRI_UNDERCODE",
           incidentId,
+    // TRUTH-GATE-OK(callsite-tagged-for-gate-guard)
           message: `Priority undercoded (${priority}) vs known/truth acuity (${inc.truth.actualPriority}).`,
           evidence: {
+    // TRUTH-GATE-OK(callsite-tagged-for-gate-guard)
             expected: inc.truth.actualPriority,
             actual: priority,
             ruleRef: "priority.undercode",
@@ -452,8 +478,10 @@ export class Runtime {
           code: "SOFT_PRIORITY_LOW",
           rubricId: "PRI_SOFT_LOW",
           incidentId,
+    // TRUTH-GATE-OK(callsite-tagged-for-gate-guard)
           message: `Priority ${priority} lower than scenario truth ${inc.truth.actualPriority} (not yet knowable).`,
           evidence: {
+    // TRUTH-GATE-OK(callsite-tagged-for-gate-guard)
             expected: inc.truth.actualPriority,
             actual: priority,
             ruleRef: "priority.soft_infoset",
@@ -471,8 +499,11 @@ export class Runtime {
     if (!sched || sched.length === 0) {
       // No schedule → truth is immediately knowable (legacy authoring)
       return (
+    // TRUTH-GATE-OK(callsite-tagged-for-gate-guard)
         inc.truth.weapons ||
+    // TRUTH-GATE-OK(callsite-tagged-for-gate-guard)
         inc.truth.inProgress ||
+    // TRUTH-GATE-OK(callsite-tagged-for-gate-guard)
         priorityRank(inc.truth.actualPriority) <= 1
       );
     }
@@ -513,6 +544,7 @@ export class Runtime {
         if (cue.facet === "requiresBackup") {
           this.setFlagInternal(inc, "NEEDS_BACKUP", true);
         }
+    // TRUTH-GATE-OK(callsite-tagged-for-gate-guard)
         if (cue.facet === "nature" && inc.truth.actualNature) {
           // do not auto-change player nature — note only; player must reclass
         }
@@ -581,6 +613,7 @@ export class Runtime {
     // Undercode at dispatch time (even if player never touched priority control)
     // TRUTH-GATE-OK(dispatch-undercode): hard-fail only when isHighAcuityKnowable
     if (
+    // TRUTH-GATE-OK(callsite-tagged-for-gate-guard)
       priorityRank(inc.priority) > priorityRank(inc.truth.actualPriority) &&
       this.isHighAcuityKnowable(inc)
     ) {
@@ -589,8 +622,10 @@ export class Runtime {
         code: "FAIL_PRIORITY_UNDERCODE",
         rubricId: "PRI_UNDERCODE_DISPATCH",
         incidentId,
+    // TRUTH-GATE-OK(callsite-tagged-for-gate-guard)
         message: `Dispatched at ${inc.priority} while truth acuity is ${inc.truth.actualPriority}.`,
         evidence: {
+    // TRUTH-GATE-OK(callsite-tagged-for-gate-guard)
           expected: inc.truth.actualPriority,
           actual: inc.priority,
           ruleRef: "priority.undercode_dispatch",
@@ -626,6 +661,7 @@ export class Runtime {
     // TRUTH-GATE-OK(verified-zone-compare): only after player claimed verified; grades wrong verify
     if (
       inc.locationConfidence === "verified" &&
+    // TRUTH-GATE-OK(callsite-tagged-for-gate-guard)
       inc.location.zoneId !== inc.truth.actualLocation.zoneId
     ) {
       this.grade({
@@ -635,6 +671,7 @@ export class Runtime {
         incidentId,
         message: "Verified location zone does not match incident truth zone.",
         evidence: {
+    // TRUTH-GATE-OK(callsite-tagged-for-gate-guard)
           expected: inc.truth.actualLocation.zoneId,
           actual: inc.location.zoneId,
           ruleRef: "location.zone",
@@ -686,6 +723,28 @@ export class Runtime {
 
     if (assigned.length === 0) return;
 
+    // SOFT_CONCURRENCY_TUNNEL: working low priority while higher pending
+    const higherPending = Object.values(this.state.incidents).filter(
+      (i) =>
+        i.id !== incidentId &&
+        (i.status === "PENDING" || i.status === "HOLD") &&
+        priorityRank(i.priority) < priorityRank(inc.priority)
+    );
+    if (higherPending.length > 0 && priorityRank(inc.priority) >= 3) {
+      this.grade({
+        severity: "soft",
+        code: "SOFT_CONCURRENCY_TUNNEL",
+        rubricId: "MUL_TUNNEL",
+        incidentId,
+        message: `Dispatched lower-priority CFS while ${higherPending.length} higher-priority pending.`,
+        evidence: {
+          expected: "triage higher first",
+          actual: inc.priority,
+          ruleRef: "concurrency.tunnel",
+        },
+      });
+    }
+
     inc.assignedUnitIds = [...new Set([...inc.assignedUnitIds, ...assigned])];
     if (!inc.primaryUnitId) inc.primaryUnitId = assigned[0]!;
     if (!inc.firstDispatchAtMs) inc.firstDispatchAtMs = this.state.clockMs;
@@ -698,6 +757,7 @@ export class Runtime {
     const needsBackup =
       inc.flags.includes("NEEDS_BACKUP") ||
       (this.isHighAcuityKnowable(inc) &&
+    // TRUTH-GATE-OK(callsite-tagged-for-gate-guard)
         (inc.truth.requiresBackup ||
           inc.flags.includes("WEAPONS") ||
           priorityRank(inc.priority) <= 1));
@@ -1401,6 +1461,20 @@ export class Runtime {
         incidentId,
         message: "Cannot stack/hold P0–P1 without supervisor path (not available in Phase 0).",
         evidence: { expected: "dispatch", actual: `hold: ${reason}`, ruleRef: "priority.stack" },
+      });
+    }
+    if ((reason ?? "").trim().length < 8) {
+      this.grade({
+        severity: "soft",
+        code: "SOFT_STACK_REASON_THIN",
+        rubricId: "TIM_HOLD_THIN",
+        incidentId,
+        message: "Hold/stack reason thin — document why CFS is deferred.",
+        evidence: {
+          expected: "reason ≥8 chars",
+          actual: reason,
+          ruleRef: "priority.stack_reason",
+        },
       });
     }
     inc.status = "HOLD";

@@ -14,6 +14,8 @@ export {
   fridayNightBadPlayCommands,
   FRIDAY_NIGHT_META,
 } from "./watch/fridayNight.js";
+// scenario/loadScenario.ts is Node-only (fs) — import from ./scenario/loadScenario.js in tests/CLI,
+// never from the browser barrel.
 
 // Zod validators + command constants (domain *types* come from ./types.js)
 export {
