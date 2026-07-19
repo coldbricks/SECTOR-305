@@ -1,7 +1,7 @@
 # Phase 0 coverage table (exit gate)
 
 **Date:** 2026-07-18  
-**Tests:** `npm test` → **93** suite tests (live AGENT-S3-5 capture; raw output in `docs/waves/staging/S3_5.md`)  
+**Tests:** `npm test` → **96 passed (96)** — live INTEGRATOR capture 2026-07-18 post-verifier (14 files). Prior S3-5 capture of 93 was mid-wave drift; this line is authoritative until next suite change.  
 **Sacred invariant:** green (`sacred_invariant.test.ts`)
 
 | Manifest ID | Artifact(s) | Evidence |
@@ -22,7 +22,7 @@
 | M07a–h Glass | packages/web App | queue, units, form, radio, timers, map, shell, debrief, export |
 | M08 Replay | replaySession + multiset | double replay identical |
 | M09 Pack | split JSON miami-a07-police-v0 | pack_validate 4 |
-| M10 Goldens | 10 test files | 75 tests |
+| M10 Goldens | 14 test files | 96 tests (see suite header) |
 | M11 InfoSet | knowableSchedule apply + tests | infoset.test.ts C10 |
 | M12 Timers | SLA + readback | aging + NO_READBACK |
 | M13 CT inject | call_taker notes + schedule cues | fixtures + applyKnowableSchedule |
