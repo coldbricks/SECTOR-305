@@ -187,6 +187,7 @@ export function App() {
   const [ownedIds, setOwnedIds] = useState<Set<string>>(() => new Set(["cfs-001"]));
   const [watchChannel, setWatchChannel] = useState<RrChannel | null>(null);
   const [mapDockW, setMapDockW] = useState(380);
+  const [mapDockH, setMapDockH] = useState<number | null>(null);
   const [fireLog, setFireLog] = useState<FireToneEvent[]>([]);
   const [heloSeen, setHeloSeen] = useState(false);
   const [trafficSeen, setTrafficSeen] = useState(false);
@@ -959,15 +960,33 @@ export function App() {
         </div>
 
         <div
-          className="panel map-panel"
+          className={`panel map-panel ${mapDockH != null ? "map-panel-custom-h" : ""}`}
           style={{
-            minWidth: mapDockW,
+            // Outer window chrome — must match MapWorkspace dock size exactly
             width: mapDockW,
-            maxWidth: "100%",
+            minWidth: mapDockW,
+            maxWidth: mapDockW,
             flex: `0 0 ${mapDockW}px`,
+            ...(mapDockH != null
+              ? {
+                  height: mapDockH,
+                  minHeight: mapDockH,
+                  maxHeight: mapDockH,
+                  alignSelf: "start",
+                }
+              : {
+                  height: "100%",
+                  minHeight: 0,
+                  maxHeight: "none",
+                }),
           }}
         >
-          <MapWorkspace onDockWidth={setMapDockW}>
+          <MapWorkspace
+            onDockSize={(s) => {
+              setMapDockW(s.width);
+              setMapDockH(s.height);
+            }}
+          >
             <SectorMap
               incidents={incidents}
               units={units}

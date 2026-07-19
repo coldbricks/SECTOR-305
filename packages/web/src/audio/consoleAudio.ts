@@ -45,11 +45,8 @@ class ConsoleAudio {
   private masterGain = 0.42;
   private unlocked = false;
   private ambientOn = false;
-  private ambientNodes: {
-    src: AudioBufferSourceNode;
-    gain: GainNode;
-    filter: BiquadFilterNode;
-  } | null = null;
+  /** Intermittent squelch-break timer (not continuous hiss). */
+  private ambientTimer: number | null = null;
   private wantedAmbient = false;
   private notifVol = 0.52;
   private rogerFiles: string[] = [];
@@ -107,7 +104,10 @@ class ConsoleAudio {
     this.unlocked = ctx.state === "running";
   }
 
-  /** Low open-squelch hiss while the watch console is live. */
+  /**
+   * Quiet open-channel bed while the watch console is live.
+   * Squelch *breaks* only — short static tails, not continuous shhhhh.
+   */
   startAmbient() {
     this.wantedAmbient = true;
     if (this.muted || this.ambientOn) return;
@@ -236,57 +236,67 @@ class ConsoleAudio {
 
   private startAmbientNow(ctx: AudioContext) {
     if (this.ambientOn) return;
-    // looped filtered noise — open channel feel
-    const buf = noiseBuffer(ctx, 2);
-    const src = ctx.createBufferSource();
-    src.buffer = buf;
-    src.loop = true;
-    const filter = ctx.createBiquadFilter();
-    filter.type = "bandpass";
-    filter.frequency.value = 1400;
-    filter.Q.value = 0.55;
-    const gain = ctx.createGain();
-    gain.gain.value = 0.0001;
-    src.connect(filter);
-    filter.connect(gain);
-    gain.connect(ctx.destination);
-    const t = ctx.currentTime;
-    gain.gain.exponentialRampToValueAtTime(0.018 * this.masterGain, t + 0.8);
-    src.start();
-    this.ambientNodes = { src, gain, filter };
     this.ambientOn = true;
+    // first break after a short settle — not a wall of hiss
+    this.scheduleSquelchBreak(ctx, 900 + Math.random() * 1400);
   }
 
-  private stopAmbientInternal() {
-    if (!this.ambientNodes) {
-      this.ambientOn = false;
-      return;
+  private scheduleSquelchBreak(ctx: AudioContext, delayMs: number) {
+    if (this.ambientTimer != null) {
+      window.clearTimeout(this.ambientTimer);
+      this.ambientTimer = null;
     }
-    const { src, gain } = this.ambientNodes;
-    try {
-      const ctx = this.ensureCtx();
-      const t = ctx.currentTime;
-      gain.gain.cancelScheduledValues(t);
-      gain.gain.setValueAtTime(Math.max(0.0001, gain.gain.value), t);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.25);
-      window.setTimeout(() => {
-        try {
-          src.stop();
-          src.disconnect();
-          gain.disconnect();
-        } catch {
-          /* ignore */
-        }
-      }, 300);
-    } catch {
+    if (!this.ambientOn || !this.wantedAmbient || this.muted) return;
+    this.ambientTimer = window.setTimeout(() => {
+      this.ambientTimer = null;
+      if (!this.ambientOn || !this.wantedAmbient || this.muted) return;
       try {
-        src.stop();
+        if (ctx.state === "suspended") {
+          void ctx.resume().then(() => {
+            if (this.ambientOn && this.wantedAmbient && !this.muted) {
+              this.fireSquelchBreak(ctx);
+            }
+          });
+        } else {
+          this.fireSquelchBreak(ctx);
+        }
       } catch {
         /* ignore */
       }
+      // long quiet between breaks — channel mostly closed
+      const gap = 4500 + Math.random() * 11000;
+      this.scheduleSquelchBreak(ctx, gap);
+    }, delayMs);
+  }
+
+  /** One open-squelch tail: brief static + optional second tick. */
+  private fireSquelchBreak(ctx: AudioContext) {
+    const t = ctx.currentTime;
+    const out = this.master(ctx, t);
+    // primary break — short (80–220ms), not a continuous bed
+    const dur = 0.08 + Math.random() * 0.14;
+    const peak = 0.028 * this.masterGain * (0.75 + Math.random() * 0.5);
+    this.crackleBurst(ctx, out, t, dur, peak);
+    // occasional double-break (tail after tail)
+    if (Math.random() < 0.35) {
+      const gap = 0.12 + Math.random() * 0.22;
+      const dur2 = 0.05 + Math.random() * 0.09;
+      this.crackleBurst(
+        ctx,
+        out,
+        t + gap,
+        dur2,
+        peak * (0.45 + Math.random() * 0.35)
+      );
     }
-    this.ambientNodes = null;
+  }
+
+  private stopAmbientInternal() {
     this.ambientOn = false;
+    if (this.ambientTimer != null) {
+      window.clearTimeout(this.ambientTimer);
+      this.ambientTimer = null;
+    }
   }
 
   private ensureCtx(): AudioContext {

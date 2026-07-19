@@ -2557,8 +2557,28 @@ button.danger {
   flex-direction: column;
   min-height: 0;
   background: #04060a;
-  /* dock width driven by MapWorkspace */
-  transition: min-width 0.05s linear;
+  /* Outer window size driven by MapWorkspace dock W×H (inline styles) */
+  box-sizing: border-box;
+}
+
+/* Custom height: outer window grows and can pull down over the bottom rail */
+.map-panel.map-panel-custom-h {
+  overflow: visible;
+  z-index: 12;
+  box-shadow:
+    0 0 0 1px rgba(56, 190, 235, 0.28),
+    0 14px 36px rgba(0, 0, 0, 0.65);
+}
+
+.map-panel.map-panel-custom-h .map-workspace {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: none !important;
+}
+
+/* Let the plate paint over the radio rail when pulled down */
+.console-grid.dense {
+  overflow: visible;
 }
 
 /* ─── Map workspace: resize · pop-out · look ─── */
@@ -2579,6 +2599,10 @@ button.danger {
   position: relative;
   background: #04060a;
   filter: brightness(var(--map-brightness));
+  box-sizing: border-box;
+  /* Visible window chrome */
+  border: 1px solid rgba(var(--map-accent-rgb), 0.22);
+  border-radius: 2px;
 }
 
 .map-workspace.mode-float,
@@ -2852,6 +2876,96 @@ button.danger {
   bottom: 0;
   height: 6px;
   cursor: ns-resize;
+}
+
+.mw-handle.s.dock {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 12px;
+  z-index: 9;
+  cursor: ns-resize;
+  background: linear-gradient(
+    0deg,
+    rgba(var(--map-accent-rgb), 0.28),
+    transparent 70%
+  );
+}
+
+.mw-handle.s.dock:hover,
+.mw-handle.s.dock:active {
+  background: linear-gradient(
+    0deg,
+    rgba(var(--map-accent-rgb), 0.55),
+    transparent 75%
+  );
+}
+
+.mw-handle.e.dock {
+  z-index: 9;
+  width: 10px;
+  cursor: ew-resize;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(var(--map-accent-rgb), 0.22)
+  );
+}
+
+.mw-handle.e.dock:hover {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(var(--map-accent-rgb), 0.5)
+  );
+}
+
+.mw-handle.se.dock {
+  width: 18px;
+  height: 18px;
+  z-index: 10;
+  cursor: nwse-resize;
+  background: linear-gradient(
+    135deg,
+    transparent 42%,
+    rgba(var(--map-accent-rgb), 0.65) 42%
+  );
+}
+
+.mw-dims {
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  color: var(--muted, #7a828e);
+  opacity: 0.85;
+  margin-left: 0.35rem;
+}
+
+.mw-size-row {
+  margin-top: 0.35rem;
+}
+
+.mw-size-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.mw-size-fields label {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 9px;
+  color: var(--muted, #7a828e);
+}
+
+.mw-size-fields input[type="number"] {
+  width: 4.2rem;
+  padding: 2px 4px;
+  font-size: 10px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(var(--map-accent-rgb, 56, 190, 235), 0.25);
+  color: var(--text, #e8edf2);
 }
 
 /* ─── Tactical sector plate ─── */

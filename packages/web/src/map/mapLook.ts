@@ -24,8 +24,13 @@ export type MapLook = {
 
 export type MapWorkspacePrefs = {
   mode: MapMode;
-  /** Docked column flex / min width px */
+  /** Docked column width px */
   dockWidth: number;
+  /**
+   * Docked plate height px. `null` = fill the grid cell (auto).
+   * Custom height lets the plate pull down over the bottom rail.
+   */
+  dockHeight: number | null;
   float: { x: number; y: number; w: number; h: number };
   look: MapLook;
   lookOpen: boolean;
@@ -96,21 +101,47 @@ export const DEFAULT_LOOK: MapLook = {
 export const DEFAULT_WORKSPACE: MapWorkspacePrefs = {
   mode: "docked",
   dockWidth: 380,
+  dockHeight: null,
   float: { x: 80, y: 72, w: 720, h: 520 },
   look: DEFAULT_LOOK,
   lookOpen: false,
 };
 
+/** Docked plate clamps */
+export const DOCK_W_MIN = 260;
+export const DOCK_W_MAX = 960;
+export const DOCK_H_MIN = 220;
+export const DOCK_H_MAX = 900;
+
 const KEY = "s305.map.workspace";
+
+function clampDockW(n: number): number {
+  return Math.min(DOCK_W_MAX, Math.max(DOCK_W_MIN, Math.round(n)));
+}
+
+function clampDockH(n: number): number {
+  return Math.min(DOCK_H_MAX, Math.max(DOCK_H_MIN, Math.round(n)));
+}
 
 export function loadMapWorkspace(): MapWorkspacePrefs {
   try {
     const raw = localStorage.getItem(KEY);
     if (!raw) return { ...DEFAULT_WORKSPACE, look: { ...DEFAULT_LOOK } };
     const j = JSON.parse(raw) as Partial<MapWorkspacePrefs>;
+    const dockHeight =
+      j.dockHeight === null || j.dockHeight === undefined
+        ? null
+        : typeof j.dockHeight === "number" && Number.isFinite(j.dockHeight)
+          ? clampDockH(j.dockHeight)
+          : null;
     return {
       ...DEFAULT_WORKSPACE,
       ...j,
+      dockWidth:
+        typeof j.dockWidth === "number" && Number.isFinite(j.dockWidth)
+          ? clampDockW(j.dockWidth)
+          : DEFAULT_WORKSPACE.dockWidth,
+      dockHeight,
       look: { ...DEFAULT_LOOK, ...(j.look ?? {}) },
       float: { ...DEFAULT_WORKSPACE.float, ...(j.float ?? {}) },
     };
@@ -118,6 +149,8 @@ export function loadMapWorkspace(): MapWorkspacePrefs {
     return { ...DEFAULT_WORKSPACE, look: { ...DEFAULT_LOOK } };
   }
 }
+
+export { clampDockW, clampDockH };
 
 export function saveMapWorkspace(p: MapWorkspacePrefs) {
   try {
