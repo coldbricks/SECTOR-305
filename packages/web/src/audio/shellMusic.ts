@@ -1,0 +1,393 @@
+/**
+ * Intro shell theme — full song player for the prestige menu.
+ *
+ * Drop track at:
+ *   packages/web/public/audio/shell-theme.mp3  (preferred)
+ *
+ * Full song (not a tiny loop): play once by default, optional loop.
+ * Analyser drives the listening-deck visualizer.
+ */
+
+const CANDIDATES = [
+  "/audio/shell-theme.mp3", // 192 kbps preferred (full song)
+  "/audio/shell-theme.ogg",
+  "/audio/shell-theme.wav",
+  "/audio/shell-theme.m4a",
+];
+
+const MUSIC_MUTE_KEY = "s305.music.muted";
+const LOOP_KEY = "s305.music.loop";
+
+export type ShellMusicMeta = {
+  title: string;
+  artist: string;
+  credit: string;
+  note: string;
+};
+
+/** Liner notes — David Lombardo on guitar. */
+export const SHELL_TRACK_META: ShellMusicMeta = {
+  title: "Dispatch in Miami",
+  artist: "David Lombardo",
+  credit: "Lead guitar — David Lombardo",
+  note: "Full title track for the prestige shell. Sit with it. The watch can wait.",
+};
+
+export type ShellMusicSnapshot = {
+  ready: boolean;
+  playing: boolean;
+  current: number;
+  duration: number;
+  volume: number;
+  loop: boolean;
+  muted: boolean;
+  ended: boolean;
+};
+
+type Listener = () => void;
+
+class ShellMusic {
+  private el: HTMLAudioElement | null = null;
+  private resolvedUrl: string | null | undefined = undefined;
+  private wanted = false;
+  private musicMuted = false;
+  private masterMuted = false;
+  private volume = 0.78;
+  private loop = false;
+  private ended = false;
+  private listeners = new Set<Listener>();
+
+  private audioCtx: AudioContext | null = null;
+  private analyser: AnalyserNode | null = null;
+  private source: MediaElementAudioSourceNode | null = null;
+  private graphReady = false;
+  /** Prefer element output until graph is safely wired. */
+  private useGraph = false;
+
+  constructor() {
+    try {
+      // Default: music ON for title splash (don't inherit a stale mute)
+      this.musicMuted = localStorage.getItem(MUSIC_MUTE_KEY) === "1";
+      this.loop = localStorage.getItem(LOOP_KEY) === "1";
+    } catch {
+      /* ignore */
+    }
+  }
+
+  /** Force music unmuted for title sequence. */
+  forceUnmute() {
+    this.musicMuted = false;
+    this.masterMuted = false;
+    try {
+      localStorage.setItem(MUSIC_MUTE_KEY, "0");
+    } catch {
+      /* ignore */
+    }
+    this.emit();
+  }
+
+  subscribe(fn: Listener): () => void {
+    this.listeners.add(fn);
+    return () => this.listeners.delete(fn);
+  }
+
+  private emit() {
+    for (const fn of this.listeners) fn();
+  }
+
+  isMusicMuted(): boolean {
+    return this.musicMuted;
+  }
+
+  getMeta(): ShellMusicMeta {
+    return SHELL_TRACK_META;
+  }
+
+  snapshot(): ShellMusicSnapshot {
+    const a = this.el;
+    return {
+      ready: !!this.resolvedUrl,
+      playing: !!(a && !a.paused && !a.ended),
+      current: a?.currentTime ?? 0,
+      duration: Number.isFinite(a?.duration) ? a!.duration : 0,
+      volume: this.volume,
+      loop: this.loop,
+      muted: this.musicMuted || this.masterMuted,
+      ended: this.ended || !!(a?.ended),
+    };
+  }
+
+  setMasterMuted(m: boolean) {
+    this.masterMuted = m;
+    this.syncPlayback();
+    this.emit();
+  }
+
+  setMusicMuted(m: boolean) {
+    this.musicMuted = m;
+    try {
+      localStorage.setItem(MUSIC_MUTE_KEY, m ? "1" : "0");
+    } catch {
+      /* ignore */
+    }
+    this.syncPlayback();
+    this.emit();
+  }
+
+  toggleMusicMuted(): boolean {
+    this.setMusicMuted(!this.musicMuted);
+    return this.musicMuted;
+  }
+
+  setLoop(loop: boolean) {
+    this.loop = loop;
+    if (this.el) this.el.loop = loop;
+    try {
+      localStorage.setItem(LOOP_KEY, loop ? "1" : "0");
+    } catch {
+      /* ignore */
+    }
+    this.emit();
+  }
+
+  setVolume(v: number) {
+    this.volume = Math.min(1, Math.max(0, v));
+    if (this.el && !this.masterMuted && !this.musicMuted) {
+      this.el.volume = this.volume;
+    }
+    this.emit();
+  }
+
+  async enable() {
+    this.wanted = true;
+    this.ended = false;
+    await this.ensureResolved();
+    this.syncPlayback();
+    this.emit();
+  }
+
+  disable() {
+    this.disableSlow(1.1);
+  }
+
+  /** Long cinematic fade when leaving splash (BEGIN). */
+  disableSlow(seconds = 4.5) {
+    this.wanted = false;
+    this.fadeOutAndPause(seconds);
+    this.emit();
+  }
+
+  hasTrack(): boolean {
+    return !!this.resolvedUrl;
+  }
+
+  async play(): Promise<boolean> {
+    this.wanted = true;
+    this.ended = false;
+    this.forceUnmute();
+    await this.ensureResolved();
+    if (!this.resolvedUrl) {
+      this.emit();
+      return false;
+    }
+    const a = this.ensureEl(this.resolvedUrl);
+    // Play through the element first so audio is guaranteed audible;
+    // wire analyser only after play succeeds (optional).
+    a.muted = false;
+    a.volume = this.volume;
+    try {
+      await a.play();
+      this.wireGraph(a);
+      this.emit();
+      return true;
+    } catch (err) {
+      console.warn("[shellMusic] play blocked", err);
+      this.emit();
+      return false;
+    }
+  }
+
+  pause() {
+    this.el?.pause();
+    this.emit();
+  }
+
+  togglePlay(): void {
+    if (this.el && !this.el.paused) this.pause();
+    else void this.play();
+  }
+
+  restart() {
+    if (!this.el) {
+      void this.play();
+      return;
+    }
+    this.ended = false;
+    this.el.currentTime = 0;
+    void this.play();
+  }
+
+  seek(seconds: number) {
+    if (!this.el || !Number.isFinite(this.el.duration)) return;
+    this.el.currentTime = Math.min(
+      this.el.duration,
+      Math.max(0, seconds)
+    );
+    this.ended = false;
+    this.emit();
+  }
+
+  /** Frequency data for visualizer. */
+  getSpectrum(out: Uint8Array): boolean {
+    if (!this.analyser) return false;
+    // TS DOM lib is picky about ArrayBuffer vs ArrayBufferLike
+    this.analyser.getByteFrequencyData(out as unknown as Uint8Array<ArrayBuffer>);
+    return true;
+  }
+
+  getAnalyser(): AnalyserNode | null {
+    return this.analyser;
+  }
+
+  private wireGraph(a: HTMLAudioElement) {
+    if (this.graphReady || !this.useGraph) return;
+    try {
+      const AC =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext })
+          .webkitAudioContext;
+      if (!this.audioCtx) this.audioCtx = new AC();
+      if (this.audioCtx.state === "suspended") void this.audioCtx.resume();
+      // One MediaElementSource per element, ever — only if we opt into graph
+      if (!this.source) {
+        this.source = this.audioCtx.createMediaElementSource(a);
+        this.analyser = this.audioCtx.createAnalyser();
+        this.analyser.fftSize = 256;
+        this.analyser.smoothingTimeConstant = 0.82;
+        this.source.connect(this.analyser);
+        this.analyser.connect(this.audioCtx.destination);
+      }
+      this.graphReady = true;
+    } catch {
+      /* keep element path only */
+    }
+  }
+
+  private async ensureResolved(): Promise<string | null> {
+    if (this.resolvedUrl !== undefined) return this.resolvedUrl;
+    for (const url of CANDIDATES) {
+      try {
+        const res = await fetch(url, { method: "HEAD", cache: "no-cache" });
+        if (res.ok) {
+          this.resolvedUrl = url;
+          return url;
+        }
+      } catch {
+        /* try next */
+      }
+    }
+    for (const url of CANDIDATES) {
+      const ok = await this.probeAudio(url);
+      if (ok) {
+        this.resolvedUrl = url;
+        return url;
+      }
+    }
+    this.resolvedUrl = null;
+    return null;
+  }
+
+  private probeAudio(url: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      const a = new Audio();
+      a.preload = "metadata";
+      let settled = false;
+      const done = (v: boolean) => {
+        if (settled) return;
+        settled = true;
+        a.removeAttribute("src");
+        a.load();
+        resolve(v);
+      };
+      a.addEventListener("loadedmetadata", () => done(true), { once: true });
+      a.addEventListener("error", () => done(false), { once: true });
+      a.src = url;
+      window.setTimeout(() => done(false), 2500);
+    });
+  }
+
+  private ensureEl(url: string): HTMLAudioElement {
+    if (this.el) {
+      const src = this.el.currentSrc || this.el.src;
+      if (src.includes("shell-theme")) {
+        this.el.loop = this.loop;
+        return this.el;
+      }
+      this.el.pause();
+      this.el = null;
+      this.graphReady = false;
+      this.source = null;
+      this.analyser = null;
+    }
+    const a = new Audio(url);
+    a.loop = this.loop;
+    a.preload = "auto";
+    a.volume = 0;
+    a.addEventListener("timeupdate", () => this.emit());
+    a.addEventListener("ended", () => {
+      this.ended = true;
+      this.emit();
+    });
+    a.addEventListener("play", () => this.emit());
+    a.addEventListener("pause", () => this.emit());
+    a.addEventListener("loadedmetadata", () => this.emit());
+    this.el = a;
+    return a;
+  }
+
+  private syncPlayback() {
+    if (!this.wanted || this.masterMuted || this.musicMuted || !this.resolvedUrl) {
+      this.fadeOutAndPause(0.35);
+      this.emit();
+      return;
+    }
+    void this.play();
+  }
+
+  private fadeTo(target: number, seconds: number) {
+    const a = this.el;
+    if (!a) return;
+    const start = a.volume;
+    const t0 = performance.now();
+    const ms = Math.max(50, seconds * 1000);
+    const step = (now: number) => {
+      if (!this.el) return;
+      const u = Math.min(1, (now - t0) / ms);
+      this.el.volume = start + (target - start) * u;
+      if (u < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  private fadeOutAndPause(seconds: number) {
+    const a = this.el;
+    if (!a) return;
+    const start = a.volume;
+    if (start < 0.01) {
+      a.pause();
+      return;
+    }
+    const t0 = performance.now();
+    const ms = Math.max(50, seconds * 1000);
+    const step = (now: number) => {
+      if (!this.el) return;
+      const u = Math.min(1, (now - t0) / ms);
+      this.el.volume = start * (1 - u);
+      if (u < 1) requestAnimationFrame(step);
+      else this.el.pause();
+    };
+    requestAnimationFrame(step);
+  }
+}
+
+export const shellMusic = new ShellMusic();

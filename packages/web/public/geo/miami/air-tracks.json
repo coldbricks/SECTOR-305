@@ -1,0 +1,61 @@
+{
+  "id": "se305-air-tracks-v0",
+  "disclaimer": "Fictional training air picture for SECTOR 305. Not live ATC/ADS-B.",
+  "tracks": [
+    {
+      "id": "ars-1",
+      "callsign": "AIR RESCUE 1",
+      "kind": "helo",
+      "agency": "MDFR",
+      "status": "STANDBY",
+      "x": 38,
+      "y": 48,
+      "altFt": 0,
+      "note": "MIA pad · ARS standby"
+    },
+    {
+      "id": "ars-2",
+      "callsign": "AIR RESCUE 2",
+      "kind": "helo",
+      "agency": "MDFR",
+      "status": "AVL",
+      "x": 52,
+      "y": 22,
+      "altFt": 800,
+      "note": "North patrol sector · helo"
+    },
+    {
+      "id": "pd-air-1",
+      "callsign": "AIR-1",
+      "kind": "helo",
+      "agency": "S305-PD",
+      "status": "OS",
+      "x": 78,
+      "y": 28,
+      "altFt": 600,
+      "note": "Ocean corridor overwatch (last-known)"
+    },
+    {
+      "id": "port-helo",
+      "callsign": "MARINE AIR",
+      "kind": "helo",
+      "agency": "PORT",
+      "status": "STANDBY",
+      "x": 18,
+      "y": 78,
+      "altFt": 0,
+      "note": "Port edge pad"
+    },
+    {
+      "id": "fw-mia",
+      "callsign": "MIA DEP",
+      "kind": "fixed",
+      "agency": "ATC-FICT",
+      "status": "TRANSIT",
+      "x": 34,
+      "y": 55,
+      "altFt": 3000,
+      "note": "Departure corridor whisper (not ATC)"
+    }
+  ]
+}

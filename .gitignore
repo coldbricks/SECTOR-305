@@ -12,3 +12,5 @@ packages/core/dist/
 test-results/
 playwright-report/
 
+# Prefer mp3 in-repo; source wav stays local
+packages/web/public/audio/shell-theme.wav

@@ -1,0 +1,113 @@
+{
+  "id": "se305-ems-board-v0",
+  "disclaimer": "Training fiction. Hospital MEDCOM tags from public scanner DB flavor (ctid 328). Not live diversion or CAD.",
+  "agency": "City of Miami Fire-Rescue · EMS / Rescue",
+  "rescues": [
+    { "id": "r-1", "callsign": "Rescue 1", "station": "FS-1", "zoneId": "Z-DOWNTOWN", "capability": ["ALS", "TRAUMA"] },
+    { "id": "r-2", "callsign": "Rescue 2", "station": "FS-2", "zoneId": "Z-WYNWOOD", "capability": ["ALS"] },
+    { "id": "r-3", "callsign": "Rescue 3", "station": "FS-3", "zoneId": "Z-DOWNTOWN", "capability": ["ALS"] },
+    { "id": "r-4", "callsign": "Rescue 4", "station": "FS-4", "zoneId": "Z-DOWNTOWN", "capability": ["ALS", "PEDS"] },
+    { "id": "r-5", "callsign": "Rescue 5", "station": "FS-5", "zoneId": "Z-WYNWOOD", "capability": ["ALS"] },
+    { "id": "r-7", "callsign": "Rescue 7", "station": "FS-7", "zoneId": "Z-PORT", "capability": ["ALS"] },
+    { "id": "r-9", "callsign": "Rescue 9", "station": "FS-9", "zoneId": "Z-COLLINS", "capability": ["ALS"] },
+    { "id": "r-15", "callsign": "Rescue 15", "station": "FS-15", "zoneId": "Z-PORT", "capability": ["ALS", "MARINE"] },
+    { "id": "r-21", "callsign": "Rescue 21", "station": "FS-1", "zoneId": "Z-DOWNTOWN", "capability": ["ALS"] },
+    { "id": "r-22", "callsign": "Rescue 22", "station": "FS-2", "zoneId": "Z-WYNWOOD", "capability": ["BLS"] }
+  ],
+  "airRescue": [
+    { "id": "ars-1", "callsign": "AIR RESCUE 1", "pad": "MIA", "status": "STANDBY" },
+    { "id": "ars-2", "callsign": "AIR RESCUE 2", "pad": "NORTH", "status": "AVL" }
+  ],
+  "hospitals": [
+    {
+      "id": "jmh",
+      "name": "Jackson Memorial",
+      "alpha": "EMS-to-Jacks",
+      "freqMHz": 463.0875,
+      "tone": "162.2 PL",
+      "level": "Level I",
+      "divert": false
+    },
+    {
+      "id": "j-north",
+      "name": "Jackson North",
+      "alpha": "EMS-to-Jacks",
+      "freqMHz": 463.1375,
+      "tone": "114.8 PL",
+      "level": "ED",
+      "divert": false
+    },
+    {
+      "id": "j-south",
+      "name": "Jackson South",
+      "alpha": "EMS-to-Jacks",
+      "freqMHz": 463.0,
+      "tone": "173.8 PL",
+      "level": "ED",
+      "divert": false
+    },
+    {
+      "id": "mount-sinai",
+      "name": "Mount Sinai",
+      "alpha": "EMS-to-Mount",
+      "freqMHz": 463.0625,
+      "tone": "127.3 PL",
+      "level": "ED",
+      "divert": false
+    },
+    {
+      "id": "baptist",
+      "name": "Baptist Miami",
+      "alpha": "EMS-to-Bapti",
+      "freqMHz": 463.0625,
+      "tone": "167.9 PL",
+      "level": "ED",
+      "divert": false
+    },
+    {
+      "id": "mercy",
+      "name": "Mercy Hospital",
+      "alpha": "EMS-to-Mercy",
+      "freqMHz": 463.1,
+      "tone": "103.5 PL",
+      "level": "ED",
+      "divert": true
+    },
+    {
+      "id": "kendall",
+      "name": "Kendall Regional",
+      "alpha": "EMS-to-Kenda",
+      "freqMHz": 463.0,
+      "tone": "186.2 PL",
+      "level": "Trauma",
+      "divert": false
+    },
+    {
+      "id": "aventura",
+      "name": "Aventura Hospital",
+      "alpha": "EMS-to-Avent",
+      "freqMHz": 463.0125,
+      "tone": "107.2 PL",
+      "level": "ED",
+      "divert": false
+    },
+    {
+      "id": "dade-call",
+      "name": "Dade Calling Med 9",
+      "alpha": "Dade Calling",
+      "freqMHz": 462.95,
+      "tone": "203.5 PL",
+      "level": "MEDCOM",
+      "divert": false
+    },
+    {
+      "id": "central-ctrl",
+      "name": "Central Dade Med-4",
+      "alpha": "Central Dade",
+      "freqMHz": 463.075,
+      "tone": "210.7 PL",
+      "level": "CONTROL",
+      "divert": false
+    }
+  ]
+}

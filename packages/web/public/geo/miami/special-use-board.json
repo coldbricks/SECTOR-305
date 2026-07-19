@@ -1,0 +1,89 @@
+{
+  "id": "se305-special-use-v0",
+  "disclaimer": "Training fiction special-use desk. Channels/nets are public scanner flavor only — not operational task forces.",
+  "modules": [
+    {
+      "id": "hidta",
+      "short": "HIDTA",
+      "title": "HIDTA nets",
+      "blurb": "High Intensity Drug Trafficking Areas · interagency nets",
+      "color": "amber",
+      "resources": [
+        { "id": "hidta-1", "label": "HIDTA 1", "kind": "net", "detail": "155.015 · 103.5 PL · Net 1", "status": "STANDBY" },
+        { "id": "hidta-2", "label": "HIDTA 2", "kind": "net", "detail": "156.030 · 103.5 PL · Net 2", "status": "STANDBY" },
+        { "id": "hidta-3", "label": "HIDTA 3", "kind": "net", "detail": "155.910 · 103.5 PL · Net 3", "status": "STANDBY" },
+        { "id": "hidta-4", "label": "HIDTA 4", "kind": "tac", "detail": "155.115 · Tac 4", "status": "COLD" },
+        { "id": "hidta-5", "label": "HIDTA 5", "kind": "tac", "detail": "155.925 · Tac 5", "status": "COLD" }
+      ]
+    },
+    {
+      "id": "swat",
+      "short": "SWAT",
+      "title": "Tactical / SWAT",
+      "blurb": "Barricade · warrant · high-risk entry (train only)",
+      "color": "red",
+      "resources": [
+        { "id": "swat-cmd", "label": "SWAT CMD", "kind": "team", "detail": "Command element", "status": "STANDBY" },
+        { "id": "swat-entry", "label": "ENTRY", "kind": "team", "detail": "Entry team", "status": "STANDBY" },
+        { "id": "swat-sniper", "label": "OVERWATCH", "kind": "team", "detail": "Overwatch / sniper", "status": "STANDBY" },
+        { "id": "swat-cnt", "label": "CNT", "kind": "team", "detail": "Crisis negotiation", "status": "STANDBY" },
+        { "id": "swat-tac", "label": "TAC NET", "kind": "net", "detail": "Encrypted TG (sim)", "status": "COLD" }
+      ]
+    },
+    {
+      "id": "marine",
+      "short": "MARINE",
+      "title": "Marine / Port",
+      "blurb": "Port edge · ocean rescue · intercity marine patch",
+      "color": "cyan",
+      "resources": [
+        { "id": "marine-1", "label": "MARINE 1", "kind": "unit", "detail": "Patrol vessel", "status": "AVL" },
+        { "id": "marine-2", "label": "MARINE 2", "kind": "unit", "detail": "Patrol vessel", "status": "AVL" },
+        { "id": "port-sec", "label": "PORT SEC", "kind": "desk", "detail": "Port authority fiction", "status": "WATCH" },
+        { "id": "intercity", "label": "INTERCITY", "kind": "net", "detail": "155.370 · PD/Marine patch", "status": "STANDBY" },
+        { "id": "crandon", "label": "CRANDON OR", "kind": "net", "detail": "Ocean Rescue Crandon", "status": "STANDBY" },
+        { "id": "haulover", "label": "HAULOVER OR", "kind": "net", "detail": "Ocean Rescue Haulover", "status": "STANDBY" }
+      ]
+    },
+    {
+      "id": "airport",
+      "short": "ARFF",
+      "title": "Airport / ARFF",
+      "blurb": "MIA fire-rescue division · foam · airside (train)",
+      "color": "orange",
+      "resources": [
+        { "id": "arff-disp", "label": "MDFR MIA", "kind": "net", "detail": "453.500 · Airport FR", "status": "WATCH" },
+        { "id": "foam-1", "label": "FOAM 1", "kind": "unit", "detail": "ARFF crash", "status": "STANDBY" },
+        { "id": "foam-2", "label": "FOAM 2", "kind": "unit", "detail": "ARFF crash", "status": "STANDBY" },
+        { "id": "ars-pad", "label": "ARS PAD", "kind": "desk", "detail": "Air Rescue pad MIA", "status": "STANDBY" }
+      ]
+    },
+    {
+      "id": "event",
+      "short": "EVENT",
+      "title": "Special event",
+      "blurb": "Stadium · festival · VIP · who-knows-what overlay",
+      "color": "pink",
+      "resources": [
+        { "id": "evt-cmd", "label": "EVENT CMD", "kind": "desk", "detail": "Event command post", "status": "COLD" },
+        { "id": "evt-gate", "label": "GATES", "kind": "desk", "detail": "Access control", "status": "COLD" },
+        { "id": "evt-med", "label": "EVENT MED", "kind": "desk", "detail": "Medical tent / EMS", "status": "COLD" },
+        { "id": "tcomm-1", "label": "TCOMM 1", "kind": "net", "detail": "Hard Rock / stadium T-Comm", "status": "COLD" },
+        { "id": "race-tac", "label": "SPEEDWAY", "kind": "net", "detail": "Homestead race tac flavor", "status": "COLD" }
+      ]
+    },
+    {
+      "id": "custom",
+      "short": "CUSTOM",
+      "title": "Open slots",
+      "blurb": "Scratch pads for whatever the watch invents tonight",
+      "color": "slate",
+      "resources": [
+        { "id": "slot-a", "label": "SLOT A", "kind": "custom", "detail": "Unassigned — rename in log", "status": "OPEN" },
+        { "id": "slot-b", "label": "SLOT B", "kind": "custom", "detail": "Unassigned — rename in log", "status": "OPEN" },
+        { "id": "slot-c", "label": "SLOT C", "kind": "custom", "detail": "Unassigned — rename in log", "status": "OPEN" },
+        { "id": "slot-d", "label": "SLOT D", "kind": "custom", "detail": "Unassigned — rename in log", "status": "OPEN" }
+      ]
+    }
+  ]
+}

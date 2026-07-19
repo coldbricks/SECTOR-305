@@ -1,0 +1,98 @@
+{
+  "id": "city-miami-fire-rescue-roster-v0",
+  "source": "https://fire-apparatus.fandom.com/wiki/City_of_Miami_Department_of_Fire-Rescue",
+  "disclaimer": "Public apparatus wiki flavor for SECTOR 305 training fiction. Not live CAD inventory.",
+  "agency": "City of Miami Department of Fire-Rescue",
+  "stations": [
+    {
+      "id": "FS-1",
+      "name": "Fire Station 1",
+      "address": "144 NE 5th Street",
+      "units": ["Foam 1", "Aerial 1", "Rescue 1", "Rescue 21", "HazMat 1", "District Chief 1"]
+    },
+    {
+      "id": "FS-2",
+      "name": "Fire Station 2",
+      "address": "1901 North Miami Avenue",
+      "units": ["Engine 2", "Rescue 2", "Rescue 22", "Decon 2", "Airbag 2"]
+    },
+    {
+      "id": "FS-3",
+      "name": "Fire Station 3",
+      "address": "1103 NW 7th Street",
+      "units": ["Engine 3", "Rescue 3", "Rescue 23"]
+    },
+    {
+      "id": "FS-4",
+      "name": "Fire Station 4",
+      "address": "1105 SW 2nd Avenue",
+      "units": ["Engine 4", "Aerial 4", "Rescue 4", "Rescue 16", "Rescue 24", "Car 94 EMS BC"]
+    },
+    {
+      "id": "FS-5",
+      "name": "Fire Station 5",
+      "address": "1200 NW 20th Street",
+      "units": ["Engine 5", "Aerial 5", "Rescue 5", "Rescue 25", "Dive 5"]
+    },
+    {
+      "id": "FS-6",
+      "name": "Fire Station 6",
+      "address": "701 NW 36th Street",
+      "units": ["Engine 6", "TRT 6", "Rescue 6", "Rescue 26", "District Chief 2", "Car 95 EMS"]
+    },
+    {
+      "id": "FS-7",
+      "name": "Fire Station 7",
+      "address": "314 Beacom Boulevard",
+      "units": ["Engine 7", "Rescue 7", "Rescue 27", "District Chief 3", "Decon 7"]
+    },
+    {
+      "id": "FS-8",
+      "name": "Fire Station 8",
+      "address": "2975 Oak Avenue",
+      "units": ["Foam 8", "Quint 8"]
+    },
+    {
+      "id": "FS-9",
+      "name": "Fire Station 9",
+      "address": "69 NE 62 Street",
+      "units": ["Engine 9", "Foam 9", "Quint 9", "Rescue 9", "Rescue 29"]
+    },
+    {
+      "id": "FS-10",
+      "name": "Fire Station 10",
+      "address": "4101 NW 7th Street",
+      "units": ["Quint 10", "Rescue 10", "Rescue 20"]
+    },
+    {
+      "id": "FS-11",
+      "name": "Fire Station 11",
+      "address": "5920 West Flagler Street",
+      "units": ["Engine 11", "Rescue 11"]
+    },
+    {
+      "id": "FS-12",
+      "name": "Fire Station 12",
+      "address": "1455 NW 46th Street",
+      "units": ["Engine 12", "Rescue 12", "Decon 12", "Rescue 30"]
+    },
+    {
+      "id": "FS-13",
+      "name": "Fire Station 13",
+      "address": "990 NE 79th Street",
+      "units": ["Engine 13", "Rescue 13"]
+    },
+    {
+      "id": "FS-14",
+      "name": "Fire Station 14",
+      "address": "2111 SW 19th Street",
+      "units": ["Rescue 14"]
+    },
+    {
+      "id": "FS-15",
+      "name": "Fire Station 15 · Marine",
+      "address": "401 Biscayne Boulevard",
+      "units": ["Fireboat 1", "Fireboat 15"]
+    }
+  ]
+}

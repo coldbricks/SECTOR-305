@@ -10,6 +10,11 @@ export default defineConfig({
     },
   },
   server: {
+    // Bind IPv4 explicitly — Windows often resolves localhost oddly; bare
+    // default can listen only on ::1 and make 127.0.0.1 look "dead".
+    host: "127.0.0.1",
     port: 3050,
+    strictPort: true,
   },
 });
+

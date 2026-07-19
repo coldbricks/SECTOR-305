@@ -1,0 +1,42 @@
+{
+  "id": "se305-traffic-pulse-v0",
+  "disclaimer": "Synthetic congestion flavor for training. Not live DOT feeds.",
+  "segments": [
+    {
+      "id": "i95-spine",
+      "label": "I-95 · HEAVY",
+      "level": "heavy",
+      "d": "M 36,8 L 38,28 L 40,52 L 42,78 L 44,96"
+    },
+    {
+      "id": "us1-coast",
+      "label": "US-1 / Biscayne · MOD",
+      "level": "mod",
+      "d": "M 58,12 L 62,30 L 68,48 L 72,70 L 76,92"
+    },
+    {
+      "id": "macarthur",
+      "label": "MacArthur Cswy · SLOW",
+      "level": "heavy",
+      "d": "M 30,62 L 52,54 L 72,48"
+    },
+    {
+      "id": "venetian",
+      "label": "Venetian · CLR",
+      "level": "light",
+      "d": "M 34,70 L 55,62 L 70,58"
+    },
+    {
+      "id": "downtown-grid",
+      "label": "DTN GRID · MOD",
+      "level": "mod",
+      "d": "M 28,42 L 52,40 L 54,62 L 30,66 Z"
+    },
+    {
+      "id": "ocean-drive",
+      "label": "Ocean Dr · EVENT",
+      "level": "event",
+      "d": "M 78,12 L 86,18 L 88,36 L 82,46"
+    }
+  ]
+}

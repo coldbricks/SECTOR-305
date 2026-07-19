@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Runtime,
   baseUnitsA07,
@@ -17,6 +17,46 @@ import {
   type DoctrinePack,
 } from "@sector305/core";
 import { SectorMap } from "./SectorMap";
+import { consoleAudio } from "./audio/consoleAudio";
+import { shellMusic } from "./audio/shellMusic";
+import { splashFxBed } from "./audio/splashFxBed";
+import { ShellSplash } from "./components/ShellSplash";
+import { ZuluClock } from "./components/ZuluClock";
+import { ChannelBank, type RrChannel } from "./components/ChannelBank";
+import { type FireToneEvent } from "./components/ApparatusStrip";
+import { AgencyDesk } from "./components/AgencyDesk";
+import { MapWorkspace } from "./components/MapWorkspace";
+import { TrainingCoach } from "./components/TrainingCoach";
+import { LiveGradeStrip } from "./components/LiveGradeStrip";
+import { CueWindowHud } from "./components/CueWindowHud";
+import { RadioCaptionMeter } from "./components/RadioCaptionMeter";
+import {
+  HOTKEY_HELP_ROWS,
+  useConsoleHotkeys,
+} from "./hooks/useConsoleHotkeys";
+import { HELO_LAYER_ID, TRAF_LAYER_ID } from "./geo/miamiBasemap";
+
+/** CAD-style stack flavor for queue rows. */
+type QueueLane = "pending" | "owned" | "working" | "hold" | "cleared";
+
+function priRank(p: string): number {
+  return ({ P0: 0, P1: 1, P2: 2, P3: 3, P4: 4, P5: 5 } as Record<string, number>)[p] ?? 9;
+}
+
+function laneFor(
+  status: string,
+  id: string,
+  owned: Set<string>,
+  assigned: boolean
+): QueueLane {
+  if (status === "CLEARED" || status === "CANCELLED") return "cleared";
+  if (status === "HOLD") return "hold";
+  if (assigned || status === "DISPATCHED" || status === "ENROUTE" || status === "ONSCENE") {
+    return "working";
+  }
+  if (owned.has(id)) return "owned";
+  return "pending";
+}
 
 type Phase = "shell" | "booting" | "console" | "debrief";
 
@@ -94,6 +134,41 @@ function createCheckride(): Runtime {
   });
 }
 
+function soundForCommand(c: PlayerCommand): void {
+  switch (c.type) {
+    case "DispatchUnits":
+      consoleAudio.play("radioKey");
+      window.setTimeout(() => consoleAudio.play("radioCrackle"), 80);
+      window.setTimeout(() => consoleAudio.play("assign"), 220);
+      break;
+    case "UnitRadioRx":
+      consoleAudio.play(c.kind === "ACK" ? "ack" : "radioRx");
+      break;
+    case "ClearIncident":
+      consoleAudio.play("clear");
+      break;
+    case "VerifyLocation":
+      consoleAudio.play("ding");
+      break;
+    case "SetPriority":
+      if (c.priority === "P0" || c.priority === "P1") consoleAudio.play("alertHi");
+      else consoleAudio.play("ui");
+      break;
+    case "SetFlag":
+    case "SetNature":
+      consoleAudio.play("ui");
+      break;
+    case "Advance":
+      consoleAudio.play("tick");
+      break;
+    case "SetUnitStatus":
+      consoleAudio.play("ui");
+      break;
+    default:
+      consoleAudio.play("ui");
+  }
+}
+
 export function App() {
   const [phase, setPhase] = useState<Phase>("shell");
   const [rt] = useState(() => createCheckride());
@@ -105,20 +180,74 @@ export function App() {
   const [radioDraft, setRadioDraft] = useState(
     "3A12, 3A14, P1 robbery in progress, 1400 block Ocean Drive, weapon reported"
   );
+  const [muted, setMuted] = useState(() => consoleAudio.isMuted());
+  const [musicMuted, setMusicMuted] = useState(() => shellMusic.isMusicMuted());
+  const [musicReady, setMusicReady] = useState(false);
+  /** Dispatcher has taken the call (ACK/select) — suppresses new-call flavor. */
+  const [ownedIds, setOwnedIds] = useState<Set<string>>(() => new Set(["cfs-001"]));
+  const [watchChannel, setWatchChannel] = useState<RrChannel | null>(null);
+  const [mapDockW, setMapDockW] = useState(380);
+  const [fireLog, setFireLog] = useState<FireToneEvent[]>([]);
+  const [heloSeen, setHeloSeen] = useState(false);
+  const [trafficSeen, setTrafficSeen] = useState(false);
+  const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
+  const [hotkeyHelp, setHotkeyHelp] = useState(false);
   const debrief = useMemo(
     () => (phase === "debrief" ? rt.debrief() : null),
     [phase, state, rt]
   );
 
+  // Debrief sting when entering AAR
+  useEffect(() => {
+    if (phase !== "debrief" || !debrief) return;
+    consoleAudio.stopAmbient();
+    consoleAudio.play(debrief.passed ? "pass" : "fail");
+  }, [phase, debrief?.passed]);
+
+  // Open channel hiss while glass is live
+  useEffect(() => {
+    if (phase === "console" && !muted) {
+      consoleAudio.startAmbient();
+    } else if (phase !== "console") {
+      consoleAudio.stopAmbient();
+    }
+    return () => {
+      if (phase !== "console") consoleAudio.stopAmbient();
+    };
+  }, [phase, muted]);
+
+  // Probe theme on shell; force music path unmuted so title can play
+  useEffect(() => {
+    if (phase === "shell") {
+      shellMusic.forceUnmute();
+      setMusicMuted(false);
+      shellMusic.setMasterMuted(false);
+      void shellMusic.enable().then(() => {
+        setMusicReady(shellMusic.hasTrack());
+        void shellMusic.play();
+      });
+    }
+  }, [phase]);
+
   function cmd(c: PlayerCommand) {
     const atMs = rt.snapshot().clockMs;
+    const gradesBefore = rt.snapshot().gradeLog.length;
     rt.apply(c);
     const next = rt.snapshot();
     setSessionCmds((prev) => [...prev, { atMs, cmd: c }]);
     setState(next);
+    soundForCommand(c);
+    // hard-fail chirp if grader just wrote one
+    const newGrades = next.gradeLog.slice(gradesBefore);
+    if (newGrades.some((g) => g.severity === "hard_fail")) {
+      window.setTimeout(() => consoleAudio.play("fail"), 120);
+    } else if (newGrades.some((g) => g.severity === "soft")) {
+      window.setTimeout(() => consoleAudio.play("ding"), 80);
+    }
   }
 
   function exportSession() {
+    consoleAudio.play("export");
     const rec = {
       schemaVersion: 1 as const,
       scenarioId: state.scenarioId,
@@ -139,83 +268,245 @@ export function App() {
     URL.revokeObjectURL(url);
   }
 
+  function selectCfs(id: string) {
+    const wasOwned = ownedIds.has(id);
+    if (id !== selectedId) {
+      // Paisley Ponytail soft desk chime on focus; first ACK also "takes" the call
+      consoleAudio.play("ding");
+    }
+    if (!wasOwned) {
+      setOwnedIds((prev) => new Set(prev).add(id));
+      // first ownership: quiet channel chirp (not the urgent new-call bank)
+      if (id !== selectedId) {
+        window.setTimeout(() => consoleAudio.play("ui"), 90);
+      }
+    }
+    setSelectedId(id);
+    setSelectedUnitId(null);
+  }
+
+  function selectUnit(id: string | null) {
+    if (id && id !== selectedUnitId) consoleAudio.play("ui");
+    setSelectedUnitId(id);
+  }
+
+  async function toggleMute() {
+    await consoleAudio.unlock();
+    const next = consoleAudio.toggleMute();
+    setMuted(next);
+    shellMusic.setMasterMuted(next);
+    if (!next) {
+      consoleAudio.play("ui");
+      if (phase === "console") consoleAudio.startAmbient();
+      if (phase === "shell" || phase === "booting") {
+        void shellMusic.enable().then(() => setMusicReady(shellMusic.hasTrack()));
+      }
+    }
+  }
+
+  async function toggleShellMusic() {
+    await consoleAudio.unlock();
+    const next = shellMusic.toggleMusicMuted();
+    setMusicMuted(next);
+    if (!next) {
+      void shellMusic.enable().then(() => setMusicReady(shellMusic.hasTrack()));
+    }
+  }
+
+  async function radioTest() {
+    await consoleAudio.unlock();
+    if (consoleAudio.isMuted()) {
+      consoleAudio.setMuted(false);
+      setMuted(false);
+      if (phase === "console") consoleAudio.startAmbient();
+    }
+    consoleAudio.radioTest();
+  }
+
   const selected = selectedId ? state.incidents[selectedId] : null;
   const incidents = Object.values(state.incidents).sort(
     (a, b) => a.receivedAtMs - b.receivedAtMs
   );
   const units = Object.values(state.units);
 
-  function openWatch() {
+  const robberyNatureCode = useMemo(() => {
+    const hit = NATURES.find(
+      (n) =>
+        n.code.toUpperCase().includes("ROBB") ||
+        n.label.toUpperCase().includes("ROBBERY")
+    );
+    return hit?.code ?? NATURES[0]?.code ?? "ROBBERY-IP";
+  }, []);
+
+  const dispatchTwo = useCallback(() => {
+    if (!selectedId) return;
+    const snap = rt.snapshot();
+    const available = Object.values(snap.units)
+      .filter((u) => u.status === "AVL" && u.type === "patrol")
+      .slice(0, 2)
+      .map((u) => u.id);
+    cmd({
+      type: "DispatchUnits",
+      incidentId: selectedId,
+      unitIds: available.length ? available : ["u-3a12"],
+      radioCaption: radioDraft,
+    });
+  }, [selectedId, radioDraft, rt]);
+
+  const simAcks = useCallback(() => {
+    if (!selectedId) return;
+    const snap = rt.snapshot();
+    const inc = snap.incidents[selectedId];
+    if (!inc) return;
+    for (const uid of inc.assignedUnitIds) {
+      cmd({
+        type: "UnitRadioRx",
+        unitId: uid,
+        incidentId: selectedId,
+        caption: `${snap.units[uid]?.callsign} copy, en route`,
+        kind: "ACK",
+      });
+    }
+  }, [selectedId, rt]);
+
+  const simOnScene = useCallback(() => {
+    if (!selectedId) return;
+    const snap = rt.snapshot();
+    const inc = snap.incidents[selectedId];
+    if (!inc) return;
+    for (const uid of inc.assignedUnitIds) {
+      cmd({
+        type: "UnitRadioRx",
+        unitId: uid,
+        incidentId: selectedId,
+        caption: `${snap.units[uid]?.callsign} on scene`,
+        kind: "STATUS",
+      });
+    }
+  }, [selectedId, rt]);
+
+  const clearGoa = useCallback(() => {
+    if (!selectedId) return;
+    const snap = rt.snapshot();
+    const inc = snap.incidents[selectedId];
+    if (!inc) return;
+    for (const uid of [...inc.assignedUnitIds]) {
+      cmd({ type: "SetUnitStatus", unitId: uid, status: "CLR" });
+      cmd({ type: "SetUnitStatus", unitId: uid, status: "AVL" });
+    }
+    cmd({
+      type: "ClearIncident",
+      incidentId: selectedId,
+      disposition: "GOA",
+    });
+  }, [selectedId, rt]);
+
+  const endDebrief = useCallback(() => {
+    consoleAudio.stopAmbient();
+    consoleAudio.play("ui");
+    setPhase("debrief");
+  }, []);
+
+  // Keyboard-first M16 path (UI_ACCEPTANCE #20) — ? toggles help
+  useConsoleHotkeys(phase === "console", {
+    onSelectIndex: (i: number) => {
+      const list = Object.values(rt.snapshot().incidents).sort(
+        (a, b) => a.receivedAtMs - b.receivedAtMs
+      );
+      const hit = list[i];
+      if (hit) selectCfs(hit.id);
+    },
+    onVerify: () => {
+      if (!selectedId) return;
+      cmd({
+        type: "VerifyLocation",
+        incidentId: selectedId,
+        confidence: "verified",
+        location: {
+          freeform: "1400 block Ocean Drive",
+          block: "1400",
+          street: "Ocean Drive",
+          zoneId: "Z-OCEAN",
+        },
+      });
+    },
+    onPriorityP1: () => {
+      if (!selectedId) return;
+      cmd({ type: "SetPriority", incidentId: selectedId, priority: "P1" });
+    },
+    onNatureRobbery: () => {
+      if (!selectedId) return;
+      cmd({
+        type: "SetNature",
+        incidentId: selectedId,
+        natureCode: robberyNatureCode,
+      });
+    },
+    onFlagWeapons: () => {
+      if (!selectedId) return;
+      cmd({
+        type: "SetFlag",
+        incidentId: selectedId,
+        flag: "WEAPONS",
+        value: true,
+      });
+    },
+    onFlagBackup: () => {
+      if (!selectedId) return;
+      cmd({
+        type: "SetFlag",
+        incidentId: selectedId,
+        flag: "NEEDS_BACKUP",
+        value: true,
+      });
+    },
+    onDispatch2: () => dispatchTwo(),
+    onAck: () => simAcks(),
+    onOnScene: () => simOnScene(),
+    onClearGoa: () => clearGoa(),
+    onAdvance5: () => cmd({ type: "Advance", ms: 5000 }),
+    onAdvance30: () => cmd({ type: "Advance", ms: 30000 }),
+    onDebrief: () => endDebrief(),
+    onExport: () => exportSession(),
+    onToggleHelp: () => setHotkeyHelp((v) => !v),
+  });
+
+  async function openWatch() {
+    await consoleAudio.unlock();
+    splashFxBed.stop();
+    // Long cinematic fade of title theme, then boot into glass
+    if (musicReady && !musicMuted && !muted) {
+      if (!shellMusic.snapshot().playing) await shellMusic.play();
+      shellMusic.disableSlow(4.5);
+    } else {
+      shellMusic.disableSlow(0.4);
+    }
+    // Delay boot stingers so they don’t stomp the fade
     setPhase("booting");
-    window.setTimeout(() => setPhase("console"), 1600);
+    window.setTimeout(() => {
+      consoleAudio.play("boot");
+    }, 900);
+    window.setTimeout(() => {
+      consoleAudio.play("channelUp");
+      setPhase("console");
+      window.setTimeout(() => {
+        consoleAudio.play("radioCrackle");
+        consoleAudio.startAmbient();
+      }, 280);
+    }, 2800);
   }
 
   if (phase === "shell" || phase === "booting") {
     return (
-      <div className={`shell prestige ${phase === "booting" ? "is-booting" : ""}`}>
-        <div className="shell-bg" aria-hidden>
-          <div className="shell-grid" />
-          <div className="shell-scan" />
-          <div className="shell-glow pink" />
-          <div className="shell-glow cyan" />
-        </div>
-        <div className="shell-card prestige-card">
-          <div className="shell-card-edge" />
-          <div className="tag">
-            <span className="tag-dot" /> Miami fiction · A-console · S305
-          </div>
-          <div className="wordmark">
-            <span className="wm-sector">SECTOR</span>
-            <span className="wm-num">305</span>
-          </div>
-          <p className="tagline">
-            Complexity that grades you. Graphics that don’t apologize.
-          </p>
-          <p className="lede">
-            Certification-grade PSAP training instrument. South Beach on the
-            shell. Ruthless glass on the watch. Process fails — not story
-            points.
-          </p>
-          <div className="mission-strip">
-            <div className="mission-item">
-              <span className="mi-k">CHECKRIDE</span>
-              <span className="mi-v">Ocean corridor · robbery IP</span>
-            </div>
-            <div className="mission-item">
-              <span className="mi-k">LOAD</span>
-              <span className="mi-v">C1 · C2 · C4 · C5 · C10</span>
-            </div>
-            <div className="mission-item">
-              <span className="mi-k">CONSOLE</span>
-              <span className="mi-v">DADE A07 · SE305-PRI</span>
-            </div>
-          </div>
-          <div className="row">
-            <button
-              className="primary prestige-cta"
-              disabled={phase === "booting"}
-              onClick={openWatch}
-            >
-              {phase === "booting" ? "LINKING SECTOR…" : "OPEN WATCH · A07"}
-            </button>
-          </div>
-          {phase === "booting" && (
-            <div className="boot-rail" aria-live="polite">
-              <div className="boot-line">AUTH · TRAINEE SESSION</div>
-              <div className="boot-line">PACK · miami-a07-police-v0</div>
-              <div className="boot-line">PLATE · IMPERFECT LAST-KNOWN</div>
-              <div className="boot-line accent">CHANNEL · SE305-PRI UP</div>
-              <div className="boot-bar">
-                <span />
-              </div>
-            </div>
-          )}
-          <p className="disclaimer" style={{ marginTop: "1.25rem" }}>
-            Training fiction only. Not a real telecommunicator certification.
-            Not affiliated with any agency or APCO/NENA/IAED.
-          </p>
-        </div>
-      </div>
+      <ShellSplash
+        booting={phase === "booting"}
+        musicReady={musicReady}
+        muted={muted}
+        musicMuted={musicMuted}
+        onBegin={() => void openWatch()}
+        onToggleSfx={() => void toggleMute()}
+        onToggleMusic={() => void toggleShellMusic()}
+      />
     );
   }
 
@@ -297,6 +588,24 @@ export function App() {
             </div>
           </section>
 
+          <section className="debrief-section">
+            <h2>Evaluation timeline · chronological</h2>
+            {debrief.timeline.length === 0 ? (
+              <p className="dim-line">No timeline events.</p>
+            ) : (
+              <ul className="fail-list aar-timeline">
+                {debrief.timeline.map((ev, i) => (
+                  <li key={`${ev.atMs}-${ev.kind}-${i}`} className={`tl-${ev.kind}`}>
+                    <div className="fail-meta mono">
+                      +{(ev.atMs / 1000).toFixed(1)}s · {ev.kind}
+                    </div>
+                    <div className="fail-msg">{ev.summary}</div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
           <div className="actions debrief-actions">
             <button className="primary" onClick={() => window.location.reload()}>
               New session
@@ -312,47 +621,153 @@ export function App() {
   return (
     <div className="console prestige-console">
       <div className="topbar">
-        <div className="tb-brand">
-          <span className="tb-live">●</span>
-          <span className="id">
-            {state.consoleId} · {state.sectorId}
-          </span>
+        <div className="tb-left">
+          <div className="tb-brand">
+            <span className="tb-live">●</span>
+            <span className="id">
+              {state.consoleId} · {state.sectorId}
+            </span>
+          </div>
+          <div className="tb-chips">
+            <span className="tb-chip">SE305-PRI</span>
+            <span className="tb-chip dim">CHECKRIDE</span>
+            <span className="tb-chip dim mono">SEED {state.seed}</span>
+          </div>
         </div>
-        <span className="tb-chip">SE305-PRI</span>
-        <span className="tb-chip dim">CHECKRIDE</span>
-        <span className="clock mono">
-          SIM {(state.clockMs / 1000).toFixed(1)}s · seed {state.seed}
-        </span>
-        <div className="tb-actions">
-          <button onClick={() => cmd({ type: "Advance", ms: 5000 })}>+5s</button>
-          <button onClick={() => cmd({ type: "Advance", ms: 30000 })}>+30s</button>
-          <button onClick={exportSession}>Export</button>
-          <button className="danger" onClick={() => setPhase("debrief")}>
-            End / Debrief
-          </button>
+
+        <ZuluClock simMs={state.clockMs} className="topbar-zulu" />
+
+        <div className="tb-right">
+          <div className="tb-sim mono" title="Simulation clock (scenario time)">
+            <span className="tb-sim-k">SIM</span>
+            <span className="tb-sim-v">T+{(state.clockMs / 1000).toFixed(1)}s</span>
+          </div>
+          <div className="tb-actions">
+            <button
+              type="button"
+              className={`audio-toggle tb-audio ${muted ? "is-muted" : ""}`}
+              onClick={() => void toggleMute()}
+              title={muted ? "Unmute" : "Mute"}
+              aria-pressed={!muted}
+            >
+              {muted ? "🔇" : "🔊"}
+            </button>
+            <button
+              type="button"
+              className="tb-radio-test"
+              onClick={() => void radioTest()}
+              title="Radio path self-test"
+            >
+              R/T
+            </button>
+            <button onClick={() => cmd({ type: "Advance", ms: 5000 })}>+5s</button>
+            <button onClick={() => cmd({ type: "Advance", ms: 30000 })}>+30s</button>
+            <button onClick={exportSession}>Export</button>
+            <button
+              type="button"
+              className="tb-help"
+              onClick={() => setHotkeyHelp((v) => !v)}
+              title="Keyboard map (?)"
+            >
+              ?
+            </button>
+            <button className="danger" onClick={() => endDebrief()}>
+              End / Debrief
+            </button>
+          </div>
         </div>
       </div>
 
-      <div className="grid console-grid">
-        <div className="panel">
-          <h2>Incident queue</h2>
-          {incidents.map((inc) => (
-            <div
-              key={inc.id}
-              className={`queue-item ${selectedId === inc.id ? "active" : ""}`}
-              onClick={() => setSelectedId(inc.id)}
-            >
-              <span className={`pri pri-${inc.priority}`}>{inc.priority}</span>
-              <strong>{inc.cfsNumber}</strong>
-              <div style={{ color: "var(--muted)", marginTop: 4 }}>
-                {inc.natureText}
-              </div>
-              <div style={{ marginTop: 2 }}>{inc.location.freeform}</div>
-              <div style={{ marginTop: 4, fontSize: 11 }}>
-                {inc.status} · loc {inc.locationConfidence}
-              </div>
+      <LiveGradeStrip gradeLog={state.gradeLog} />
+
+      {hotkeyHelp ? (
+        <div className="hotkey-help" role="dialog" aria-label="Keyboard map">
+          <div className="hotkey-help-inner">
+            <div className="hh-head mono">
+              <span>KEYBOARD · M16 PATH</span>
+              <button type="button" onClick={() => setHotkeyHelp(false)}>
+                CLOSE
+              </button>
             </div>
-          ))}
+            <table className="hh-table mono">
+              <tbody>
+                {HOTKEY_HELP_ROWS.map((row) => (
+                  <tr key={row.keys}>
+                    <td className="hh-keys">{row.keys}</td>
+                    <td>{row.action}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="hh-note">
+              Disabled while typing in caption/fields. Instrument path only —
+              no mic required.
+            </p>
+          </div>
+        </div>
+      ) : null}
+
+      <div className="grid console-grid dense">
+        <div className="panel queue-panel">
+          <h2>
+            Incident queue
+            <span className="h2-meta mono">
+              CAD · PRI THEN AGE · ACK SUPPRESSES
+            </span>
+          </h2>
+          <CueWindowHud clockMs={state.clockMs} />
+          {(
+            [
+              ["pending", "PENDING · UNAKED"],
+              ["owned", "OWNED · ACK"],
+              ["working", "WORKING · DISPATCHED"],
+              ["hold", "HOLD"],
+              ["cleared", "CLEARED"],
+            ] as const
+          ).map(([lane, label]) => {
+            const rows = incidents
+              .filter((inc) => {
+                const assigned = (inc.assignedUnitIds?.length ?? 0) > 0;
+                return laneFor(inc.status, inc.id, ownedIds, assigned) === lane;
+              })
+              .sort((a, b) => {
+                const pr = priRank(a.priority) - priRank(b.priority);
+                if (pr !== 0) return pr;
+                return a.receivedAtMs - b.receivedAtMs;
+              });
+            if (rows.length === 0) return null;
+            return (
+              <div key={lane} className={`queue-lane lane-${lane}`}>
+                <div className="queue-lane-h mono">{label}</div>
+                {rows.map((inc) => {
+                  const age = (state.clockMs - inc.receivedAtMs) / 1000;
+                  const assigned = (inc.assignedUnitIds?.length ?? 0) > 0;
+                  return (
+                    <div
+                      key={inc.id}
+                      className={`queue-item lane-${lane} ${selectedId === inc.id ? "active" : ""} ${lane === "pending" ? "is-new" : ""}`}
+                      onClick={() => selectCfs(inc.id)}
+                    >
+                      <div className="qi-top">
+                        <span className={`pri pri-${inc.priority}`}>{inc.priority}</span>
+                        <strong>{inc.cfsNumber}</strong>
+                        <span className="qi-age mono">{age.toFixed(0)}s</span>
+                      </div>
+                      <div className="qi-nature">{inc.natureText}</div>
+                      <div className="qi-loc">{inc.location.freeform}</div>
+                      <div className="qi-meta mono">
+                        {inc.status}
+                        {ownedIds.has(inc.id) ? " · ACK" : " · NEW"}
+                        {assigned ? " · UNITS" : ""}
+                        {" · "}
+                        {inc.locationConfidence}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
         </div>
 
         <div className="panel">
@@ -458,22 +873,9 @@ export function App() {
                   onChange={(e) => setRadioDraft(e.target.value)}
                 />
               </label>
+              <RadioCaptionMeter caption={radioDraft} />
               <div className="actions">
-                <button
-                  className="primary"
-                  onClick={() => {
-                    const available = units
-                      .filter((u) => u.status === "AVL" && u.type === "patrol")
-                      .slice(0, 2)
-                      .map((u) => u.id);
-                    cmd({
-                      type: "DispatchUnits",
-                      incidentId: selected.id,
-                      unitIds: available.length ? available : ["u-3a12"],
-                      radioCaption: radioDraft,
-                    });
-                  }}
-                >
+                <button className="primary" onClick={() => dispatchTwo()}>
                   Dispatch 2× AVL patrol
                 </button>
                 <button
@@ -490,51 +892,9 @@ export function App() {
                 >
                   Dispatch 1× (risk)
                 </button>
-                <button
-                  onClick={() => {
-                    for (const uid of selected.assignedUnitIds) {
-                      cmd({
-                        type: "UnitRadioRx",
-                        unitId: uid,
-                        incidentId: selected.id,
-                        caption: `${state.units[uid]?.callsign} copy, en route`,
-                        kind: "ACK",
-                      });
-                    }
-                  }}
-                >
-                  Sim unit ACKs
-                </button>
-                <button
-                  onClick={() => {
-                    for (const uid of selected.assignedUnitIds) {
-                      cmd({
-                        type: "UnitRadioRx",
-                        unitId: uid,
-                        incidentId: selected.id,
-                        caption: `${state.units[uid]?.callsign} on scene`,
-                        kind: "STATUS",
-                      });
-                    }
-                  }}
-                >
-                  Sim on scene
-                </button>
-                <button
-                  onClick={() => {
-                    for (const uid of [...selected.assignedUnitIds]) {
-                      cmd({ type: "SetUnitStatus", unitId: uid, status: "CLR" });
-                      cmd({ type: "SetUnitStatus", unitId: uid, status: "AVL" });
-                    }
-                    cmd({
-                      type: "ClearIncident",
-                      incidentId: selected.id,
-                      disposition: "GOA",
-                    });
-                  }}
-                >
-                  Clear GOA
-                </button>
+                <button onClick={() => simAcks()}>Sim unit ACKs</button>
+                <button onClick={() => simOnScene()}>Sim on scene</button>
+                <button onClick={() => clearGoa()}>Clear GOA</button>
               </div>
               <h2 style={{ marginTop: 12 }}>CAD notes</h2>
               <div className="radio-log">
@@ -552,96 +912,164 @@ export function App() {
           )}
         </div>
 
-        <div className="panel">
-          <h2>Unit status</h2>
-          {units.map((u) => (
-            <div key={u.id} className="unit-row">
-              <span>{u.callsign}</span>
-              <span className={`st-${u.status}`}>{u.status}</span>
-              <span style={{ color: "var(--muted)" }}>
-                {u.assignedIncidentId
-                  ? state.incidents[u.assignedIncidentId]?.cfsNumber
-                  : u.zoneId}
-              </span>
-            </div>
-          ))}
-          <h2 style={{ marginTop: 12 }}>Timers</h2>
-          <div className="radio-log">
-            {incidents
-              .filter((i) => i.status === "PENDING" || i.status === "HOLD")
-              .map((i) => {
-                const age = state.clockMs - i.receivedAtMs;
-                return (
-                  <div key={i.id} className="radio-line">
-                    {i.cfsNumber} {i.priority} age {(age / 1000).toFixed(0)}s ·{" "}
-                    {i.locationConfidence}
-                  </div>
-                );
-              })}
-            {state.radioLog
-              .filter((r) => r.requiresReadback && !r.readbackSatisfiedAtMs)
-              .map((r) => (
-                <div key={r.id} className="radio-line" style={{ color: "var(--amber)" }}>
-                  READBACK pending · {r.caption.slice(0, 48)}…
-                </div>
-              ))}
-          </div>
-        </div>
-
-        <div className="panel map-panel">
-          <SectorMap
-            incidents={incidents}
+        <div className="panel agency-panel">
+          <AgencyDesk
             units={units}
-            selectedId={selectedId}
+            incidents={state.incidents}
+            selectedUnitId={selectedUnitId}
+            onSelectUnit={selectUnit}
             clockMs={state.clockMs}
-            sectorId={state.sectorId}
-            onSelectCfs={setSelectedId}
+            selectedCfsLabel={
+              selected ? `${selected.cfsNumber} · ${selected.priority}` : null
+            }
+            onFireToneOut={(ev) => {
+              setFireLog((prev) => [ev, ...prev].slice(0, 12));
+            }}
+            fireLog={fireLog}
+            pdFooter={
+              <>
+                <h2 style={{ marginTop: 10, marginBottom: 4 }}>Timers</h2>
+                <div className="radio-log">
+                  {incidents
+                    .filter((i) => i.status === "PENDING" || i.status === "HOLD")
+                    .map((i) => {
+                      const age = state.clockMs - i.receivedAtMs;
+                      return (
+                        <div key={i.id} className="radio-line">
+                          {i.cfsNumber} {i.priority} age {(age / 1000).toFixed(0)}
+                          s · {i.locationConfidence}
+                        </div>
+                      );
+                    })}
+                  {state.radioLog
+                    .filter((r) => r.requiresReadback && !r.readbackSatisfiedAtMs)
+                    .map((r) => (
+                      <div
+                        key={r.id}
+                        className="radio-line"
+                        style={{ color: "var(--amber)" }}
+                      >
+                        READBACK pending · {r.caption.slice(0, 48)}…
+                      </div>
+                    ))}
+                </div>
+              </>
+            }
           />
         </div>
 
-        <div className="panel" style={{ gridColumn: "1 / -1" }}>
-          <h2>Radio log · {(radioJson as { channelPrimary: string }).channelPrimary}</h2>
-          <div className="radio-log">
-            {state.radioLog.length === 0 && (
-              <div className="radio-line">Channel quiet</div>
-            )}
-            {state.radioLog.map((r) => (
-              <div key={r.id} className="radio-line">
-                +{(r.atMs / 1000).toFixed(1)}s {r.from}→{r.to ?? "ALL"}{" "}
-                <span className="cap">{r.caption}</span>
-                {r.requiresReadback && !r.readbackSatisfiedAtMs ? " ⚠ READBACK" : ""}
+        <div
+          className="panel map-panel"
+          style={{
+            minWidth: mapDockW,
+            width: mapDockW,
+            maxWidth: "100%",
+            flex: `0 0 ${mapDockW}px`,
+          }}
+        >
+          <MapWorkspace onDockWidth={setMapDockW}>
+            <SectorMap
+              incidents={incidents}
+              units={units}
+              selectedId={selectedId}
+              selectedUnitId={selectedUnitId}
+              clockMs={state.clockMs}
+              sectorId={state.sectorId}
+              onSelectCfs={selectCfs}
+              onSelectUnit={selectUnit}
+              onRadarVisibility={(vis) => {
+                if (vis[HELO_LAYER_ID]) setHeloSeen(true);
+                if (vis[TRAF_LAYER_ID]) setTrafficSeen(true);
+              }}
+            />
+          </MapWorkspace>
+        </div>
+
+        {phase === "console" && (
+          <TrainingCoach
+            state={state}
+            selectedId={selectedId}
+            ownedIds={ownedIds}
+            fireDispatches={fireLog.length}
+            heloSeen={heloSeen}
+            trafficSeen={trafficSeen}
+            onAdvanceSim={(ms) => cmd({ type: "Advance", ms })}
+          />
+        )}
+
+        <div className="panel bottom-rail">
+          <div className="bottom-rail-grid">
+            <div className="br-col">
+              <h2>
+                Radio log ·{" "}
+                {watchChannel?.alpha ??
+                  (radioJson as { channelPrimary: string }).channelPrimary}
+              </h2>
+              {watchChannel && (
+                <div className="watch-ch mono">
+                  {watchChannel.freqMHz?.toFixed(4)} MHz · {watchChannel.mode} ·{" "}
+                  {watchChannel.tone || "CSQ"} · {watchChannel.tag}
+                </div>
+              )}
+              <div className="radio-log">
+                {state.radioLog.length === 0 && (
+                  <div className="radio-line">Channel quiet</div>
+                )}
+                {state.radioLog.map((r) => (
+                  <div key={r.id} className="radio-line">
+                    +{(r.atMs / 1000).toFixed(1)}s {r.from}→{r.to ?? "ALL"}{" "}
+                    <span className="cap">{r.caption}</span>
+                    {r.requiresReadback && !r.readbackSatisfiedAtMs
+                      ? " ⚠ READBACK"
+                      : r.readbackSatisfiedAtMs
+                        ? " · ACK"
+                        : ""}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-          <h2 style={{ marginTop: 12 }}>Live grades</h2>
-          <div className="radio-log">
-            {state.gradeLog.length === 0 && (
-              <div className="radio-line">No grade events yet</div>
-            )}
-            {state.gradeLog.map((g) => (
-              <div key={g.id} className="radio-line">
-                <span
-                  style={{
-                    color:
-                      g.severity === "hard_fail"
-                        ? "var(--red)"
-                        : g.severity === "soft"
-                          ? "var(--amber)"
-                          : "var(--muted)",
-                  }}
-                >
-                  [{g.severity}] {g.code}
-                </span>{" "}
-                {g.message}
+            </div>
+            <div className="br-col">
+              <h2>Live grades</h2>
+              <div className="radio-log">
+                {state.gradeLog.length === 0 && (
+                  <div className="radio-line">No grade events yet</div>
+                )}
+                {state.gradeLog.map((g) => (
+                  <div key={g.id} className="radio-line">
+                    <span
+                      style={{
+                        color:
+                          g.severity === "hard_fail"
+                            ? "var(--red)"
+                            : g.severity === "soft"
+                              ? "var(--amber)"
+                              : "var(--muted)",
+                      }}
+                    >
+                      [{g.severity}] {g.code}
+                    </span>{" "}
+                    {g.message}
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+            <div className="br-col br-chan">
+              <ChannelBank
+                activeAlpha={watchChannel?.alpha}
+                onSelect={(ch) => {
+                  setWatchChannel(ch);
+                  consoleAudio.play("radioKey");
+                  window.setTimeout(() => consoleAudio.play("radioCrackle"), 60);
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>
 
       <div className="footer">
-        SECTOR 305 · text radio Phase 0 · STT disabled · shell≠glass · not a
-        real cert
+        SECTOR 305 · instrument checkride · live grades · keys{" "}
+        <kbd>?</kbd> · CAD ACK · training fiction only · not a real cert
       </div>
     </div>
   );
