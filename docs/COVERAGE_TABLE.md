@@ -1,7 +1,7 @@
 # Phase 0 coverage table (exit gate)
 
 **Date:** 2026-07-18  
-**Tests:** `npm test` → **75/75 passed**  
+**Tests:** `npm test` → **93** suite tests (live AGENT-S3-5 capture; raw output in `docs/waves/staging/S3_5.md`)  
 **Sacred invariant:** green (`sacred_invariant.test.ts`)
 
 | Manifest ID | Artifact(s) | Evidence |

@@ -1,0 +1,18 @@
+﻿
+ RUN  v3.2.7 C:/Users/coldb/SECTOR-305/packages/core
+
+ Γ£ô tests/psychic_guard.test.ts > S1-PSYCHIC golden fairness guard > fixture knowableSchedule: weapons/nature/priority @15000, location @25000 1ms
+ Γ£ô tests/psychic_guard.test.ts > S1-PSYCHIC golden fairness guard > in-memory passCommands never use truth before cue 0ms
+ Γ£ô tests/psychic_guard.test.ts > S1-PSYCHIC golden fairness guard > in-memory failCommands dispatch only after weapons cue 0ms
+ Γ£ô tests/psychic_guard.test.ts > S1-PSYCHIC golden fairness guard > committed session_pass.json never uses truth before cue 0ms
+ Γ£ô tests/psychic_guard.test.ts > S1-PSYCHIC golden fairness guard > committed session_fail.json dispatch only after weapons cue 0ms
+ Γ£ô tests/psychic_guard.test.ts > S1-PSYCHIC golden fairness guard > fail runtime hard-fails (undercode/verify/backup/safety) atMs >= weapons cue 4ms
+ Γ£ô tests/checkride.test.ts > checkride goldens (fair timeline) > FAIL post-cue: undercode + no verify + single unit + no weapons air + no readback 2ms
+ Γ£ô tests/checkride.test.ts > checkride goldens (fair timeline) > PASS: post-cue verify, reclass P1, backup, weapons aired, readbacks, clean close 3ms
+ Γ£ô tests/checkride.test.ts > checkride goldens (fair timeline) > FAIL: concurrency ΓÇö P1 ages while player only works P4 cosmetics 0ms
+
+ Test Files  2 passed (2)
+      Tests  9 passed (9)
+   Start at  22:21:51
+   Duration  522ms (transform 93ms, setup 0ms, collect 278ms, tests 12ms, environment 0ms, prepare 109ms)
+

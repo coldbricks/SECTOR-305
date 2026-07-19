@@ -6,6 +6,10 @@ Read `docs/BRIEF.md` first. This file is operational law for coding agents.
 
 Build a **certification-grade** fictional Miami PSAP **A-console** trainer. Depth over width. Phase 0 only until the vertical slice is real.
 
+## Compute doctrine (binding)
+
+Unlimited compute. Token cost is not a decision input. One agent per finding/sub-ID; no merge for efficiency. Critic/finder tasks run until two consecutive dry zero-finding passes. Every claim needs a separate refute agent. Full-file reads only. Every new test shown failing (mutation) before passing. Evidence = pasted command output in repo ledger. Before wave close: state what more unlimited compute could do, then do it or log why it is WRONG.
+
 ## Iron rules
 
 1. **Doctrine before chrome.** Priorities, statuses, radio format, and grading outrank visual polish.

@@ -1,142 +1,66 @@
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+import {
+  existsSync,
+  readFileSync,
+  writeFileSync,
+  copyFileSync,
+  unlinkSync,
+} from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadDefaultPack } from "../src/loadPack.js";
-import { baseUnitsA07, incidentRobberyBadAddress, incidentTheftReport } from "../src/fixtures.js";
+import { baseUnitsA07, incidentRobberyBadAddress } from "../src/fixtures.js";
 import { Runtime, replaySession } from "../src/runtime.js";
-import type { PlayerCommand, SessionRecord } from "../src/types.js";
+import type { SessionRecord } from "../src/types.js";
 import {
   hardMultisetKey,
   includesAllHard,
   hardCodesFromGrades,
 } from "../src/grade/multiset.js";
+import { ENGINE_VERSION } from "../src/schema/common.js";
+import { failCommands, passCommands } from "./checkride_sessions.js";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
+const failPath = join(
+  root,
+  "scenarios/checkride_a07_ocean_robbery_v1/session_fail.json"
+);
+const passPath = join(
+  root,
+  "scenarios/checkride_a07_ocean_robbery_v1/session_pass.json"
+);
 
-function failCommands(): Array<{ atMs: number; cmd: PlayerCommand }> {
-  return [
-    { atMs: 1000, cmd: { type: "SetPriority", incidentId: "cfs-001", priority: "P4" } },
-    {
-      atMs: 2000,
-      cmd: {
-        type: "DispatchUnits",
-        incidentId: "cfs-001",
-        unitIds: ["u-3a12"],
-        radioCaption: "3A12, Priority 4 disturbance, beach area",
-      },
-    },
-    { atMs: 50000, cmd: { type: "Advance", ms: 50000 } },
-  ];
-}
+/** Hard codes the committed fail golden must produce (M04 / M08 bind). */
+const FAIL_HARD_REQUIRED = [
+  "FAIL_NO_VERIFY",
+  "FAIL_PRIORITY_UNDERCODE",
+  "FAIL_NO_READBACK",
+] as const;
 
-function passCommands(): Array<{ atMs: number; cmd: PlayerCommand }> {
-  return [
-    {
-      atMs: 2000,
-      cmd: {
-        type: "VerifyLocation",
-        incidentId: "cfs-001",
-        confidence: "verified",
-        location: {
-          freeform: "1400 block Ocean Drive",
-          block: "1400",
-          street: "Ocean Drive",
-          zoneId: "Z-OCEAN",
-        },
-      },
-    },
-    {
-      atMs: 3000,
-      cmd: {
-        type: "SetNature",
-        incidentId: "cfs-001",
-        natureCode: "ROBBERY-IP",
-        natureText: "Robbery in progress",
-      },
-    },
-    { atMs: 3500, cmd: { type: "SetPriority", incidentId: "cfs-001", priority: "P1" } },
-    { atMs: 4000, cmd: { type: "SetFlag", incidentId: "cfs-001", flag: "WEAPONS", value: true } },
-    {
-      atMs: 4100,
-      cmd: { type: "SetFlag", incidentId: "cfs-001", flag: "NEEDS_BACKUP", value: true },
-    },
-    {
-      atMs: 5000,
-      cmd: {
-        type: "DispatchUnits",
-        incidentId: "cfs-001",
-        unitIds: ["u-3a12", "u-3a14"],
-        radioCaption:
-          "3A12, 3A14, P1 robbery in progress, 1400 block Ocean Drive, weapon reported",
-      },
-    },
-    {
-      atMs: 8000,
-      cmd: {
-        type: "UnitRadioRx",
-        unitId: "u-3a12",
-        incidentId: "cfs-001",
-        caption: "3A12 copy, en route",
-        kind: "ACK",
-      },
-    },
-    {
-      atMs: 9000,
-      cmd: {
-        type: "UnitRadioRx",
-        unitId: "u-3a14",
-        incidentId: "cfs-001",
-        caption: "3A14 en route",
-        kind: "ACK",
-      },
-    },
-    {
-      atMs: 20000,
-      cmd: {
-        type: "UnitRadioRx",
-        unitId: "u-3a12",
-        incidentId: "cfs-001",
-        caption: "3A12 on scene",
-        kind: "STATUS",
-      },
-    },
-    {
-      atMs: 21000,
-      cmd: {
-        type: "UnitRadioRx",
-        unitId: "u-3a14",
-        incidentId: "cfs-001",
-        caption: "3A14 on scene",
-        kind: "STATUS",
-      },
-    },
-    { atMs: 40000, cmd: { type: "SetUnitStatus", unitId: "u-3a12", status: "CLR" } },
-    { atMs: 40100, cmd: { type: "SetUnitStatus", unitId: "u-3a12", status: "AVL" } },
-    { atMs: 40200, cmd: { type: "SetUnitStatus", unitId: "u-3a14", status: "CLR" } },
-    { atMs: 40300, cmd: { type: "SetUnitStatus", unitId: "u-3a14", status: "AVL" } },
-    {
-      atMs: 41000,
-      cmd: { type: "ClearIncident", incidentId: "cfs-001", disposition: "GOA" },
-    },
-  ];
+function replayRecord(
+  pack: ReturnType<typeof loadDefaultPack>,
+  record: SessionRecord
+) {
+  return replaySession(
+    pack,
+    baseUnitsA07(),
+    [incidentRobberyBadAddress()],
+    record
+  );
 }
 
 describe("M08 sacred invariant — SessionRecord headless replay", () => {
   const pack = loadDefaultPack();
 
-  it("fail path: required hard codes present and double-replay identical", () => {
+  it("fail path: post-cue hard fails + double-replay identical", () => {
     const commands = failCommands();
-    const base = () =>
-      new Runtime({
-        pack,
-        scenarioId: "checkride_a07_ocean_robbery_v1",
-        seed: 305001,
-        units: baseUnitsA07(),
-        incidents: [incidentRobberyBadAddress()],
-      });
-
-    const rt1 = base();
+    const rt1 = new Runtime({
+      pack,
+      scenarioId: "checkride_a07_ocean_robbery_v1",
+      seed: 305001,
+      units: baseUnitsA07(),
+      incidents: [incidentRobberyBadAddress()],
+    });
     rt1.applyAll(commands);
     const d1 = rt1.debrief();
     const key1 = hardMultisetKey(d1.hardFails);
@@ -147,29 +71,42 @@ describe("M08 sacred invariant — SessionRecord headless replay", () => {
       packId: pack.id,
       packVersion: pack.version,
       seed: 305001,
+      engineVersion: ENGINE_VERSION,
       commands,
     };
 
-    const r2 = replaySession(pack, baseUnitsA07(), [incidentRobberyBadAddress()], record);
-    const r3 = replaySession(pack, baseUnitsA07(), [incidentRobberyBadAddress()], record);
+    const r2 = replayRecord(pack, record);
+    const r3 = replayRecord(pack, record);
 
     expect(hardMultisetKey(r2.debrief.hardFails)).toBe(key1);
     expect(hardMultisetKey(r3.debrief.hardFails)).toBe(key1);
     expect(r2.debrief.passed).toBe(false);
 
-    const required = [
-      "FAIL_NO_VERIFY",
-      "FAIL_PRIORITY_UNDERCODE",
-      "FAIL_NO_READBACK",
-      "FAIL_NO_BACKUP",
-    ];
-    expect(includesAllHard(d1.hardFails, required)).toBe(true);
+    expect(
+      includesAllHard(d1.hardFails, [
+        "FAIL_NO_VERIFY",
+        "FAIL_PRIORITY_UNDERCODE",
+        "FAIL_NO_READBACK",
+        "FAIL_NO_BACKUP",
+      ])
+    ).toBe(true);
 
-    // write-through assertion for coverage evidence
+    for (const g of d1.hardFails) {
+      if (
+        [
+          "FAIL_PRIORITY_UNDERCODE",
+          "FAIL_NO_VERIFY",
+          "FAIL_NO_BACKUP",
+          "FAIL_SAFETY_NOT_AIRED",
+        ].includes(g.code)
+      ) {
+        expect(g.atMs).toBeGreaterThanOrEqual(15000);
+      }
+    }
     expect(hardCodesFromGrades(d1.hardFails).length).toBeGreaterThanOrEqual(4);
   });
 
-  it("pass path: zero hard fails, double-replay identical empty multiset", () => {
+  it("pass path: zero hard fails, double-replay empty multiset", () => {
     const commands = passCommands();
     const record: SessionRecord = {
       schemaVersion: 1,
@@ -177,39 +114,83 @@ describe("M08 sacred invariant — SessionRecord headless replay", () => {
       packId: pack.id,
       packVersion: pack.version,
       seed: 305001,
+      engineVersion: ENGINE_VERSION,
       commands,
     };
-    const a = replaySession(pack, baseUnitsA07(), [incidentRobberyBadAddress()], record);
-    const b = replaySession(pack, baseUnitsA07(), [incidentRobberyBadAddress()], record);
+    const a = replayRecord(pack, record);
+    const b = replayRecord(pack, record);
     expect(a.debrief.passed).toBe(true);
     expect(a.debrief.hardFails).toEqual([]);
-    expect(hardMultisetKey(a.debrief.hardFails)).toBe(hardMultisetKey(b.debrief.hardFails));
-    expect(hardMultisetKey(a.debrief.hardFails)).toBe("");
+    expect(hardMultisetKey(a.debrief.hardFails)).toBe(
+      hardMultisetKey(b.debrief.hardFails)
+    );
   });
 
-  it("committed session_fail.json matches runtime multiset when present", () => {
-    const p = join(
-      root,
-      "scenarios/checkride_a07_ocean_robbery_v1/session_fail.json"
+  /**
+   * S1-VACUOUS fix: bind committed session_fail.json with NO rewrite.
+   * Must NOT call any writeSessionFiles / regenerate helper.
+   * Asserts are bare — no try/catch may swallow failures.
+   * External corruption of this file must turn this test red.
+   */
+  it("committed session_fail.json is bound WITHOUT rewrite (S1-VACUOUS)", () => {
+    expect(existsSync(failPath)).toBe(true);
+    const record = JSON.parse(readFileSync(failPath, "utf8")) as SessionRecord;
+    expect(record.commands.length).toBeGreaterThan(0);
+    const { debrief } = replayRecord(pack, record);
+    expect(includesAllHard(debrief.hardFails, [...FAIL_HARD_REQUIRED])).toBe(
+      true
     );
+  });
+
+  /**
+   * In-process mutation protocol (author proof; VERIFIER re-runs externally):
+   * corrupt session_fail.json on disk → includesAllHard false → restore → true.
+   * try/finally restores the golden only; it does NOT catch assertion failures.
+   */
+  it("mutation: corrupt session_fail.json → includesAllHard false; restore → true", () => {
+    expect(existsSync(failPath)).toBe(true);
+    const bak = failPath + ".bak";
+    copyFileSync(failPath, bak);
     try {
-      const record = JSON.parse(readFileSync(p, "utf8")) as SessionRecord;
-      const { debrief } = replaySession(
-        pack,
-        baseUnitsA07(),
-        [incidentRobberyBadAddress()],
-        record
+      const rec = JSON.parse(readFileSync(failPath, "utf8")) as SessionRecord;
+      // Corrupt one command (DispatchUnits → NoOp), keep remaining steps
+      const di = rec.commands.findIndex((c) => c.cmd?.type === "DispatchUnits");
+      expect(di).toBeGreaterThanOrEqual(0);
+      rec.commands[di] = { atMs: rec.commands[di].atMs, cmd: { type: "NoOp" } };
+      writeFileSync(failPath, JSON.stringify(rec, null, 2) + "\n");
+
+      const broken = JSON.parse(readFileSync(failPath, "utf8")) as SessionRecord;
+      const { debrief } = replayRecord(pack, broken);
+      expect(includesAllHard(debrief.hardFails, [...FAIL_HARD_REQUIRED])).toBe(
+        false
       );
-      expect(
-        includesAllHard(debrief.hardFails, [
-          "FAIL_NO_VERIFY",
-          "FAIL_PRIORITY_UNDERCODE",
-          "FAIL_NO_READBACK",
-        ])
-      ).toBe(true);
-    } catch {
-      // file written in same wave — regenerate below in sim write
-      expect(true).toBe(true);
+    } finally {
+      copyFileSync(bak, failPath);
+      unlinkSync(bak);
     }
+
+    const good = JSON.parse(readFileSync(failPath, "utf8")) as SessionRecord;
+    const { debrief } = replayRecord(pack, good);
+    expect(includesAllHard(debrief.hardFails, [...FAIL_HARD_REQUIRED])).toBe(
+      true
+    );
+  });
+
+  /**
+   * S1-VACUOUS acceptance also covers session_pass.json:
+   * read committed file only — no regenerate. Empty/NoOp play must not
+   * satisfy the bind (vacuous "passed with zero hard fails" is not enough).
+   */
+  it("committed session_pass.json bound without rewrite", () => {
+    expect(existsSync(passPath)).toBe(true);
+    const record = JSON.parse(readFileSync(passPath, "utf8")) as SessionRecord;
+    const types = record.commands.map((c) => c.cmd.type);
+    // Structural bind: a real pass script, not a decorative empty session
+    expect(record.commands.length).toBeGreaterThanOrEqual(8);
+    expect(types).toContain("VerifyLocation");
+    expect(types).toContain("DispatchUnits");
+    const { debrief } = replayRecord(pack, record);
+    expect(debrief.passed).toBe(true);
+    expect(debrief.hardFails).toEqual([]);
   });
 });

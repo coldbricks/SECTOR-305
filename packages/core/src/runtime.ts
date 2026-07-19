@@ -25,12 +25,6 @@ import type {
   UnitStatus,
 } from "./types.js";
 
-let idSeq = 0;
-function nid(prefix: string): string {
-  idSeq += 1;
-  return `${prefix}_${idSeq.toString(36)}`;
-}
-
 export interface CreateRuntimeOpts {
   pack: DoctrinePack;
   scenarioId: string;
@@ -49,12 +43,19 @@ export class Runtime {
     new Map();
   /** Applied knowable-schedule cue keys: `${incidentId}:${atMs}:${facet}` */
   private appliedCues = new Set<string>();
+  /** Instance-local id counter (S3: no module-global interleave). */
+  private idSeq = 0;
+
+  private nid(prefix: string): string {
+    this.idSeq += 1;
+    return `${prefix}_${this.idSeq.toString(36)}`;
+  }
 
   constructor(opts: CreateRuntimeOpts) {
     this.pack = opts.pack;
     this.rng = mulberry32(opts.seed);
     void this.rng;
-    idSeq = 0;
+    this.idSeq = 0;
     const units: Record<string, Unit> = {};
     for (const u of opts.units) units[u.id] = { ...u };
     const incidents: Record<string, Incident> = {};
@@ -97,7 +98,7 @@ export class Runtime {
     if (this.state.ended && cmd.type !== "Advance") return this.snapshot();
     const at = this.state.clockMs;
     this.state.simLog.push({
-      id: nid("ev"),
+      id: this.nid("ev"),
       atMs: at,
       kind: "command",
       command: cmd,
@@ -250,6 +251,55 @@ export class Runtime {
         }
       }
     }
+
+    // FAIL_CHANNEL_ABANDON: ≥2 high-acuity pending, player only worked lower
+    const highPending = Object.values(this.state.incidents).filter(
+      (i) =>
+        (i.status === "PENDING" || i.status === "HOLD") &&
+        priorityRank(i.priority) <= 1
+    );
+    if (highPending.length >= 2) {
+      const already = this.state.gradeLog.some((g) => g.code === "FAIL_CHANNEL_ABANDON");
+      if (!already) {
+        this.grade({
+          severity: "hard_fail",
+          code: "FAIL_CHANNEL_ABANDON",
+          rubricId: "MUL_ABANDON",
+          message: "Multiple high-acuity CFS pending — channel abandon / concurrency fail.",
+          evidence: {
+            expected: "triage high-acuity queue",
+            actual: `${highPending.length} high pending`,
+            ruleRef: "concurrency.abandon",
+          },
+        });
+      }
+    }
+
+    // FAIL_STATUS_STALE: unit OS on high-risk > 5 min without note
+    for (const u of Object.values(this.state.units)) {
+      if (u.status !== "OS" || !u.assignedIncidentId) continue;
+      const dwell = end - u.statusChangedAtMs;
+      if (dwell > 300_000) {
+        const already = this.state.gradeLog.some(
+          (g) => g.code === "FAIL_STATUS_STALE" && g.unitId === u.id
+        );
+        if (!already) {
+          this.grade({
+            severity: "hard_fail",
+            code: "FAIL_STATUS_STALE",
+            rubricId: "STA_STALE",
+            unitId: u.id,
+            incidentId: u.assignedIncidentId,
+            message: `${u.callsign} on scene stale >5m without status hygiene.`,
+            evidence: {
+              expected: "status update within 300s",
+              actual: `${dwell}ms`,
+              ruleRef: "timers.status_stale",
+            },
+          });
+        }
+      }
+    }
   }
 
   private getIncident(id: string): Incident | null {
@@ -264,7 +314,7 @@ export class Runtime {
     partial: Omit<GradeEvent, "id" | "atMs"> & { atMs?: number; code: GradeCode }
   ): void {
     const ev: GradeEvent = {
-      id: nid("gr"),
+      id: this.nid("gr"),
       atMs: partial.atMs ?? this.state.clockMs,
       severity: partial.severity,
       code: partial.code,
@@ -290,6 +340,7 @@ export class Runtime {
     }
     if (cmd.confidence === "verified" || cmd.confidence === "partial") {
       // Align freeform with truth when player verifies correctly against truth zone
+      // TRUTH-GATE-OK(verify-alignment): world-model fill after player-correct zone, not acuity grading
       if (cmd.location?.zoneId && cmd.location.zoneId === inc.truth.actualLocation.zoneId) {
         inc.location = {
           ...inc.location,
@@ -329,6 +380,35 @@ export class Runtime {
         ? `Priority ${prev} → ${priority} (${reason})`
         : `Priority ${prev} → ${priority}`,
     });
+    // Upgrade while units rolling without radio re-tone → FAIL_RECLASS_NO_RADIO
+    if (priorityRank(priority) < priorityRank(prev)) {
+      const rolling = inc.assignedUnitIds.some((uid) => {
+        const u = this.getUnit(uid);
+        return u && (u.status === "DIS" || u.status === "ER" || u.status === "OS");
+      });
+      if (rolling) {
+        const recentRadio = this.state.radioLog.some(
+          (r) =>
+            r.direction === "dispatch_tx" &&
+            r.atMs >= this.state.clockMs - 1000 &&
+            r.incidentId === incidentId
+        );
+        if (!recentRadio) {
+          this.grade({
+            severity: "hard_fail",
+            code: "FAIL_RECLASS_NO_RADIO",
+            rubricId: "PRI_RETONE",
+            incidentId,
+            message: "Priority upgraded while units rolling without radio re-tone.",
+            evidence: {
+              expected: "dispatch re-tone",
+              actual: `${prev}→${priority}`,
+              ruleRef: "priority.retone",
+            },
+          });
+        }
+      }
+    }
     // Downgrade while units rolling
     if (priorityRank(priority) > priorityRank(prev)) {
       const rolling = inc.assignedUnitIds.some((uid) => {
@@ -351,6 +431,7 @@ export class Runtime {
       }
     }
     // Undercode vs truth — only hard-fail when high acuity is KNOWABLE (C10)
+    // TRUTH-GATE-OK(setPriority): hard path gated by isHighAcuityKnowable; soft path pre-cue only
     if (priorityRank(priority) > priorityRank(inc.truth.actualPriority)) {
       if (this.isHighAcuityKnowable(inc)) {
         this.grade({
@@ -385,6 +466,7 @@ export class Runtime {
   /** Information-set: high acuity only grades hard undercode when knowable. */
   private isHighAcuityKnowable(inc: Incident): boolean {
     if (inc.flags.includes("WEAPONS") || inc.flags.includes("IN_PROGRESS")) return true;
+    // TRUTH-GATE-OK(gate-definition): this method IS the knowable gate
     const sched = inc.truth.knowableSchedule;
     if (!sched || sched.length === 0) {
       // No schedule → truth is immediately knowable (legacy authoring)
@@ -406,6 +488,7 @@ export class Runtime {
 
   private applyKnowableSchedule(start: number, end: number): void {
     for (const inc of Object.values(this.state.incidents)) {
+      // TRUTH-GATE-OK(schedule-inject): reveals facets into player-visible notes/flags at cue time
       const sched = inc.truth.knowableSchedule;
       if (!sched?.length) continue;
       for (const cue of sched) {
@@ -496,6 +579,7 @@ export class Runtime {
     if (!inc) return;
 
     // Undercode at dispatch time (even if player never touched priority control)
+    // TRUTH-GATE-OK(dispatch-undercode): hard-fail only when isHighAcuityKnowable
     if (
       priorityRank(inc.priority) > priorityRank(inc.truth.actualPriority) &&
       this.isHighAcuityKnowable(inc)
@@ -515,6 +599,7 @@ export class Runtime {
     }
 
     // Location gate: high set priority OR knowable high truth acuity requires verify
+    // TRUTH-GATE-OK(dispatch-verify): acuity via isHighAcuityKnowable, not raw actualPriority
     const highAcuity =
       priorityRank(inc.priority) <= 1 || this.isHighAcuityKnowable(inc);
     if (
@@ -538,6 +623,7 @@ export class Runtime {
     }
 
     // Wrong zone vs truth (dispatched to wrong place belief that contradicts truth after verify opportunity)
+    // TRUTH-GATE-OK(verified-zone-compare): only after player claimed verified; grades wrong verify
     if (
       inc.locationConfidence === "verified" &&
       inc.location.zoneId !== inc.truth.actualLocation.zoneId
@@ -607,12 +693,14 @@ export class Runtime {
       inc.status = "DISPATCHED";
     }
 
-    // Backup policy
+    // Backup policy — only from knowable high risk / flags (no raw truth.weapons pre-cue)
+    // TRUTH-GATE-OK(dispatch-backup): requiresBackup only when isHighAcuityKnowable
     const needsBackup =
       inc.flags.includes("NEEDS_BACKUP") ||
-      inc.truth.requiresBackup ||
-      (priorityRank(inc.priority) <= 1 &&
-        (inc.truth.weapons || inc.flags.includes("WEAPONS") || inc.truth.inProgress));
+      (this.isHighAcuityKnowable(inc) &&
+        (inc.truth.requiresBackup ||
+          inc.flags.includes("WEAPONS") ||
+          priorityRank(inc.priority) <= 1));
     if (needsBackup && inc.assignedUnitIds.length < this.pack.assignment.minBackupUnitsP1) {
       this.grade({
         severity: "hard_fail",
@@ -628,31 +716,81 @@ export class Runtime {
       });
     }
 
-    // Weapons known but not flagged / not in radio
+    // Jurisdiction soft-hard: PORT zone without REF disposition path → FAIL_JURISDICTION
     if (
-      (inc.truth.weapons || inc.flags.includes("WEAPONS")) &&
-      radioCaption &&
-      !/weapon|gun|knife|armed/i.test(radioCaption)
+      (inc.location.zoneId === "Z-PORT" || inc.jurisdictionId === "PORT") &&
+      !inc.flags.includes("HANDOFF_NOTED")
     ) {
       this.grade({
         severity: "hard_fail",
-        code: "FAIL_SAFETY_NOT_AIRED",
-        rubricId: "SAF_WEAPONS_RADIO",
+        code: "FAIL_JURISDICTION",
+        rubricId: "JURIS_PORT",
         incidentId,
-        message: "Known weapons/threat not aired on dispatch radio.",
+        message: "Dispatched port-edge CFS without handoff/refer flag.",
         evidence: {
-          expected: "weapons in radio caption",
-          actual: radioCaption,
-          ruleRef: "safety.air_weapons",
+          expected: "HANDOFF_NOTED or REF",
+          actual: inc.jurisdictionId,
+          ruleRef: "jurisdiction.handoff",
         },
       });
     }
 
-    const caption =
-      radioCaption ??
-      this.formatDispatch(inc, assigned.map((id) => this.state.units[id]!.callsign));
+    // Traffic nature + patrol when traffic AVL → FAIL_UNIT_WRONG_TYPE (hard when traffic available)
+    if (inc.natureCode === "TRAFFIC-CRASH") {
+      const hasTraffic = Object.values(this.state.units).some(
+        (u) => u.type === "traffic" && u.status === "AVL"
+      );
+      const usedPatrolOnly = assigned.every(
+        (id) => this.state.units[id]?.type === "patrol"
+      );
+      if (hasTraffic && usedPatrolOnly && assigned.length > 0) {
+        this.grade({
+          severity: "hard_fail",
+          code: "FAIL_UNIT_WRONG_TYPE",
+          rubricId: "ASN_TYPE",
+          incidentId,
+          message: "Traffic crash assigned patrol while traffic unit AVL.",
+          evidence: {
+            expected: "traffic",
+            actual: "patrol",
+            ruleRef: "assignment.type",
+          },
+        });
+      }
+    }
 
-    const radioId = nid("rx");
+    // Build final caption first — safety grades the EFFECTIVE caption (S2-SAFETYHATCH)
+    let caption =
+      radioCaption ??
+      this.formatDispatch(
+        inc,
+        assigned.map((id) => this.state.units[id]!.callsign)
+      );
+    // TRUTH-GATE-OK(dispatch-safety): truth.weapons only when isHighAcuityKnowable
+    const weaponsKnowable =
+      inc.flags.includes("WEAPONS") ||
+      (this.isHighAcuityKnowable(inc) && inc.truth.weapons);
+    if (weaponsKnowable && !/weapon|gun|knife|armed/i.test(caption)) {
+      // House law: auto-caption must include safety when weapons knowable and player omitted
+      if (!radioCaption) {
+        caption = `${caption}, weapon reported`;
+      } else {
+        this.grade({
+          severity: "hard_fail",
+          code: "FAIL_SAFETY_NOT_AIRED",
+          rubricId: "SAF_WEAPONS_RADIO",
+          incidentId,
+          message: "Known weapons/threat not aired on dispatch radio.",
+          evidence: {
+            expected: "weapons in radio caption",
+            actual: caption,
+            ruleRef: "safety.air_weapons",
+          },
+        });
+      }
+    }
+
+    const radioId = this.nid("rx");
     const radio: RadioEvent = {
       id: radioId,
       atMs: this.state.clockMs,
@@ -664,9 +802,10 @@ export class Runtime {
       caption,
       incidentId,
       unitId: assigned[0],
-      // Readback required for high set priority OR high truth acuity (undercode cannot dodge protocol)
+      // Readback: player priority OR knowable high acuity (not raw hidden truth pre-cue)
+      // TRUTH-GATE-OK(dispatch-readback): isHighAcuityKnowable only
       requiresReadback:
-        priorityRank(inc.priority) <= 1 || priorityRank(inc.truth.actualPriority) <= 1,
+        priorityRank(inc.priority) <= 1 || this.isHighAcuityKnowable(inc),
       readbackSatisfiedAtMs: null,
       steppedOn: false,
       incomplete: false,
@@ -787,7 +926,7 @@ export class Runtime {
     u.lastKnownAtMs = this.state.clockMs;
     if (note) {
       this.state.radioLog.push({
-        id: nid("rx"),
+        id: this.nid("rx"),
         atMs: this.state.clockMs,
         channelId: this.pack.radio.channelPrimary,
         direction: "system",
@@ -844,7 +983,7 @@ export class Runtime {
     const caption = this.fillTemplateCaption(cmd.templateId, cmd.slots);
     const kind = this.templateKind(cmd.templateId);
     const radio: RadioEvent = {
-      id: nid("rx"),
+      id: this.nid("rx"),
       atMs: this.state.clockMs,
       channelId: cmd.channelId ?? this.pack.radio.channelPrimary,
       direction: "dispatch_tx",
@@ -873,7 +1012,7 @@ export class Runtime {
 
   private radioTxFreeform(cmd: Extract<PlayerCommand, { type: "RadioTxFreeform" }>): void {
     const radio: RadioEvent = {
-      id: nid("rx"),
+      id: this.nid("rx"),
       atMs: this.state.clockMs,
       channelId: cmd.channelId ?? this.pack.radio.channelPrimary,
       direction: "dispatch_tx",
@@ -922,7 +1061,7 @@ export class Runtime {
   private unitRadioRx(cmd: Extract<PlayerCommand, { type: "UnitRadioRx" }>): void {
     const u = this.getUnit(cmd.unitId);
     const radio: RadioEvent = {
-      id: nid("rx"),
+      id: this.nid("rx"),
       atMs: this.state.clockMs,
       channelId: this.pack.radio.channelPrimary,
       direction: "unit_tx",
@@ -951,8 +1090,26 @@ export class Runtime {
     // Auto status progression on common phrases
     if (u) {
       if (/on\s*scene|arrived/i.test(cmd.caption)) {
-        if (u.status === "DIS") this.setUnitStatus(cmd.unitId, "ER");
-        if (u.status === "ER" || u.status === "DIS") this.setUnitStatus(cmd.unitId, "OS");
+        if (u.status === "DIS") {
+          // S3-1: laundering DIS→OS without verbal ER — soft mark, still legal path via ER
+          this.grade({
+            severity: "soft",
+            code: "SOFT_STATUS_QUERY_LATE",
+            rubricId: "STA_LAUNDER",
+            unitId: cmd.unitId,
+            incidentId: cmd.incidentId,
+            message: "Unit reported on scene from DIS without separate en route (status laundering).",
+            evidence: {
+              expected: "DIS→ER then OS",
+              actual: "DIS→on scene phrase",
+              ruleRef: "unit.status_hygiene",
+            },
+          });
+          this.setUnitStatus(cmd.unitId, "ER");
+        }
+        if (u.status === "ER" || this.getUnit(cmd.unitId)?.status === "ER") {
+          this.setUnitStatus(cmd.unitId, "OS");
+        }
       } else if (/en\s*route|responding/i.test(cmd.caption) && u.status === "DIS") {
         this.setUnitStatus(cmd.unitId, "ER");
       }
@@ -1055,7 +1212,7 @@ export class Runtime {
     const u = this.getUnit(unitId);
     const callsign = u?.callsign ?? unitId;
     const radio: RadioEvent = {
-      id: nid("rx"),
+      id: this.nid("rx"),
       atMs: this.state.clockMs,
       channelId: this.pack.radio.channelPrimary,
       direction: "dispatch_tx",
@@ -1078,7 +1235,7 @@ export class Runtime {
 
   private injectRadio(cmd: Extract<PlayerCommand, { type: "InjectRadio" }>): void {
     const radio: RadioEvent = {
-      id: nid("rx"),
+      id: this.nid("rx"),
       atMs: this.state.clockMs,
       channelId: cmd.channelId ?? this.pack.radio.channelPrimary,
       direction: cmd.direction ?? "unit_tx",
@@ -1095,7 +1252,7 @@ export class Runtime {
     };
     this.state.radioLog.push(radio);
     this.state.simLog.push({
-      id: nid("ev"),
+      id: this.nid("ev"),
       atMs: this.state.clockMs,
       kind: "inject",
       detail: `InjectRadio ${cmd.from}: ${cmd.caption}`,
@@ -1108,7 +1265,7 @@ export class Runtime {
       ? `Emergency traffic — ${reason ?? "channel hold"}`
       : `Emergency traffic clear — ${reason ?? "resume normal"}`;
     this.state.radioLog.push({
-      id: nid("rx"),
+      id: this.nid("rx"),
       atMs: this.state.clockMs,
       channelId: this.pack.radio.channelPrimary,
       direction: "system",
@@ -1199,6 +1356,8 @@ export class Runtime {
     inc.disposition = disposition;
     inc.status = "CLEARED";
     inc.clearedAtMs = this.state.clockMs;
+    // House law (S3-2 / DOCTRINE): CFS clear is an administrative force-clear.
+    // Units are force-set AVL after dirty-close grades; not a silent laundering of illegal edges mid-call.
     for (const uid of [...inc.assignedUnitIds]) {
       const u = this.getUnit(uid);
       if (u) {
@@ -1207,6 +1366,11 @@ export class Runtime {
         u.statusChangedAtMs = this.state.clockMs;
       }
     }
+    inc.notes.push({
+      atMs: this.state.clockMs,
+      author: "system",
+      text: "CFS cleared — house law force-clear assigned units to AVL (dirty statuses already graded).",
+    });
     inc.assignedUnitIds = [];
   }
 
@@ -1268,7 +1432,7 @@ export class Runtime {
     };
     this.state.incidents[inc.id] = inc;
     this.state.simLog.push({
-      id: nid("ev"),
+      id: this.nid("ev"),
       atMs: this.state.clockMs,
       kind: "inject",
       detail: `InjectIncident ${inc.id}`,

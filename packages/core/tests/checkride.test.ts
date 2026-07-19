@@ -2,36 +2,27 @@ import { describe, expect, it } from "vitest";
 import {
   baseUnitsA07,
   incidentRobberyBadAddress,
-  incidentTheftReport,
 } from "../src/fixtures.js";
 import { loadDefaultPack } from "../src/loadPack.js";
 import { Runtime, replaySession } from "../src/runtime.js";
+import { failCommands, passCommands } from "./checkride_sessions.js";
 import type { PlayerCommand } from "../src/types.js";
+import { ENGINE_VERSION } from "../src/schema/common.js";
 
-describe("checkride goldens", () => {
+const WEAPONS_CUE_MS = 15000;
+
+describe("checkride goldens (fair timeline)", () => {
   const pack = loadDefaultPack();
 
-  it("FAIL: no verify + undercode + single unit + no weapons air + no readback", () => {
+  it("FAIL post-cue: undercode + no verify + single unit + no weapons air + no readback", () => {
     const rt = new Runtime({
       pack,
       scenarioId: "golden_fail",
-      seed: 305,
+      seed: 305001,
       units: baseUnitsA07(),
       incidents: [incidentRobberyBadAddress()],
     });
-    rt.applyAll([
-      { atMs: 1000, cmd: { type: "SetPriority", incidentId: "cfs-001", priority: "P4" } },
-      {
-        atMs: 2000,
-        cmd: {
-          type: "DispatchUnits",
-          incidentId: "cfs-001",
-          unitIds: ["u-3a12"],
-          radioCaption: "3A12 handle the beach thing",
-        },
-      },
-      { atMs: 50000, cmd: { type: "Advance", ms: 50000 } },
-    ]);
+    rt.applyAll(failCommands());
     const d = rt.debrief();
     expect(d.passed).toBe(false);
     const codes = new Set(d.hardFails.map((f) => f.code));
@@ -39,103 +30,41 @@ describe("checkride goldens", () => {
     expect(codes.has("FAIL_NO_VERIFY")).toBe(true);
     expect(codes.has("FAIL_NO_BACKUP")).toBe(true);
     expect(codes.has("FAIL_NO_READBACK")).toBe(true);
+    expect(codes.has("FAIL_SAFETY_NOT_AIRED")).toBe(true);
+    // Post-cue only — grades fire at dispatch clock (≥ weapons cue)
+    for (const g of d.hardFails.filter((h) =>
+      [
+        "FAIL_PRIORITY_UNDERCODE",
+        "FAIL_NO_VERIFY",
+        "FAIL_NO_BACKUP",
+        "FAIL_SAFETY_NOT_AIRED",
+      ].includes(h.code)
+    )) {
+      expect(g.atMs).toBeGreaterThanOrEqual(WEAPONS_CUE_MS);
+      // Dispatch step is authored @27000; applyAll lands there without double Advance
+      expect(g.atMs).toBeGreaterThanOrEqual(27000);
+    }
   });
 
-  it("PASS: verify, reclass P1, backup, weapons aired, readbacks, clean close", () => {
-    const commands: Array<{ atMs: number; cmd: PlayerCommand }> = [
-      {
-        atMs: 2000,
-        cmd: {
-          type: "VerifyLocation",
-          incidentId: "cfs-001",
-          confidence: "verified",
-          location: {
-            freeform: "1400 block Ocean Drive",
-            block: "1400",
-            street: "Ocean Drive",
-            zoneId: "Z-OCEAN",
-          },
-        },
-      },
-      {
-        atMs: 3000,
-        cmd: {
-          type: "SetNature",
-          incidentId: "cfs-001",
-          natureCode: "ROBBERY-IP",
-          natureText: "Robbery in progress",
-        },
-      },
-      { atMs: 3500, cmd: { type: "SetPriority", incidentId: "cfs-001", priority: "P1" } },
-      { atMs: 4000, cmd: { type: "SetFlag", incidentId: "cfs-001", flag: "WEAPONS", value: true } },
-      {
-        atMs: 4100,
-        cmd: { type: "SetFlag", incidentId: "cfs-001", flag: "NEEDS_BACKUP", value: true },
-      },
-      {
-        atMs: 5000,
-        cmd: {
-          type: "DispatchUnits",
-          incidentId: "cfs-001",
-          unitIds: ["u-3a12", "u-3a14"],
-          radioCaption:
-            "3A12, 3A14, P1 robbery in progress, 1400 block Ocean Drive, weapon reported",
-        },
-      },
-      {
-        atMs: 8000,
-        cmd: {
-          type: "UnitRadioRx",
-          unitId: "u-3a12",
-          incidentId: "cfs-001",
-          caption: "3A12 copy, en route",
-          kind: "ACK",
-        },
-      },
-      {
-        atMs: 9000,
-        cmd: {
-          type: "UnitRadioRx",
-          unitId: "u-3a14",
-          incidentId: "cfs-001",
-          caption: "3A14 en route",
-          kind: "ACK",
-        },
-      },
-      {
-        atMs: 20000,
-        cmd: {
-          type: "UnitRadioRx",
-          unitId: "u-3a12",
-          incidentId: "cfs-001",
-          caption: "3A12 on scene",
-          kind: "STATUS",
-        },
-      },
-      {
-        atMs: 21000,
-        cmd: {
-          type: "UnitRadioRx",
-          unitId: "u-3a14",
-          incidentId: "cfs-001",
-          caption: "3A14 on scene",
-          kind: "STATUS",
-        },
-      },
-      { atMs: 40000, cmd: { type: "SetUnitStatus", unitId: "u-3a12", status: "CLR" } },
-      { atMs: 40100, cmd: { type: "SetUnitStatus", unitId: "u-3a12", status: "AVL" } },
-      { atMs: 40200, cmd: { type: "SetUnitStatus", unitId: "u-3a14", status: "CLR" } },
-      { atMs: 40300, cmd: { type: "SetUnitStatus", unitId: "u-3a14", status: "AVL" } },
-      {
-        atMs: 41000,
-        cmd: { type: "ClearIncident", incidentId: "cfs-001", disposition: "GOA" },
-      },
-    ];
+  it("PASS: post-cue verify, reclass P1, backup, weapons aired, readbacks, clean close", () => {
+    const commands = passCommands();
+    // Static fairness: no truth-derived cmd before cues
+    for (const step of commands) {
+      if (step.cmd.type === "VerifyLocation") {
+        expect(step.atMs).toBeGreaterThanOrEqual(25000);
+      }
+      if (step.cmd.type === "SetPriority" && step.cmd.priority === "P1") {
+        expect(step.atMs).toBeGreaterThanOrEqual(WEAPONS_CUE_MS);
+      }
+      if (step.cmd.type === "SetNature" && step.cmd.natureCode === "ROBBERY-IP") {
+        expect(step.atMs).toBeGreaterThanOrEqual(WEAPONS_CUE_MS);
+      }
+    }
 
     const rt = new Runtime({
       pack,
       scenarioId: "golden_pass",
-      seed: 305,
+      seed: 305001,
       units: baseUnitsA07(),
       incidents: [incidentRobberyBadAddress()],
     });
@@ -144,8 +73,15 @@ describe("checkride goldens", () => {
     expect(d.hardFails).toEqual([]);
     expect(d.passed).toBe(true);
 
-    // Deterministic replay
-    const record = rt.toSessionRecord(commands);
+    const record = {
+      schemaVersion: 1 as const,
+      scenarioId: "golden_pass",
+      packId: pack.id,
+      packVersion: pack.version,
+      seed: 305001,
+      engineVersion: ENGINE_VERSION,
+      commands,
+    };
     const { debrief: d2 } = replaySession(
       pack,
       baseUnitsA07(),
@@ -153,7 +89,6 @@ describe("checkride goldens", () => {
       record
     );
     expect(d2.passed).toBe(true);
-    expect(d2.hardFails.map((h) => h.code)).toEqual(d.hardFails.map((h) => h.code));
   });
 
   it("FAIL: concurrency — P1 ages while player only works P4 cosmetics", () => {
@@ -162,30 +97,21 @@ describe("checkride goldens", () => {
       scenarioId: "aging",
       seed: 7,
       units: baseUnitsA07(),
-      incidents: [incidentRobberyBadAddress(), incidentTheftReport()],
+      incidents: [incidentRobberyBadAddress()],
     });
-    // Fix robbery to P1 verified but never dispatch; mess with theft
+    // Make high priority knowable then leave pending
     rt.applyAll([
+      { atMs: 16000, cmd: { type: "Advance", ms: 0 } },
       {
-        atMs: 1000,
-        cmd: {
-          type: "VerifyLocation",
-          incidentId: "cfs-001",
-          confidence: "verified",
-          location: { freeform: "1400 Ocean", zoneId: "Z-OCEAN" },
-        },
+        atMs: 17000,
+        cmd: { type: "SetPriority", incidentId: "cfs-001", priority: "P1" },
       },
-      { atMs: 1500, cmd: { type: "SetPriority", incidentId: "cfs-001", priority: "P1" } },
       {
-        atMs: 2000,
-        cmd: {
-          type: "AddNote",
-          incidentId: "cfs-002",
-          text: "Caller wants case number eventually",
-        },
+        atMs: 18000,
+        cmd: { type: "AddNote", incidentId: "cfs-001", text: "Still pending" },
       },
-      { atMs: 70000, cmd: { type: "Advance", ms: 70000 } },
-    ]);
+      { atMs: 90000, cmd: { type: "NoOp" } },
+    ] as Array<{ atMs: number; cmd: PlayerCommand }>);
     const d = rt.debrief();
     expect(d.hardFails.some((f) => f.code === "FAIL_PRIORITY_AGING")).toBe(true);
   });

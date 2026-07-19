@@ -49,6 +49,8 @@ Dispatch template elements: **unit(s), priority, nature, location, safety**.
 P0/P1 require **readback** within pack timeout (default 45s).  
 Emergency traffic holds non-emergency TX.
 
+**Safety airing (S2-SAFETYHATCH house law):** When weapons are knowable (player WEAPONS flag or post-cue knowable truth), the engine grades the **final effective caption** regardless of source. If the player supplies a `radioCaption` that omits a weapons/armed element → `FAIL_SAFETY_NOT_AIRED`. If the player omits `radioCaption`, the auto-caption **includes** `weapon reported` so silence cannot skip the safety check.
+
 ## Backup
 
 P1 violence/weapons/robbery-IP: **≥2 units** (pack `minBackupUnitsP1`).
@@ -60,6 +62,15 @@ Decisions scored against **what was knowable** via CFS fields, notes, and flags.
 ## Jurisdiction fiction
 
 Zones: Ocean, Collins, Downtown, Wynwood, Port edge. Port = handoff jurisdiction for stretch scenarios.
+
+## CFS clear force-clear (house law — S3-2)
+
+When a CFS is **CLEARED** with disposition, the engine:
+
+1. Grades `FAIL_STATUS_DIRTY_CLOSE` for any unit still DIS/ER/OS on that CFS  
+2. Then **force-sets** those units to AVL (administrative clear)
+
+This is intentional house law, not silent auto-correct of illegal mid-call transitions. Mid-call status changes still go through the 64-cell matrix. Documented system CAD note is appended on force-clear.
 
 ## Disclaimer (ship on every debrief)
 

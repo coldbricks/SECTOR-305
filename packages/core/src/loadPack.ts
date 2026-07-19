@@ -119,13 +119,22 @@ export function loadPackFromDir(dir: string): DoctrinePack {
       allowOosAssign: assignment.allowOosAssign ?? false,
       requireVerifiedOrPartialForP1: assignment.requireVerifiedOrPartialForP1 ?? true,
     },
-    rubric: hardRules.map((r) => ({
-      id: r.id ?? r.code,
-      code: r.code,
-      severity: "hard_fail" as const,
-      message: r.message ?? r.messageTemplate ?? r.code,
-      ruleRef: r.ruleRef ?? r.code,
-    })),
+    rubric: hardRules.map((r) => {
+      const row = r as {
+        id?: string;
+        code: string;
+        message?: string;
+        messageTemplate?: string;
+        ruleRef?: string;
+      };
+      return {
+        id: row.id ?? row.code,
+        code: row.code,
+        severity: "hard_fail" as const,
+        message: row.message ?? row.messageTemplate ?? row.code,
+        ruleRef: row.ruleRef ?? row.code,
+      };
+    }),
     zones: zones.map((z) => ({
       id: z.id,
       name: z.name,

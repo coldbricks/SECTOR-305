@@ -86,6 +86,7 @@ export const IncidentFlagSchema = z.enum([
   "FIRE_EMS_NEEDED",
   "DUPLICATE",
   "HOLD_ACTIVE",
+  "HANDOFF_NOTED",
 ]);
 export type IncidentFlag = z.infer<typeof IncidentFlagSchema>;
 

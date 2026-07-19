@@ -1,42 +1,94 @@
-# Critic rounds log
+# Critic rounds ledger
 
-## Round 1 — 2026-07-18
+## S0 stop-work — GIT (external S0-GIT)
 
-Findings: knowable schedule, busy watch, map, export, honesty block.  
-**Status:** addressed in residual wave.
+**Response: FIX**
 
-## Round 2 — 2026-07-18 (residual close pass)
+```
+$ git init && git add -A && git commit
+[master (root-commit) 5fc52a6] S0-GIT: initial commit — Phase 0 instrument tree
+ 90 files changed, 14218 insertions(+)
 
-| Critic | Findings | Disposition |
-|--------|----------|-------------|
-| DOCTRINE | Knowable schedule not wired | **FIXED** — `applyKnowableSchedule` + infoset tests |
-| DOCTRINE | C7–C10 thin | **FIXED** — CHALLENGE_COVERAGE + friday/ES/port + infoset + emergency |
-| FORGE | Web pack natures broken | **FIXED** — browserPack + natures.json |
-| FORGE | Session export missing | **FIXED** — Export SessionRecord button |
-| ARENA | No full busy watch | **FIXED** — fridayNight.ts 9 CFS, 15 min, tests |
-| ARENA | Map missing | **FIXED** — imperfect zone map panel (no truth pins) |
-| ANTI-EFFICIENCY | Overclaim Phase 0 closed | **HELD** — still require Round 3 zero after soak |
+$ git log --oneline -1
+5fc52a6 S0-GIT: initial commit — Phase 0 instrument tree
+```
 
-### Round 2 automated evidence
+Acceptance: `git log` shows ≥1 commit. CI file present for future remote.
 
-- `npm test` → **75/75** passed  
-- Suites: status matrix 35, sacred 3, watch 4, infoset 2, schema 7, radio 6, checkride 3, pack 4, kill 7, status 4  
+---
 
-## Round 3 — 2026-07-18 (zero-finding claim attempt)
+## External findings (docs/CRITIC_ROUND_EXTERNAL_CLAUDE.md)
 
-| Critic | Findings |
-|--------|----------|
-| DOCTRINE | None remaining for Phase 0 floor (C1–C10 have automated evidence) |
-| FORGE | None remaining for sacred invariant / loadPack / export path |
-| ARENA | None remaining for toy/kill-list guards at current scope |
-| ANTI-EFFICIENCY | Residual **soft**: Playwright not automated (manual UI_ACCEPTANCE exists); polygon GIS not required by Phase 0 imperfect map |
+### S1-PSYCHIC — FIX
 
-**ANTI-EFFICIENCY soft residual is accepted as Phase 0 out-of-floor** (manifest allows imperfect map; Playwright was L4 main-branch optional).
+- `fixtures.ts`: `knowableSchedule` weapons/nature/priority @15000, location @25000  
+- `checkride_sessions.ts`: pass/fail retimed post-cue only  
+- `psychic_guard.test.ts`: automated no-clairvoyance  
+- Fail hard fails require `atMs >= 15000` for undercode/verify/backup/safety  
 
-### Two consecutive zero hard-finding rounds
+### S1-VACUOUS — FIX
 
-- Round 2 hard findings: cleared by fixes  
-- Round 3 hard findings: **zero**  
-- Soft residual documented, not blocking Phase 0 instrument exit  
+- Removed try/catch swallow  
+- `session_fail.json` hard-bound  
+- Mutation test: corrupt session → `includesAllHard` false → restore green  
 
-**Phase 0 instrument exit: ACCEPTED with documented soft residual (no Playwright automation).**
+### S1-TRUTHLEAK — FIX
+
+- `dispatchUnits` undercode/verify/readback/backup use `isHighAcuityKnowable()`  
+- `critic_s1_s2.test.ts`: pre-cue zero hard undercode/verify; post-cue undercode fires  
+
+### S2-SAFETYHATCH — FIX
+
+- Effective caption graded; omitted caption auto-appends weapons when knowable; explicit wrong caption → FAIL_SAFETY_NOT_AIRED  
+- Tests in critic_s1_s2  
+
+### S2-ORPHANS — FIX
+
+- Emissions wired for jurisdiction, type, stale, abandon, reclass, divert, double, etc.  
+- `orphan_codes.test.ts`: every FAIL_/SOFT_ emitted or DEFERRED with phase tag  
+- FAIL_INFOSET_VIOLATION deferred as test-only by design  
+
+### S3 batch — FIX
+
+1. Status launder → SOFT_STATUS_QUERY_LATE  
+2. Force-clear documented in DOCTRINE.md + system note  
+3. idSeq instance-local  
+4. scenario.json load still Phase 0.5 (honest)  
+5. Test count now 88 (this wave)  
+
+---
+
+## Wave command evidence (pasted)
+
+```
+$ npm test
+ Test Files  13 passed (13)
+      Tests  88 passed (88)
+```
+
+```
+$ npx tsc -p packages/core/tsconfig.json --noEmit
+(exit 0, empty output)
+```
+
+---
+
+## Separate refute agent
+
+See `docs/REFUTE_ROUND_CRITIC_FIXES.md` (spawned agent; must complete before zero-finding claim).
+
+---
+
+## Wave-boundary self-check (unlimited compute)
+
+**What more could be done:**
+
+1. Wire every DEFERRED soft code with real emitters (not phase1 defer)  
+2. Scenario JSON loader so scenario.json is not decorative  
+3. Playwright 20-step UI_ACCEPTANCE in CI with mutation  
+4. Property test: random SessionRecords never use post-cue facts pre-cue  
+5. FAIL_INFOSET_VIOLATION assert on any remaining direct truth read via eslint rule  
+
+**Why not all done this second:** (1)(2)(3)(5) are real next-wave work; not skipped for cost — pending refute agent + commit of this fix wave first. (4) partially covered by psychic_guard.
+
+**Zero-finding claim:** NOT YET — wait for refute agent + second dry pass.

@@ -37,7 +37,7 @@ export function baseUnitsA07(): Unit[] {
   ];
 }
 
-/** C1+C2+C5 checkride CFS */
+/** M04 checkride CFS — knowableSchedule per binding narrative (C10) */
 export function incidentRobberyBadAddress(): Incident {
   return {
     id: "cfs-001",
@@ -88,9 +88,29 @@ export function incidentRobberyBadAddress(): Incident {
       inProgress: true,
       requiresBackup: true,
       callerLanguage: "en",
-      notes: "Truth: armed robbery in progress 1400 Ocean; caller initially minimized.",
-      // Empty schedule = truth immediately knowable (fail demos / pass reclass)
-      // Author C10 scenarios by setting knowableSchedule with delayed weapons facet.
+      notes: "Truth: armed robbery 1400 Ocean; cues delayed per M04 timeline.",
+      knowableSchedule: [
+        {
+          atMs: 15000,
+          facet: "weapons",
+          summary: "Caller says someone took a bag, maybe a knife",
+        },
+        {
+          atMs: 15000,
+          facet: "nature",
+          summary: "Sounds like robbery in progress",
+        },
+        {
+          atMs: 15000,
+          facet: "priority",
+          summary: "Elevate — weapons/IP cues",
+        },
+        {
+          atMs: 25000,
+          facet: "location",
+          summary: "Caller thinks 1400 Ocean Drive",
+        },
+      ],
     },
   };
 }
