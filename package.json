@@ -1,0 +1,24 @@
+{
+  "name": "sector-305",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Certification-grade fictional Miami A-console PSAP trainer",
+  "type": "module",
+  "scripts": {
+    "build": "npm run build -w @sector305/core && npm run build -w @sector305/web",
+    "test": "npm run test -w @sector305/core",
+    "test:all": "npm run test -w @sector305/core",
+    "sim": "npm run sim -w @sector305/core",
+    "dev": "npm run dev -w @sector305/web",
+    "typecheck": "npm run typecheck -w @sector305/core && npm run typecheck -w @sector305/web",
+    "validate:packs": "npm run validate:packs -w @sector305/core",
+    "test:e2e": "npm run test:e2e -w @sector305/web"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}

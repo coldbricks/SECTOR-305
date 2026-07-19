@@ -1,0 +1,113 @@
+{
+  "id": "se305-ems-board-v0",
+  "disclaimer": "Training fiction. Hospital radio identifiers and MEDCOM parameters are invented and non-operational. Not live diversion or CAD.",
+  "agency": "SECTOR 305 Fire · EMS / Rescue",
+  "rescues": [
+    { "id": "r-1", "callsign": "Rescue 1", "station": "FS-1", "zoneId": "Z-DOWNTOWN", "capability": ["ALS", "TRAUMA"] },
+    { "id": "r-2", "callsign": "Rescue 2", "station": "FS-2", "zoneId": "Z-WYNWOOD", "capability": ["ALS"] },
+    { "id": "r-3", "callsign": "Rescue 3", "station": "FS-3", "zoneId": "Z-DOWNTOWN", "capability": ["ALS"] },
+    { "id": "r-4", "callsign": "Rescue 4", "station": "FS-4", "zoneId": "Z-DOWNTOWN", "capability": ["ALS", "PEDS"] },
+    { "id": "r-5", "callsign": "Rescue 5", "station": "FS-5", "zoneId": "Z-WYNWOOD", "capability": ["ALS"] },
+    { "id": "r-7", "callsign": "Rescue 7", "station": "FS-7", "zoneId": "Z-PORT", "capability": ["ALS"] },
+    { "id": "r-9", "callsign": "Rescue 9", "station": "FS-9", "zoneId": "Z-COLLINS", "capability": ["ALS"] },
+    { "id": "r-15", "callsign": "Rescue 15", "station": "FS-15", "zoneId": "Z-PORT", "capability": ["ALS", "MARINE"] },
+    { "id": "r-21", "callsign": "Rescue 21", "station": "FS-1", "zoneId": "Z-DOWNTOWN", "capability": ["ALS"] },
+    { "id": "r-22", "callsign": "Rescue 22", "station": "FS-2", "zoneId": "Z-WYNWOOD", "capability": ["BLS"] }
+  ],
+  "airRescue": [
+    { "id": "ars-1", "callsign": "AIR RESCUE 1", "pad": "MIA", "status": "STANDBY" },
+    { "id": "ars-2", "callsign": "AIR RESCUE 2", "pad": "NORTH", "status": "AVL" }
+  ],
+  "hospitals": [
+    {
+      "id": "jmh",
+      "name": "Jackson Memorial",
+      "alpha": "MED-JACKSON",
+      "freqMHz": null,
+      "tone": "SIM MED 1",
+      "level": "Level I",
+      "divert": false
+    },
+    {
+      "id": "j-north",
+      "name": "Jackson North",
+      "alpha": "MED-J NORTH",
+      "freqMHz": null,
+      "tone": "SIM MED 2",
+      "level": "ED",
+      "divert": false
+    },
+    {
+      "id": "j-south",
+      "name": "Jackson South",
+      "alpha": "MED-J SOUTH",
+      "freqMHz": null,
+      "tone": "SIM MED 3",
+      "level": "ED",
+      "divert": false
+    },
+    {
+      "id": "mount-sinai",
+      "name": "Mount Sinai",
+      "alpha": "MED-MOUNT",
+      "freqMHz": null,
+      "tone": "SIM MED 4",
+      "level": "ED",
+      "divert": false
+    },
+    {
+      "id": "baptist",
+      "name": "Baptist Miami",
+      "alpha": "MED-BAPTIST",
+      "freqMHz": null,
+      "tone": "SIM MED 5",
+      "level": "ED",
+      "divert": false
+    },
+    {
+      "id": "mercy",
+      "name": "Mercy Hospital",
+      "alpha": "MED-MERCY",
+      "freqMHz": null,
+      "tone": "SIM MED 6",
+      "level": "ED",
+      "divert": true
+    },
+    {
+      "id": "kendall",
+      "name": "Kendall Regional",
+      "alpha": "MED-KENDALL",
+      "freqMHz": null,
+      "tone": "SIM MED 7",
+      "level": "Trauma",
+      "divert": false
+    },
+    {
+      "id": "aventura",
+      "name": "Aventura Hospital",
+      "alpha": "MED-AVENTURA",
+      "freqMHz": null,
+      "tone": "SIM MED 8",
+      "level": "ED",
+      "divert": false
+    },
+    {
+      "id": "dade-call",
+      "name": "SE305 Calling Med 9",
+      "alpha": "SE305 Calling",
+      "freqMHz": null,
+      "tone": "SIM MED 9",
+      "level": "MEDCOM",
+      "divert": false
+    },
+    {
+      "id": "central-ctrl",
+      "name": "SE305 Medical Control",
+      "alpha": "SE305 Control",
+      "freqMHz": null,
+      "tone": "SIM MED 10",
+      "level": "CONTROL",
+      "divert": false
+    }
+  ]
+}

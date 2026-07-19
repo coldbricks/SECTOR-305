@@ -1,0 +1,29 @@
+{
+  "id": "checkride_a07_ocean_robbery_v1",
+  "version": "1.0.0",
+  "kind": "checkride",
+  "packId": "miami-a07-police-v0",
+  "seed": 305001,
+  "title": "A07 Ocean corridor — robbery with bad initial address",
+  "adversarialTags": [
+    "C1",
+    "C2",
+    "C4",
+    "C5"
+  ],
+  "contentNotes": [
+    "weapons-in-progress CAD text only",
+    "no-gore",
+    "fictional location"
+  ],
+  "passConditions": {
+    "noHardFails": true
+  },
+  "expectedHardFailsOnFailSession": [
+    "FAIL_NO_VERIFY",
+    "FAIL_PRIORITY_UNDERCODE",
+    "FAIL_NO_READBACK",
+    "FAIL_NO_BACKUP",
+    "FAIL_SAFETY_NOT_AIRED"
+  ]
+}

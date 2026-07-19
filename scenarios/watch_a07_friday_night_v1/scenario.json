@@ -1,0 +1,23 @@
+{
+  "id": "watch_a07_friday_night_v1",
+  "version": "1.0.0",
+  "kind": "watch",
+  "packId": "miami-a07-police-v0",
+  "seed": 305200,
+  "title": "A07 Friday night — single sector concurrency",
+  "durationMs": 900000,
+  "adversarialTags": ["C6", "C7", "C8"],
+  "contentNotes": [
+    "fictional incidents",
+    "language delay as note only",
+    "port handoff friction",
+    "no-gore"
+  ],
+  "minCfs": 9,
+  "minUnits": 10,
+  "passConditions": {
+    "noHardFails": false,
+    "note": "Watch grades soft+hard; reference bad play expects FAIL_PRIORITY_AGING"
+  },
+  "implementation": "packages/core/src/watch/fridayNight.ts"
+}

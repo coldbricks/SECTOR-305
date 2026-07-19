@@ -1,0 +1,29 @@
+name: Doctrine or grading challenge
+description: Challenge a rule, grade, cutoff, or information-set decision with evidence.
+title: "[DOCTRINE] "
+labels: ["doctrine-review"]
+body:
+  - type: input
+    id: code
+    attributes:
+      label: Grade or rubric code
+      placeholder: "FAIL_NO_VERIFY"
+    validations:
+      required: true
+  - type: textarea
+    id: claim
+    attributes:
+      label: What is wrong or unfair?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Reproducible evidence
+      description: Include knowable cues, scenario clock, command sequence, and desired outcome.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed doctrine or grader change

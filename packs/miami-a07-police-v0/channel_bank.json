@@ -1,0 +1,27 @@
+{
+  "id": "se305-fictional-channel-bank-v1",
+  "source": "Independently authored SECTOR 305 fictional training fixture",
+  "sourceFile": null,
+  "portal": "",
+  "disclaimer": "Entirely fictional channel plan for SECTOR 305 training. No listed channel, identifier, talkgroup, agency, or radio parameter is operational data.",
+  "channels": [
+    { "freqMHz": null, "alpha": "SE305 PRI", "desc": "Primary police dispatch", "tone": "TG 30501", "mode": "SIM", "tag": "Law Dispatch", "agency": "SECTOR 305 Police", "callsign": "", "role": "pri" },
+    { "freqMHz": null, "alpha": "SE305 OCEAN", "desc": "Ocean sector dispatch", "tone": "TG 30502", "mode": "SIM", "tag": "Law Dispatch", "agency": "SECTOR 305 Police", "callsign": "", "role": "pri" },
+    { "freqMHz": null, "alpha": "SE305 CENTRAL", "desc": "Central sector dispatch", "tone": "TG 30503", "mode": "SIM", "tag": "Law Dispatch", "agency": "SECTOR 305 Police", "callsign": "", "role": "pri" },
+    { "freqMHz": null, "alpha": "SE305 TAC 1", "desc": "Tactical response one", "tone": "TG 30511", "mode": "SIM", "tag": "Law Tac", "agency": "SECTOR 305 Police", "callsign": "", "role": "tac" },
+    { "freqMHz": null, "alpha": "SE305 TAC 2", "desc": "Tactical response two", "tone": "TG 30512", "mode": "SIM", "tag": "Law Tac", "agency": "SECTOR 305 Police", "callsign": "", "role": "tac" },
+    { "freqMHz": null, "alpha": "SE305 TAC 3", "desc": "Tactical response three", "tone": "TG 30513", "mode": "SIM", "tag": "Law Tac", "agency": "SECTOR 305 Police", "callsign": "", "role": "tac" },
+    { "freqMHz": null, "alpha": "SE305 AIR", "desc": "Air support coordination", "tone": "TG 30520", "mode": "SIM", "tag": "Law Tac", "agency": "SECTOR 305 Police", "callsign": "", "role": "tac" },
+    { "freqMHz": null, "alpha": "SE305 EVENT", "desc": "Planned event operations", "tone": "TG 30521", "mode": "SIM", "tag": "Interop", "agency": "SECTOR 305 Unified", "callsign": "", "role": "svc" },
+    { "freqMHz": null, "alpha": "SE305 FIRE E", "desc": "East fire dispatch", "tone": "TG 30531", "mode": "SIM", "tag": "Fire Dispatch", "agency": "SECTOR 305 Fire", "callsign": "", "role": "pri" },
+    { "freqMHz": null, "alpha": "SE305 FIRE C", "desc": "Central fire dispatch", "tone": "TG 30532", "mode": "SIM", "tag": "Fire Dispatch", "agency": "SECTOR 305 Fire", "callsign": "", "role": "pri" },
+    { "freqMHz": null, "alpha": "SE305 FIRE S", "desc": "South fire dispatch", "tone": "TG 30533", "mode": "SIM", "tag": "Fire Dispatch", "agency": "SECTOR 305 Fire", "callsign": "", "role": "pri" },
+    { "freqMHz": null, "alpha": "SE305 FG 1", "desc": "Fireground one", "tone": "TG 30541", "mode": "SIM", "tag": "Fire-Tac", "agency": "SECTOR 305 Fire", "callsign": "", "role": "tac" },
+    { "freqMHz": null, "alpha": "SE305 FG 2", "desc": "Fireground two", "tone": "TG 30542", "mode": "SIM", "tag": "Fire-Tac", "agency": "SECTOR 305 Fire", "callsign": "", "role": "tac" },
+    { "freqMHz": null, "alpha": "SE305 RESCUE", "desc": "Rescue dispatch", "tone": "TG 30551", "mode": "SIM", "tag": "EMS Dispatch", "agency": "SECTOR 305 Rescue", "callsign": "", "role": "pri" },
+    { "freqMHz": null, "alpha": "SE305 MED 1", "desc": "Medical coordination one", "tone": "TG 30552", "mode": "SIM", "tag": "Hospital", "agency": "SECTOR 305 Rescue", "callsign": "", "role": "svc" },
+    { "freqMHz": null, "alpha": "SE305 MED 2", "desc": "Medical coordination two", "tone": "TG 30553", "mode": "SIM", "tag": "Hospital", "agency": "SECTOR 305 Rescue", "callsign": "", "role": "svc" },
+    { "freqMHz": null, "alpha": "SE305 INTEROP", "desc": "Unified command interoperability", "tone": "TG 30561", "mode": "SIM", "tag": "Interop", "agency": "SECTOR 305 Unified", "callsign": "", "role": "svc" },
+    { "freqMHz": null, "alpha": "SE305 ADMIN", "desc": "Administrative coordination", "tone": "TG 30590", "mode": "SIM", "tag": "Law Talk", "agency": "SECTOR 305 Police", "callsign": "", "role": "svc" }
+  ]
+}

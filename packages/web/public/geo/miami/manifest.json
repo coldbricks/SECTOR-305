@@ -1,0 +1,113 @@
+{
+  "id": "miami-city-gis-v0",
+  "title": "City of Miami GIS basemap pack (prestige plate)",
+  "portal": "https://datahub-miamigis.opendata.arcgis.com/",
+  "attribution": "City of Miami GIS Open Data",
+  "disclaimer": "Basemap atmosphere only. Not official dispatch CAD. SECTOR 305 is fictional training — no truth pins.",
+  "crs": "EPSG:4326",
+  "bbox": {
+    "minLon": -80.3198145419837,
+    "minLat": 25.7089900369234,
+    "maxLon": -80.1357823981633,
+    "maxLat": 25.855806506695
+  },
+  "viewPad": 0.04,
+  "layers": [
+    {
+      "id": "city-boundary",
+      "file": "city-boundary.geojson",
+      "kind": "polygon",
+      "z": 0,
+      "defaultOn": true,
+      "short": "BNDY",
+      "label": "City boundary",
+      "group": "base"
+    },
+    {
+      "id": "police-districts",
+      "file": "police-districts.geojson",
+      "kind": "polygon",
+      "z": 1,
+      "defaultOn": true,
+      "labelProp": "PDDISTNAME",
+      "short": "DIST",
+      "label": "PD districts",
+      "group": "police"
+    },
+    {
+      "id": "police-neighborhoods",
+      "file": "police-neighborhoods.geojson",
+      "kind": "polygon",
+      "z": 2,
+      "defaultOn": false,
+      "labelProp": "PDNETNAME",
+      "short": "NET",
+      "label": "PD neighborhoods",
+      "group": "police"
+    },
+    {
+      "id": "police-zones",
+      "file": "police-zones.geojson",
+      "kind": "polygon",
+      "z": 3,
+      "defaultOn": false,
+      "labelProp": "PDZONEID",
+      "short": "ZONE",
+      "label": "PD zones",
+      "group": "police"
+    },
+    {
+      "id": "code-enforcement",
+      "file": "code-enforcement.geojson",
+      "kind": "polygon",
+      "z": 4,
+      "defaultOn": false,
+      "labelProp": "CESECTNAME",
+      "short": "CODE",
+      "label": "Code sectors",
+      "group": "civic"
+    },
+    {
+      "id": "major-roads",
+      "file": "major-roads.geojson",
+      "kind": "line",
+      "z": 5,
+      "defaultOn": true,
+      "short": "ROAD",
+      "label": "Major roads",
+      "group": "infra"
+    },
+    {
+      "id": "evac-routes",
+      "file": "evac-routes.geojson",
+      "kind": "line",
+      "z": 6,
+      "defaultOn": false,
+      "short": "EVAC",
+      "label": "Evac routes",
+      "group": "infra"
+    },
+    {
+      "id": "fire-stations",
+      "file": "fire-stations.geojson",
+      "kind": "point",
+      "z": 7,
+      "defaultOn": true,
+      "labelProp": "NAME",
+      "short": "FIRE",
+      "label": "Fire stations",
+      "group": "points"
+    },
+    {
+      "id": "landmarks",
+      "file": "landmarks.geojson",
+      "kind": "point",
+      "z": 8,
+      "defaultOn": false,
+      "labelProp": "LMNAME",
+      "short": "LMK",
+      "label": "Landmarks",
+      "group": "points"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "miami-a07-police-v0",
+  "version": "0.2.0",
+  "title": "A07 Coastal / Central — Police A-Console (fictional)",
+  "localeDefault": "en",
+  "disclaimer": "Fictional training doctrine for SECTOR 305. Not official Miami-Dade, City of Miami, or any agency SOP. Standards-aligned educational concepts only. Not APCO/NENA/IAED certification.",
+  "consoleId": "A07",
+  "sectorId": "SE305-A07",
+  "files": {
+    "priorities": "priorities.json",
+    "unit_statuses": "unit_statuses.json",
+    "natures": "natures.json",
+    "dispositions": "dispositions.json",
+    "radio_templates": "radio_templates.json",
+    "assignment": "assignment.json",
+    "location_confidence": "location_confidence.json",
+    "cfs_lifecycle": "cfs_lifecycle.json",
+    "rubric": "rubric.json",
+    "rubric_soft": "rubric_soft.json",
+    "zones": "zones.json",
+    "nature_matrix": "nature_matrix.json",
+    "strings_en": "strings/en.json"
+  },
+  "engineVersion": "0.2.0"
+}

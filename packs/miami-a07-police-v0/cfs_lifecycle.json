@@ -1,0 +1,135 @@
+{
+  "schema": "s305.cfs_lifecycle.v1",
+  "packId": "miami-a07-police-v0",
+  "incidentStatuses": [
+    {
+      "code": "PENDING",
+      "name": "Pending",
+      "definition": "CFS entered, not yet dispatched. SLA aging applies by priority."
+    },
+    {
+      "code": "DISPATCHED",
+      "name": "Dispatched",
+      "definition": "At least one unit assigned and DIS or higher on the call; firstDispatchAtMs set."
+    },
+    {
+      "code": "WORKING",
+      "name": "Working",
+      "definition": "Unit OS or active work on scene; firstOnSceneAtMs set."
+    },
+    {
+      "code": "HOLD",
+      "name": "Hold",
+      "definition": "Explicit hold/stack. Forbidden for P0–P1 (and P2 per priority hold_forbidden). Requires reason for allowed priorities."
+    },
+    {
+      "code": "CLEARED",
+      "name": "Cleared",
+      "definition": "Terminal clear with disposition; clearedAtMs set; no dirty unit statuses remaining."
+    },
+    {
+      "code": "CANCELLED",
+      "name": "Cancelled",
+      "definition": "Terminal cancel before or after dispatch with disposition CAN or equivalent path."
+    },
+    {
+      "code": "LINKED_DUP",
+      "name": "Linked duplicate",
+      "definition": "Terminal or holding link state for duplicate CFS; disposition DUP; must reference primary incident."
+    }
+  ],
+  "statusOrder": [
+    "PENDING",
+    "DISPATCHED",
+    "WORKING",
+    "HOLD",
+    "CLEARED",
+    "CANCELLED",
+    "LINKED_DUP"
+  ],
+  "transitions": [
+    { "from": "PENDING", "to": "PENDING", "legal": true, "reason": "identity_noop" },
+    { "from": "PENDING", "to": "DISPATCHED", "legal": true, "reason": "first_unit_dispatched", "stamps": ["firstDispatchAtMs"] },
+    { "from": "PENDING", "to": "WORKING", "legal": false, "reason": "cannot_skip_dispatched" },
+    { "from": "PENDING", "to": "HOLD", "legal": true, "reason": "stack_or_hold_if_priority_allows", "guard": "priority_stack_allowed" },
+    { "from": "PENDING", "to": "CLEARED", "legal": false, "reason": "must_cancel_or_work_before_clear_without_dispatch_use_cancelled" },
+    { "from": "PENDING", "to": "CANCELLED", "legal": true, "reason": "cancel_before_dispatch", "requiresDisposition": true },
+    { "from": "PENDING", "to": "LINKED_DUP", "legal": true, "reason": "mark_duplicate", "requiresDisposition": true },
+
+    { "from": "DISPATCHED", "to": "PENDING", "legal": true, "reason": "all_units_released_before_scene" },
+    { "from": "DISPATCHED", "to": "DISPATCHED", "legal": true, "reason": "identity_noop" },
+    { "from": "DISPATCHED", "to": "WORKING", "legal": true, "reason": "first_unit_on_scene", "stamps": ["firstOnSceneAtMs"] },
+    { "from": "DISPATCHED", "to": "HOLD", "legal": true, "reason": "hold_after_dispatch_if_allowed", "guard": "priority_stack_allowed" },
+    { "from": "DISPATCHED", "to": "CLEARED", "legal": true, "reason": "clear_after_dispatch", "requiresDisposition": true, "guard": "no_dirty_units" },
+    { "from": "DISPATCHED", "to": "CANCELLED", "legal": true, "reason": "cancel_after_dispatch", "requiresDisposition": true, "guard": "no_dirty_units" },
+    { "from": "DISPATCHED", "to": "LINKED_DUP", "legal": true, "reason": "relink_as_duplicate", "requiresDisposition": true },
+
+    { "from": "WORKING", "to": "PENDING", "legal": false, "reason": "cannot_return_to_pending_after_working" },
+    { "from": "WORKING", "to": "DISPATCHED", "legal": true, "reason": "units_left_scene_still_assigned" },
+    { "from": "WORKING", "to": "WORKING", "legal": true, "reason": "identity_noop" },
+    { "from": "WORKING", "to": "HOLD", "legal": false, "reason": "cannot_hold_while_working_on_scene" },
+    { "from": "WORKING", "to": "CLEARED", "legal": true, "reason": "clear_from_working", "requiresDisposition": true, "guard": "no_dirty_units" },
+    { "from": "WORKING", "to": "CANCELLED", "legal": false, "reason": "use_cleared_with_disposition_after_work" },
+    { "from": "WORKING", "to": "LINKED_DUP", "legal": false, "reason": "duplicate_link_before_or_instead_of_work" },
+
+    { "from": "HOLD", "to": "PENDING", "legal": true, "reason": "release_hold_back_to_pending" },
+    { "from": "HOLD", "to": "DISPATCHED", "legal": true, "reason": "dispatch_from_hold", "stamps": ["firstDispatchAtMs"] },
+    { "from": "HOLD", "to": "WORKING", "legal": false, "reason": "must_dispatch_before_working" },
+    { "from": "HOLD", "to": "HOLD", "legal": true, "reason": "identity_noop" },
+    { "from": "HOLD", "to": "CLEARED", "legal": false, "reason": "cancel_or_dispatch_before_clear" },
+    { "from": "HOLD", "to": "CANCELLED", "legal": true, "reason": "cancel_from_hold", "requiresDisposition": true },
+    { "from": "HOLD", "to": "LINKED_DUP", "legal": true, "reason": "duplicate_from_hold", "requiresDisposition": true },
+
+    { "from": "CLEARED", "to": "PENDING", "legal": false, "reason": "terminal" },
+    { "from": "CLEARED", "to": "DISPATCHED", "legal": false, "reason": "terminal" },
+    { "from": "CLEARED", "to": "WORKING", "legal": false, "reason": "terminal" },
+    { "from": "CLEARED", "to": "HOLD", "legal": false, "reason": "terminal" },
+    { "from": "CLEARED", "to": "CLEARED", "legal": true, "reason": "identity_noop" },
+    { "from": "CLEARED", "to": "CANCELLED", "legal": false, "reason": "terminal" },
+    { "from": "CLEARED", "to": "LINKED_DUP", "legal": false, "reason": "terminal" },
+
+    { "from": "CANCELLED", "to": "PENDING", "legal": false, "reason": "terminal" },
+    { "from": "CANCELLED", "to": "DISPATCHED", "legal": false, "reason": "terminal" },
+    { "from": "CANCELLED", "to": "WORKING", "legal": false, "reason": "terminal" },
+    { "from": "CANCELLED", "to": "HOLD", "legal": false, "reason": "terminal" },
+    { "from": "CANCELLED", "to": "CLEARED", "legal": false, "reason": "terminal" },
+    { "from": "CANCELLED", "to": "CANCELLED", "legal": true, "reason": "identity_noop" },
+    { "from": "CANCELLED", "to": "LINKED_DUP", "legal": false, "reason": "terminal" },
+
+    { "from": "LINKED_DUP", "to": "PENDING", "legal": false, "reason": "terminal_or_admin_only" },
+    { "from": "LINKED_DUP", "to": "DISPATCHED", "legal": false, "reason": "terminal_or_admin_only" },
+    { "from": "LINKED_DUP", "to": "WORKING", "legal": false, "reason": "terminal_or_admin_only" },
+    { "from": "LINKED_DUP", "to": "HOLD", "legal": false, "reason": "terminal_or_admin_only" },
+    { "from": "LINKED_DUP", "to": "CLEARED", "legal": false, "reason": "terminal_or_admin_only" },
+    { "from": "LINKED_DUP", "to": "CANCELLED", "legal": false, "reason": "terminal_or_admin_only" },
+    { "from": "LINKED_DUP", "to": "LINKED_DUP", "legal": true, "reason": "identity_noop" }
+  ],
+  "narrativeRules": {
+    "appendOnly": true,
+    "editApi": false,
+    "deleteApi": false,
+    "systemNotesOnAutomaticStatusChange": true,
+    "playerNotesOptional": true,
+    "softIfWeaponsReclassWithoutNote": "SOFT_NOTE_THIN",
+    "hardIfCriticalNarrativeMissing": "FAIL_NARRATIVE_MISSING_CRITICAL"
+  },
+  "clearRules": {
+    "dispositionRequired": true,
+    "dispositionFailCode": "FAIL_NO_DISPOSITION",
+    "dirtyUnitStatuses": ["DIS", "ER", "OS", "EMR"],
+    "dirtyCloseFailCode": "FAIL_STATUS_DIRTY_CLOSE"
+  },
+  "holdRules": {
+    "forbiddenPriorities": ["P0", "P1", "P2"],
+    "failCode": "FAIL_HOLD_HIGH_PRIORITY",
+    "softThinReason": "SOFT_STACK_REASON_THIN"
+  },
+  "liabilityTimestampsOnEdges": {
+    "create": ["receivedAtMs", "enteredAtMs", "lastUpdateAtMs"],
+    "setPriority": ["priorityHistory", "lastUpdateAtMs"],
+    "firstDispatch": ["firstDispatchAtMs", "lastUpdateAtMs"],
+    "firstEnRoute": ["firstEnRouteAtMs", "lastUpdateAtMs"],
+    "firstOnScene": ["firstOnSceneAtMs", "lastUpdateAtMs"],
+    "clear": ["clearedAtMs", "lastUpdateAtMs"]
+  }
+}

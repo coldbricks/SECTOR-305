@@ -1,0 +1,88 @@
+{
+  "priorities": [
+    {
+      "code": "P0",
+      "name": "OFFICER EMERGENCY",
+      "definition": "Officer needs help or emergency traffic declaring unit/officer in immediate danger. Highest channel priority. All non-emergency traffic yields.",
+      "knowable_cues": ["unit EMR status", "officer emergency radio phrase", "EMERGENCY_TRAFFIC_OPEN"],
+      "dispatch_sla_ms": 15000,
+      "stack_allowed": false,
+      "radio_preempt": "full",
+      "min_units_default": 99,
+      "requires_backup_natures": ["OFFICER-EMERGENCY"],
+      "liability_timestamps_touched": ["receivedAtMs", "firstDispatchAtMs", "priorityHistory"],
+      "example_natures": ["OFFICER-EMERGENCY"]
+    },
+    {
+      "code": "P1",
+      "name": "IN PROGRESS LIFE/WEAPON",
+      "definition": "Crime in progress with weapon, violence, or imminent harm to persons. Immediate closest appropriate multi-unit response with safety aired.",
+      "knowable_cues": ["weapons flag", "in-progress flag", "nature ROBBERY-IP/ASSAULT-IP/WEAPONS", "CT note knife/gun/armed"],
+      "dispatch_sla_ms": 60000,
+      "stack_allowed": false,
+      "radio_preempt": "high",
+      "min_units_default": 2,
+      "requires_backup_natures": ["ROBBERY-IP", "ASSAULT-IP", "WEAPONS", "BURG-IP"],
+      "liability_timestamps_touched": ["receivedAtMs", "enteredAtMs", "firstDispatchAtMs", "priorityHistory"],
+      "example_natures": ["ROBBERY-IP", "ASSAULT-IP", "WEAPONS"]
+    },
+    {
+      "code": "P2",
+      "name": "IN PROGRESS / URGENT",
+      "definition": "In progress or just occurred elevated threat without confirmed weapons/life-imminent, or urgent public-safety need (open 911 with distress cues, injury crash).",
+      "knowable_cues": ["in-progress without weapons", "911-OPEN with distress", "domestic without weapons confirmed"],
+      "dispatch_sla_ms": 120000,
+      "stack_allowed": false,
+      "radio_preempt": "medium",
+      "min_units_default": 1,
+      "requires_backup_natures": ["DOMESTIC"],
+      "liability_timestamps_touched": ["receivedAtMs", "firstDispatchAtMs", "priorityHistory"],
+      "example_natures": ["DOMESTIC", "911-OPEN", "SHOTS-HEARD"]
+    },
+    {
+      "code": "P3",
+      "name": "PROMPT",
+      "definition": "Prompt response: recent events, disturbances without active violence, welfare with time pressure, alarms.",
+      "knowable_cues": ["disturbance", "welfare", "alarm", "suspicious person unarmed"],
+      "dispatch_sla_ms": 300000,
+      "stack_allowed": true,
+      "radio_preempt": "low",
+      "min_units_default": 1,
+      "requires_backup_natures": [],
+      "liability_timestamps_touched": ["receivedAtMs", "firstDispatchAtMs"],
+      "example_natures": ["DISTURBANCE", "WELFARE", "ALARM", "SUSP-PERSON"]
+    },
+    {
+      "code": "P4",
+      "name": "ROUTINE",
+      "definition": "Routine reports and cold events. Yields to all higher priorities. Stacking allowed with reason.",
+      "knowable_cues": ["theft report", "cold burglary report", "info"],
+      "dispatch_sla_ms": 900000,
+      "stack_allowed": true,
+      "radio_preempt": "none",
+      "min_units_default": 1,
+      "requires_backup_natures": [],
+      "liability_timestamps_touched": ["receivedAtMs", "firstDispatchAtMs"],
+      "example_natures": ["THEFT-REPORT"]
+    },
+    {
+      "code": "P5",
+      "name": "ADMIN / INFO",
+      "definition": "Administrative, BOLO relay without response, internal info. No field unit unless exception noted.",
+      "knowable_cues": ["admin", "info only"],
+      "dispatch_sla_ms": 3600000,
+      "stack_allowed": true,
+      "radio_preempt": "none",
+      "min_units_default": 0,
+      "requires_backup_natures": [],
+      "liability_timestamps_touched": ["receivedAtMs"],
+      "example_natures": []
+    }
+  ],
+  "reclass": {
+    "upgrade": "Immediate on new knowable cue; append CAD note; if units DIS/ER/OS re-tone radio or FAIL_RECLASS_NO_RADIO",
+    "downgrade": "Requires reason; soft SOFT_DOWNGRADE_WHILE_ROLLING if units rolling; hard FAIL_PRIORITY_UNDERCODE if weapons flag still true",
+    "uncertainty_default": "higher_priority",
+    "infoset_fairness": "No undercode hard fail if weapons/IP never entered knowable set"
+  }
+}

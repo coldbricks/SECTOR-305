@@ -1,0 +1,130 @@
+{
+  "schema": "s305.strings.v1",
+  "locale": "en",
+  "packId": "miami-a07-police-v0",
+  "app": {
+    "title": "SECTOR 305",
+    "subtitle": "A07 Coastal / Central — Police A-Console",
+    "consoleId": "A07",
+    "sectorId": "SE305-A07"
+  },
+  "disclaimer": {
+    "short": "Fictional training doctrine. Not official agency SOP. Not APCO/NENA/IAED certification.",
+    "debrief": "Training simulation. Fictional PSAP and geography. Standards-aligned educational concepts. Not a substitute for agency training. Completing tracks does not grant real telecommunicator certification. Not affiliated with Miami-Dade or any certification body.",
+    "login": "SECTOR 305 is a fictional PSAP trainer. Standards-aligned educational concepts only."
+  },
+  "shell": {
+    "loginTitle": "SECTOR 305",
+    "loginPrompt": "Open sector desk",
+    "openSector": "Open A07",
+    "logout": "Close desk"
+  },
+  "cad": {
+    "queueTitle": "CFS Queue",
+    "incidentFormTitle": "Incident",
+    "unitBoardTitle": "Unit Status",
+    "radioTitle": "Radio — SE305-PRI",
+    "mapTitle": "Sector Map (last-known)",
+    "timersTitle": "Timers",
+    "notesTitle": "Narrative",
+    "dispositionLabel": "Disposition",
+    "priorityLabel": "Priority",
+    "natureLabel": "Nature",
+    "locationLabel": "Location",
+    "confidenceLabel": "Location confidence",
+    "assignUnit": "Assign unit",
+    "dispatch": "Dispatch",
+    "verifyLocation": "Verify location",
+    "setPriority": "Set priority",
+    "setNature": "Set nature",
+    "hold": "Hold",
+    "clear": "Clear",
+    "appendNote": "Append note",
+    "emergencyTraffic": "EMERGENCY TRAFFIC",
+    "emergencyTrafficClear": "Clear emergency traffic",
+    "readbackPending": "Readback pending",
+    "readbackOk": "Readback satisfied",
+    "noUnitsAvailable": "No assignable units",
+    "dirtyCloseBlocked": "Cannot clear while units DIS/ER/OS/EMR"
+  },
+  "priorities": {
+    "P0": "P0 Officer emergency",
+    "P1": "P1 In progress life/weapon",
+    "P2": "P2 In progress / urgent",
+    "P3": "P3 Prompt",
+    "P4": "P4 Routine",
+    "P5": "P5 Admin / info"
+  },
+  "unitStatuses": {
+    "AVL": "Available",
+    "DIS": "Dispatched",
+    "ER": "En route",
+    "OS": "On scene",
+    "CLR": "Clearing",
+    "OOS": "Out of service",
+    "BSI": "Busy self-initiated",
+    "EMR": "Emergency"
+  },
+  "incidentStatuses": {
+    "PENDING": "Pending",
+    "DISPATCHED": "Dispatched",
+    "WORKING": "Working",
+    "HOLD": "Hold",
+    "CLEARED": "Cleared",
+    "CANCELLED": "Cancelled",
+    "LINKED_DUP": "Linked duplicate"
+  },
+  "locationConfidence": {
+    "unverified": "Unverified",
+    "partial": "Partial",
+    "verified": "Verified",
+    "conflicting": "Conflicting"
+  },
+  "zones": {
+    "Z-OCEAN": "Ocean Drive corridor",
+    "Z-COLLINS": "Collins Ave mid-beach",
+    "Z-DOWNTOWN": "Downtown core",
+    "Z-WYNWOOD": "Wynwood / Midtown",
+    "Z-PORT": "Port edge (handoff)"
+  },
+  "debrief": {
+    "title": "Checkride debrief",
+    "pass": "PASS — zero hard fails",
+    "fail": "FAIL — hard process fails recorded",
+    "hardFails": "Hard fails",
+    "softMarks": "Soft marks (coaching)",
+    "timeline": "Timeline",
+    "metrics": "Metrics",
+    "remediation": "Remediation tags",
+    "exportSession": "Export SessionRecord",
+    "domains": {
+      "LOC": "Location",
+      "PRI": "Priority",
+      "ASN": "Assignment",
+      "STA": "Unit status",
+      "RAD": "Radio",
+      "TIM": "Timers",
+      "DOC": "Documentation",
+      "SAF": "Safety",
+      "MUL": "Multiplicity / concurrency",
+      "CON": "Consistency / infoset"
+    }
+  },
+  "errors": {
+    "illegalStatus": "Illegal unit status transition",
+    "notAssignable": "Unit not assignable",
+    "holdForbidden": "Hold forbidden at this priority",
+    "noDisposition": "Disposition required to clear",
+    "locationGate": "Location confidence insufficient for high-acuity dispatch",
+    "backupRequired": "Additional unit(s) required for backup policy"
+  },
+  "radio": {
+    "tx": "Transmit",
+    "channel": "SE305-PRI",
+    "stepOn": "Stepped on",
+    "incomplete": "Incomplete reception",
+    "templateDispatch": "Dispatch assign",
+    "templateBolo": "BOLO",
+    "templateStatusQuery": "Status query"
+  }
+}

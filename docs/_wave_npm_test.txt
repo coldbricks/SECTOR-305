@@ -1,0 +1,30 @@
+﻿
+> sector-305@0.1.0 test
+> npm run test -w @sector305/core
+
+
+> @sector305/core@0.1.0 test
+> vitest run
+
+
+ RUN  v3.2.7 C:/Users/coldb/SECTOR-305/packages/core
+
+ Γ£ô tests/psychic_guard.test.ts (4 tests) 2ms
+ Γ£ô tests/pack_validate.test.ts (4 tests) 5ms
+ Γ£ô tests/kill_list_guards.test.ts (7 tests) 12ms
+ Γ£ô tests/status.test.ts (4 tests) 3ms
+ Γ£ô tests/infoset.test.ts (2 tests) 3ms
+ Γ£ô tests/radio_protocol.test.ts (6 tests) 10ms
+ Γ£ô tests/checkride.test.ts (3 tests) 7ms
+ Γ£ô tests/critic_s1_s2.test.ts (6 tests) 9ms
+ Γ£ô tests/orphan_codes.test.ts (2 tests) 17ms
+ Γ£ô tests/watch_headless.test.ts (4 tests) 3ms
+ Γ£ô tests/sacred_invariant.test.ts (4 tests) 26ms
+ Γ£ô tests/unit_status_matrix.test.ts (35 tests) 46ms
+ Γ£ô tests/schema.test.ts (7 tests) 5ms
+
+ Test Files  13 passed (13)
+      Tests  88 passed (88)
+   Start at  22:15:12
+   Duration  756ms (transform 696ms, setup 0ms, collect 2.41s, tests 148ms, environment 2ms, prepare 1.04s)
+

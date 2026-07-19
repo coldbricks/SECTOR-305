@@ -1,0 +1,99 @@
+{
+  "schema": "s305.location_confidence.v1",
+  "packId": "miami-a07-police-v0",
+  "truthNeverOnPlayerMap": true,
+  "unitIconsUseLastKnownOnly": true,
+  "levels": [
+    {
+      "code": "unverified",
+      "name": "Unverified",
+      "definition": "Location is a raw caller claim, ANI/ALI seed, or freeform text with no dispatcher verification action. Zone may be guessed only as a vague blob.",
+      "howPlayerAchieves": "Initial CFS state before VerifyLocation; or after clearing verification without confirm.",
+      "mapRendering": {
+        "cfsMarker": "amber_vague_zone_blob",
+        "truthPin": "hidden",
+        "unitGps": "last_known_zone_centroid_lag"
+      },
+      "dispatchRestrictions": {
+        "P0": "allowed_but_log_location_uncertainty",
+        "P1": "blocked",
+        "P2": "allowed_with_soft_risk",
+        "P3": "allowed",
+        "P4": "allowed",
+        "P5": "allowed"
+      },
+      "gradeCodes": {
+        "dispatchHighAcuity": "FAIL_NO_VERIFY",
+        "highAcuityPriorities": ["P1"]
+      }
+    },
+    {
+      "code": "partial",
+      "name": "Partial",
+      "definition": "Block, cross-street, landmark, or zone refined but not a confirmed premise pin. Player has taken a verify action that narrowed uncertainty without full confirmation.",
+      "howPlayerAchieves": "VerifyLocation with partial result; CT inject partial address; cross-street only confirm.",
+      "mapRendering": {
+        "cfsMarker": "cyan_approximate_block",
+        "truthPin": "hidden",
+        "unitGps": "last_known"
+      },
+      "dispatchRestrictions": {
+        "P0": "allowed",
+        "P1": "allowed",
+        "P2": "allowed",
+        "P3": "allowed",
+        "P4": "allowed",
+        "P5": "allowed"
+      },
+      "gradeCodes": {
+        "dispatchHighAcuity": null,
+        "mapOvertrustSoft": "SOFT_MAP_OVERTRUST"
+      }
+    },
+    {
+      "code": "verified",
+      "name": "Verified",
+      "definition": "Dispatcher confirmed a stated location suitable for response (premise, verified address, or confirmed intersection). Verified does not reveal hidden IncidentTruth; wrong verification vs truth grades FAIL_WRONG_LOCATION.",
+      "howPlayerAchieves": "VerifyLocation success against knowable address set; structured confirm of freeform + zone.",
+      "mapRendering": {
+        "cfsMarker": "green_pin_at_stated_location",
+        "truthPin": "hidden",
+        "unitGps": "last_known"
+      },
+      "dispatchRestrictions": {
+        "P0": "allowed",
+        "P1": "allowed",
+        "P2": "allowed",
+        "P3": "allowed",
+        "P4": "allowed",
+        "P5": "allowed"
+      },
+      "gradeCodes": {
+        "verifiedZoneNeTruthZone": "FAIL_WRONG_LOCATION"
+      }
+    },
+    {
+      "code": "conflicting",
+      "name": "Conflicting",
+      "definition": "Two or more knowable location claims disagree (caller vs ALI, two callers, unit size-up vs CFS). High-acuity dispatch blocked until resolved or consciously overridden with doctrine path Phase 0 = blocked.",
+      "howPlayerAchieves": "Conflicting injects; second VerifyLocation disagreeing; CT note conflicts with field.",
+      "mapRendering": {
+        "cfsMarker": "red_split_markers",
+        "truthPin": "hidden",
+        "unitGps": "last_known"
+      },
+      "dispatchRestrictions": {
+        "P0": "allowed_with_uncertainty_note",
+        "P1": "blocked",
+        "P2": "blocked",
+        "P3": "allowed_with_soft",
+        "P4": "allowed",
+        "P5": "allowed"
+      },
+      "gradeCodes": {
+        "dispatchHighAcuity": "FAIL_NO_VERIFY",
+        "highAcuityPriorities": ["P1", "P2"]
+      }
+    }
+  ]
+}

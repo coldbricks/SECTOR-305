@@ -1,0 +1,63 @@
+{
+  "schema": "s305.zones.v1",
+  "packId": "miami-a07-police-v0",
+  "sectorId": "SE305-A07",
+  "zones": [
+    {
+      "id": "Z-OCEAN",
+      "name": "Ocean Drive corridor",
+      "jurisdictionId": "CITY-BEACH",
+      "jurisdictionLabel": "City Beach fiction",
+      "description": "Ocean Drive tourist strip; high pedestrian density; nightlife pressure.",
+      "adjacentZoneIds": ["Z-COLLINS"],
+      "handoffRequired": false,
+      "mapCentroid": { "x": 0.72, "y": 0.35 },
+      "defaultUnitPosture": "patrol_heavy"
+    },
+    {
+      "id": "Z-COLLINS",
+      "name": "Collins Ave mid-beach",
+      "jurisdictionId": "CITY-BEACH",
+      "jurisdictionLabel": "City Beach fiction",
+      "description": "Collins Avenue mid-beach hotels and mid-rises; parallel to Ocean.",
+      "adjacentZoneIds": ["Z-OCEAN", "Z-DOWNTOWN"],
+      "handoffRequired": false,
+      "mapCentroid": { "x": 0.68, "y": 0.48 },
+      "defaultUnitPosture": "patrol_mixed"
+    },
+    {
+      "id": "Z-DOWNTOWN",
+      "name": "Downtown core",
+      "jurisdictionId": "CITY-MIA",
+      "jurisdictionLabel": "City Mia fiction",
+      "description": "Downtown core offices, transit, and evening venues.",
+      "adjacentZoneIds": ["Z-COLLINS", "Z-WYNWOOD", "Z-PORT"],
+      "handoffRequired": false,
+      "mapCentroid": { "x": 0.42, "y": 0.55 },
+      "defaultUnitPosture": "patrol_mixed"
+    },
+    {
+      "id": "Z-WYNWOOD",
+      "name": "Wynwood / Midtown",
+      "jurisdictionId": "CITY-MIA",
+      "jurisdictionLabel": "City Mia fiction",
+      "description": "Arts district and midtown mix; weekend surge.",
+      "adjacentZoneIds": ["Z-DOWNTOWN"],
+      "handoffRequired": false,
+      "mapCentroid": { "x": 0.38, "y": 0.32 },
+      "defaultUnitPosture": "patrol_light"
+    },
+    {
+      "id": "Z-PORT",
+      "name": "Port edge (handoff)",
+      "jurisdictionId": "PORT",
+      "jurisdictionLabel": "Port authority fiction",
+      "description": "Port edge stretch jurisdiction; hard handoff friction for C7 scenarios.",
+      "adjacentZoneIds": ["Z-DOWNTOWN"],
+      "handoffRequired": true,
+      "handoffFailCode": "FAIL_JURISDICTION",
+      "mapCentroid": { "x": 0.28, "y": 0.72 },
+      "defaultUnitPosture": "limited_posts"
+    }
+  ]
+}

@@ -1,0 +1,213 @@
+{
+  "schema": "s305.unit_statuses.v1",
+  "packId": "miami-a07-police-v0",
+  "statusOrder": ["AVL", "DIS", "ER", "OS", "CLR", "OOS", "BSI", "EMR"],
+  "statuses": [
+    {
+      "code": "AVL",
+      "name": "Available",
+      "assignable": true,
+      "radio_required_on_enter": false,
+      "clears_assignment_on_enter": true,
+      "legal_next": ["AVL", "DIS", "OOS", "BSI", "EMR"],
+      "illegal_next": [
+        { "to": "ER", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "cannot_skip_to_enroute_without_dispatch" },
+        { "to": "OS", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "cannot_skip_to_on_scene_from_available" },
+        { "to": "CLR", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "cannot_clear_without_assignment_cycle" }
+      ],
+      "timer_hooks": []
+    },
+    {
+      "code": "DIS",
+      "name": "Dispatched",
+      "assignable": false,
+      "radio_required_on_enter": true,
+      "clears_assignment_on_enter": false,
+      "legal_next": ["DIS", "ER", "AVL", "OOS", "EMR"],
+      "illegal_next": [
+        { "to": "OS", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "cannot_skip_enroute" },
+        { "to": "CLR", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "must_er_os_before_clear" },
+        { "to": "BSI", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "bsi_only_from_available_or_explicit_pack_path" }
+      ],
+      "timer_hooks": [
+        { "id": "dis_ack_overdue", "thresholdMs": 45000, "gradeHint": "FAIL_NO_READBACK" }
+      ]
+    },
+    {
+      "code": "ER",
+      "name": "En Route",
+      "assignable": false,
+      "radio_required_on_enter": true,
+      "clears_assignment_on_enter": false,
+      "legal_next": ["ER", "OS", "AVL", "OOS", "EMR"],
+      "illegal_next": [
+        { "to": "DIS", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "cannot_regress_to_dispatched" },
+        { "to": "CLR", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "must_on_scene_or_release_to_avl_before_clear_cycle" },
+        { "to": "BSI", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "bsi_not_from_enroute" }
+      ],
+      "timer_hooks": [
+        { "id": "er_overdue", "thresholdMs": 600000, "gradeHint": "FAIL_STATUS_STALE" }
+      ]
+    },
+    {
+      "code": "OS",
+      "name": "On Scene",
+      "assignable": false,
+      "radio_required_on_enter": true,
+      "clears_assignment_on_enter": false,
+      "legal_next": ["OS", "CLR", "ER", "AVL", "OOS", "EMR"],
+      "illegal_next": [
+        { "to": "DIS", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "cannot_return_to_dispatched_from_on_scene" },
+        { "to": "BSI", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "bsi_not_from_on_scene" }
+      ],
+      "timer_hooks": [
+        { "id": "os_stale", "thresholdMs": 1800000, "gradeHint": "FAIL_STATUS_STALE" }
+      ]
+    },
+    {
+      "code": "CLR",
+      "name": "Clearing / Cleared Assignment",
+      "assignable": false,
+      "radio_required_on_enter": true,
+      "clears_assignment_on_enter": true,
+      "legal_next": ["CLR", "AVL", "OOS"],
+      "illegal_next": [
+        { "to": "DIS", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "must_become_available_before_new_dispatch" },
+        { "to": "ER", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "cannot_enroute_from_clear" },
+        { "to": "OS", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "cannot_on_scene_from_clear" },
+        { "to": "BSI", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "bsi_from_avl_only" },
+        { "to": "EMR", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "emergency_while_clearing_requires_avl_or_os_path_first" }
+      ],
+      "timer_hooks": [
+        { "id": "clr_to_avl", "thresholdMs": 120000, "gradeHint": "FAIL_STATUS_STALE" }
+      ]
+    },
+    {
+      "code": "OOS",
+      "name": "Out of Service",
+      "assignable": false,
+      "radio_required_on_enter": true,
+      "clears_assignment_on_enter": true,
+      "legal_next": ["OOS", "AVL"],
+      "illegal_next": [
+        { "to": "DIS", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "cannot_dispatch_out_of_service" },
+        { "to": "ER", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "cannot_enroute_from_oos" },
+        { "to": "OS", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "cannot_on_scene_from_oos" },
+        { "to": "CLR", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "clear_cycle_not_from_oos" },
+        { "to": "BSI", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "bsi_from_avl_only" },
+        { "to": "EMR", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "oos_unit_must_return_avl_before_emr_tracking" }
+      ],
+      "timer_hooks": []
+    },
+    {
+      "code": "BSI",
+      "name": "Busy Self-Initiated",
+      "assignable": false,
+      "radio_required_on_enter": true,
+      "clears_assignment_on_enter": false,
+      "legal_next": ["BSI", "AVL", "OS", "OOS", "DIS"],
+      "illegal_next": [
+        { "to": "ER", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "self_initiated_does_not_use_enroute_edge" },
+        { "to": "CLR", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "clear_via_avl_or_os_then_clr" },
+        { "to": "EMR", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "emr_from_bsi_use_os_or_avl_path_per_pack" }
+      ],
+      "timer_hooks": [
+        { "id": "bsi_stale", "thresholdMs": 900000, "gradeHint": "FAIL_STATUS_STALE" }
+      ]
+    },
+    {
+      "code": "EMR",
+      "name": "Emergency",
+      "assignable": false,
+      "radio_required_on_enter": true,
+      "clears_assignment_on_enter": false,
+      "legal_next": ["EMR", "OS", "AVL", "OOS"],
+      "illegal_next": [
+        { "to": "DIS", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "must_leave_emr_via_os_avl_oos_only" },
+        { "to": "ER", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "no_enroute_from_emergency_status" },
+        { "to": "CLR", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "no_direct_clear_from_emergency" },
+        { "to": "BSI", "fail_code": "FAIL_STATUS_ILLEGAL", "reason": "no_bsi_from_emergency" }
+      ],
+      "timer_hooks": [
+        { "id": "emr_hold", "thresholdMs": 0, "gradeHint": "FAIL_RADIO_EMERGENCY_TRAFFIC" }
+      ]
+    }
+  ],
+  "matrix": [
+    { "from": "AVL", "to": "AVL", "legal": true, "reason": "identity_noop" },
+    { "from": "AVL", "to": "DIS", "legal": true, "reason": "assign_and_dispatch" },
+    { "from": "AVL", "to": "ER", "legal": false, "reason": "cannot_skip_to_enroute_without_dispatch" },
+    { "from": "AVL", "to": "OS", "legal": false, "reason": "cannot_skip_to_on_scene_from_available" },
+    { "from": "AVL", "to": "CLR", "legal": false, "reason": "cannot_clear_without_assignment_cycle" },
+    { "from": "AVL", "to": "OOS", "legal": true, "reason": "unit_goes_out_of_service" },
+    { "from": "AVL", "to": "BSI", "legal": true, "reason": "self_initiated_activity" },
+    { "from": "AVL", "to": "EMR", "legal": true, "reason": "officer_emergency_from_available" },
+
+    { "from": "DIS", "to": "AVL", "legal": true, "reason": "cancel_or_release_before_enroute" },
+    { "from": "DIS", "to": "DIS", "legal": true, "reason": "identity_noop" },
+    { "from": "DIS", "to": "ER", "legal": true, "reason": "unit_acknowledges_enroute" },
+    { "from": "DIS", "to": "OS", "legal": false, "reason": "cannot_skip_enroute" },
+    { "from": "DIS", "to": "CLR", "legal": false, "reason": "must_er_os_before_clear" },
+    { "from": "DIS", "to": "OOS", "legal": true, "reason": "unit_unavailable_after_dispatch" },
+    { "from": "DIS", "to": "BSI", "legal": false, "reason": "bsi_only_from_available_or_explicit_pack_path" },
+    { "from": "DIS", "to": "EMR", "legal": true, "reason": "officer_emergency_while_dispatched" },
+
+    { "from": "ER", "to": "AVL", "legal": true, "reason": "divert_or_cancel_enroute_return_available" },
+    { "from": "ER", "to": "DIS", "legal": false, "reason": "cannot_regress_to_dispatched" },
+    { "from": "ER", "to": "ER", "legal": true, "reason": "identity_noop" },
+    { "from": "ER", "to": "OS", "legal": true, "reason": "arrive_on_scene" },
+    { "from": "ER", "to": "CLR", "legal": false, "reason": "must_on_scene_or_release_to_avl_before_clear_cycle" },
+    { "from": "ER", "to": "OOS", "legal": true, "reason": "mechanical_or_admin_oos_while_enroute" },
+    { "from": "ER", "to": "BSI", "legal": false, "reason": "bsi_not_from_enroute" },
+    { "from": "ER", "to": "EMR", "legal": true, "reason": "officer_emergency_while_enroute" },
+
+    { "from": "OS", "to": "AVL", "legal": true, "reason": "release_on_scene_without_formal_clear_code_path" },
+    { "from": "OS", "to": "DIS", "legal": false, "reason": "cannot_return_to_dispatched_from_on_scene" },
+    { "from": "OS", "to": "ER", "legal": true, "reason": "leave_scene_still_assigned_reposition" },
+    { "from": "OS", "to": "OS", "legal": true, "reason": "identity_noop" },
+    { "from": "OS", "to": "CLR", "legal": true, "reason": "clear_from_scene" },
+    { "from": "OS", "to": "OOS", "legal": true, "reason": "oos_from_scene" },
+    { "from": "OS", "to": "BSI", "legal": false, "reason": "bsi_not_from_on_scene" },
+    { "from": "OS", "to": "EMR", "legal": true, "reason": "officer_emergency_on_scene" },
+
+    { "from": "CLR", "to": "AVL", "legal": true, "reason": "return_to_available_after_clear" },
+    { "from": "CLR", "to": "DIS", "legal": false, "reason": "must_become_available_before_new_dispatch" },
+    { "from": "CLR", "to": "ER", "legal": false, "reason": "cannot_enroute_from_clear" },
+    { "from": "CLR", "to": "OS", "legal": false, "reason": "cannot_on_scene_from_clear" },
+    { "from": "CLR", "to": "CLR", "legal": true, "reason": "identity_noop" },
+    { "from": "CLR", "to": "OOS", "legal": true, "reason": "oos_after_clear" },
+    { "from": "CLR", "to": "BSI", "legal": false, "reason": "bsi_from_avl_only" },
+    { "from": "CLR", "to": "EMR", "legal": false, "reason": "emergency_while_clearing_requires_avl_or_os_path_first" },
+
+    { "from": "OOS", "to": "AVL", "legal": true, "reason": "return_to_service" },
+    { "from": "OOS", "to": "DIS", "legal": false, "reason": "cannot_dispatch_out_of_service" },
+    { "from": "OOS", "to": "ER", "legal": false, "reason": "cannot_enroute_from_oos" },
+    { "from": "OOS", "to": "OS", "legal": false, "reason": "cannot_on_scene_from_oos" },
+    { "from": "OOS", "to": "CLR", "legal": false, "reason": "clear_cycle_not_from_oos" },
+    { "from": "OOS", "to": "OOS", "legal": true, "reason": "identity_noop" },
+    { "from": "OOS", "to": "BSI", "legal": false, "reason": "bsi_from_avl_only" },
+    { "from": "OOS", "to": "EMR", "legal": false, "reason": "oos_unit_must_return_avl_before_emr_tracking" },
+
+    { "from": "BSI", "to": "AVL", "legal": true, "reason": "end_self_initiated" },
+    { "from": "BSI", "to": "DIS", "legal": true, "reason": "reassign_from_bsi_to_cfs" },
+    { "from": "BSI", "to": "ER", "legal": false, "reason": "self_initiated_does_not_use_enroute_edge" },
+    { "from": "BSI", "to": "OS", "legal": true, "reason": "bsi_arrived_or_on_view" },
+    { "from": "BSI", "to": "CLR", "legal": false, "reason": "clear_via_avl_or_os_then_clr" },
+    { "from": "BSI", "to": "OOS", "legal": true, "reason": "oos_from_bsi" },
+    { "from": "BSI", "to": "BSI", "legal": true, "reason": "identity_noop" },
+    { "from": "BSI", "to": "EMR", "legal": false, "reason": "emr_from_bsi_use_os_or_avl_path_per_pack" },
+
+    { "from": "EMR", "to": "AVL", "legal": true, "reason": "emergency_cleared_unit_available" },
+    { "from": "EMR", "to": "DIS", "legal": false, "reason": "must_leave_emr_via_os_avl_oos_only" },
+    { "from": "EMR", "to": "ER", "legal": false, "reason": "no_enroute_from_emergency_status" },
+    { "from": "EMR", "to": "OS", "legal": true, "reason": "emergency_stabilized_on_scene" },
+    { "from": "EMR", "to": "CLR", "legal": false, "reason": "no_direct_clear_from_emergency" },
+    { "from": "EMR", "to": "OOS", "legal": true, "reason": "unit_oos_after_emergency" },
+    { "from": "EMR", "to": "BSI", "legal": false, "reason": "no_bsi_from_emergency" },
+    { "from": "EMR", "to": "EMR", "legal": true, "reason": "identity_noop" }
+  ],
+  "dirtyCloseBlockingStatuses": ["DIS", "ER", "OS", "EMR"],
+  "matrixCellCount": 64,
+  "legalCellCount": 35,
+  "illegalCellCount": 29
+}

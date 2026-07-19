@@ -1,0 +1,33 @@
+{
+  "id": "checkride_ocean_robbery_v0",
+  "version": "0.1.0",
+  "kind": "checkride",
+  "packId": "miami-a07-police-v0",
+  "seed": 305,
+  "title": "Ocean corridor — robbery with bad initial address",
+  "adversarialTags": ["C1", "C2", "C4", "C5"],
+  "contentNotes": [
+    "Armed robbery in progress described in CAD text only",
+    "No graphic audio",
+    "Fictional location"
+  ],
+  "passConditions": {
+    "noHardFails": true,
+    "must": [
+      "verify location before or without hard fail",
+      "P1 with backup ≥2",
+      "weapons aired",
+      "readbacks obtained",
+      "clean dispositions"
+    ]
+  },
+  "failDemo": {
+    "description": "P4 dispatch single unit no verify no weapons no ack",
+    "expectedHardFails": [
+      "FAIL_PRIORITY_UNDERCODE",
+      "FAIL_NO_VERIFY",
+      "FAIL_NO_BACKUP",
+      "FAIL_NO_READBACK"
+    ]
+  }
+}

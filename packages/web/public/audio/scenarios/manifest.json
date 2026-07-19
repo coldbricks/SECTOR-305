@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "collection": "SECTOR 305 — Scenario Score",
+  "artist": "David Lombardo",
+  "copyright": "Copyright 2026 David Lombardo. All rights reserved.",
+  "sourceDownloads": 19,
+  "uniqueMasters": 17,
+  "encoding": "MP3, 160 kbps, 48 kHz stereo, loudness-normalized for in-app playback",
+  "tracks": [
+    { "id": "collins-alert", "title": "Collins Alert", "file": "collins-alert.mp3", "durationSeconds": 163.15, "sources": ["Collins Alert.wav"] },
+    { "id": "south-beach-pursuit", "title": "South Beach Pursuit", "file": "south-beach-pursuit.mp3", "durationSeconds": 162.6, "sources": ["South Beach Pursuit.wav"] },
+    { "id": "south-beach-alarm", "title": "South Beach Alarm", "file": "south-beach-alarm.mp3", "durationSeconds": 86.28, "sources": ["South Beach Alarm.wav"] },
+    { "id": "mister-three-oh-five", "title": "Mister Three Oh Five", "file": "mister-three-oh-five.mp3", "durationSeconds": 137.4, "sources": ["Mister Three Oh Five.wav"] },
+    { "id": "miami-cipher", "title": "Miami Cipher", "file": "miami-cipher.mp3", "durationSeconds": 142.4, "sources": ["Miami Cipher.wav"] },
+    { "id": "vice-grid", "title": "Vice Grid", "file": "vice-grid.mp3", "durationSeconds": 122.88, "sources": ["Vice Grid.wav"] },
+    { "id": "chopper-run", "title": "Chopper Run", "file": "chopper-run.mp3", "durationSeconds": 128.12, "sources": ["Chopper Run.wav", "Chopper Run (1).wav"] },
+    { "id": "gloria-bay", "title": "Gloria Bay", "file": "gloria-bay.mp3", "durationSeconds": 107.93, "sources": ["Gloria Bay.wav"] },
+    { "id": "calle-ocho-alarm", "title": "Calle Ocho Alarm", "file": "calle-ocho-alarm.mp3", "durationSeconds": 143, "sources": ["Calle Ocho Alarm.wav"] },
+    { "id": "mayday-over-miami", "title": "Mayday Over Miami", "file": "mayday-over-miami.mp3", "durationSeconds": 192.32, "sources": ["Mayday Over Miami.wav", "Mayday Over Miami (1).wav"] },
+    { "id": "biscayne-bay-run", "title": "Biscayne Bay Run", "file": "biscayne-bay-run.mp3", "durationSeconds": 77.2, "sources": ["Biscayne Bay Run.wav"] },
+    { "id": "biscayne-bay-alert", "title": "Biscayne Bay Alert", "file": "biscayne-bay-alert.mp3", "durationSeconds": 176.6, "sources": ["Biscayne Bay Alert.wav"] },
+    { "id": "miami-command-grid", "title": "Miami Command Grid", "file": "miami-command-grid.mp3", "durationSeconds": 171.68, "sources": ["Miami Command Grid.wav"] },
+    { "id": "miami-fog-command", "title": "Miami Fog Command", "file": "miami-fog-command.mp3", "durationSeconds": 165, "sources": ["Miami Fog Command.wav"] },
+    { "id": "miami-grid", "title": "Miami Grid", "file": "miami-grid.mp3", "durationSeconds": 164.56, "sources": ["Miami Grid.wav"] },
+    { "id": "miami-grid-1", "title": "Miami Grid I", "file": "miami-grid-1.mp3", "durationSeconds": 209.4, "sources": ["Miami Grid (1).wav"] },
+    { "id": "miami-grid-2", "title": "Miami Grid II", "file": "miami-grid-2.mp3", "durationSeconds": 355, "sources": ["Miami Grid (2).wav"] }
+  ]
+}

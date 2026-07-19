@@ -1,0 +1,171 @@
+{
+  "schema": "s305.nature_matrix.v1",
+  "packId": "miami-a07-police-v0",
+  "columns": [
+    "natureCode",
+    "defaultPriority",
+    "requiresBackup",
+    "minUnits",
+    "weaponsLikely",
+    "inProgressDefault",
+    "radioSafetyRequired",
+    "preferredUnitTypes",
+    "holdAllowedAtDefault"
+  ],
+  "rows": [
+    {
+      "natureCode": "ROBBERY-IP",
+      "defaultPriority": "P1",
+      "requiresBackup": true,
+      "minUnits": 2,
+      "weaponsLikely": true,
+      "inProgressDefault": true,
+      "radioSafetyRequired": true,
+      "preferredUnitTypes": ["patrol", "supervisor"],
+      "holdAllowedAtDefault": false
+    },
+    {
+      "natureCode": "ASSAULT-IP",
+      "defaultPriority": "P1",
+      "requiresBackup": true,
+      "minUnits": 2,
+      "weaponsLikely": false,
+      "inProgressDefault": true,
+      "radioSafetyRequired": true,
+      "preferredUnitTypes": ["patrol", "supervisor"],
+      "holdAllowedAtDefault": false
+    },
+    {
+      "natureCode": "WEAPONS",
+      "defaultPriority": "P1",
+      "requiresBackup": true,
+      "minUnits": 2,
+      "weaponsLikely": true,
+      "inProgressDefault": true,
+      "radioSafetyRequired": true,
+      "preferredUnitTypes": ["patrol", "supervisor", "k9"],
+      "holdAllowedAtDefault": false
+    },
+    {
+      "natureCode": "DOMESTIC",
+      "defaultPriority": "P2",
+      "requiresBackup": true,
+      "minUnits": 2,
+      "weaponsLikely": false,
+      "inProgressDefault": true,
+      "radioSafetyRequired": true,
+      "preferredUnitTypes": ["patrol", "supervisor"],
+      "holdAllowedAtDefault": false
+    },
+    {
+      "natureCode": "DISTURBANCE",
+      "defaultPriority": "P3",
+      "requiresBackup": false,
+      "minUnits": 1,
+      "weaponsLikely": false,
+      "inProgressDefault": true,
+      "radioSafetyRequired": false,
+      "preferredUnitTypes": ["patrol"],
+      "holdAllowedAtDefault": true
+    },
+    {
+      "natureCode": "THEFT-REPORT",
+      "defaultPriority": "P4",
+      "requiresBackup": false,
+      "minUnits": 1,
+      "weaponsLikely": false,
+      "inProgressDefault": false,
+      "radioSafetyRequired": false,
+      "preferredUnitTypes": ["patrol"],
+      "holdAllowedAtDefault": true
+    },
+    {
+      "natureCode": "WELFARE",
+      "defaultPriority": "P3",
+      "requiresBackup": false,
+      "minUnits": 1,
+      "weaponsLikely": false,
+      "inProgressDefault": false,
+      "radioSafetyRequired": false,
+      "preferredUnitTypes": ["patrol"],
+      "holdAllowedAtDefault": true
+    },
+    {
+      "natureCode": "911-OPEN",
+      "defaultPriority": "P2",
+      "requiresBackup": false,
+      "minUnits": 1,
+      "weaponsLikely": false,
+      "inProgressDefault": false,
+      "radioSafetyRequired": false,
+      "preferredUnitTypes": ["patrol"],
+      "holdAllowedAtDefault": false
+    },
+    {
+      "natureCode": "BURG-IP",
+      "defaultPriority": "P1",
+      "requiresBackup": true,
+      "minUnits": 2,
+      "weaponsLikely": false,
+      "inProgressDefault": true,
+      "radioSafetyRequired": true,
+      "preferredUnitTypes": ["patrol", "k9", "supervisor"],
+      "holdAllowedAtDefault": false
+    },
+    {
+      "natureCode": "SHOTS-HEARD",
+      "defaultPriority": "P2",
+      "requiresBackup": true,
+      "minUnits": 2,
+      "weaponsLikely": true,
+      "inProgressDefault": true,
+      "radioSafetyRequired": true,
+      "preferredUnitTypes": ["patrol", "supervisor"],
+      "holdAllowedAtDefault": false
+    },
+    {
+      "natureCode": "TRAFFIC-CRASH",
+      "defaultPriority": "P4",
+      "requiresBackup": false,
+      "minUnits": 1,
+      "weaponsLikely": false,
+      "inProgressDefault": false,
+      "radioSafetyRequired": false,
+      "preferredUnitTypes": ["traffic", "patrol"],
+      "holdAllowedAtDefault": true
+    },
+    {
+      "natureCode": "SUSP-PERSON",
+      "defaultPriority": "P3",
+      "requiresBackup": false,
+      "minUnits": 1,
+      "weaponsLikely": false,
+      "inProgressDefault": true,
+      "radioSafetyRequired": false,
+      "preferredUnitTypes": ["patrol"],
+      "holdAllowedAtDefault": true
+    },
+    {
+      "natureCode": "OFFICER-EMERGENCY",
+      "defaultPriority": "P0",
+      "requiresBackup": true,
+      "minUnits": 3,
+      "weaponsLikely": true,
+      "inProgressDefault": true,
+      "radioSafetyRequired": true,
+      "preferredUnitTypes": ["patrol", "supervisor", "k9"],
+      "holdAllowedAtDefault": false
+    },
+    {
+      "natureCode": "ALARM",
+      "defaultPriority": "P3",
+      "requiresBackup": false,
+      "minUnits": 1,
+      "weaponsLikely": false,
+      "inProgressDefault": false,
+      "radioSafetyRequired": false,
+      "preferredUnitTypes": ["patrol"],
+      "holdAllowedAtDefault": true
+    }
+  ]
+}
