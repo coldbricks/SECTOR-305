@@ -59,7 +59,7 @@ A training instrument built so operational discipline is *playable*—and *audit
 | **Information-set fairness** | Hidden scenario truth cannot fail you until the cue is knowable. |
 | **Sacred replay** | A `SessionRecord` stores commands; the engine re-derives state and debrief. |
 | **Adaptive mastery** | Failures become next watch’s focus—not XP, not streaks, not cosplay ranks. |
-| **Original score** | Full title performance + 17 scenario beds that duck under radio traffic. |
+| **Original score** | Full title performance + 16 scenario beds that duck under radio traffic. |
 
 ## The instrument
 
@@ -119,7 +119,7 @@ Prove the location discipline holds · no hard fails yet
 <p align="center">
   <strong>Coldbricks · David Lombardo</strong><br />
   Recorded July 2026 · Smithtown, New York<br />
-  <a href="https://coldbricks.github.io/SECTOR-305/ost/">Title theme + seventeen scenario beds →</a>
+  <a href="https://coldbricks.github.io/SECTOR-305/ost/">17 tracks · title theme + scenario beds →</a>
 </p>
 
 Shell opens on the title performance. The watch rotates beds that duck under dispatch and unit traffic so the radio stays intelligible. The score is part of the product—not a free stock loop.
@@ -179,7 +179,7 @@ CI runs typecheck, core tests, production build, pack validation, both sims, and
 - Geographic atmosphere from [City of Miami GIS Open Data](https://datahub-miamigis.opendata.arcgis.com/) — **non-operational**.  
 - Zones, units, incidents, doctrine, and scenario truth are **fictional training content**.  
 - Public channel bank is independently authored fiction.  
-- Music: *Dispatch in Miami* + seventeen scenario masters by **David Lombardo** · © 2026, all rights reserved (separate from the source-code license).
+- Music: *Dispatch in Miami* + sixteen scenario masters by **David Lombardo** · © 2026, all rights reserved (separate from the source-code license).
 
 See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
