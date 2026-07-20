@@ -783,16 +783,22 @@ export function App() {
   }
 
   return (
-    <div className="console prestige-console">
-      <div className="topbar">
+    <div className="console prestige-console instrument-desk">
+      <div className="topbar instrument-topbar">
         <div className="tb-left">
           <div className="tb-brand">
-            <span className="tb-live">●</span>
-            <span className="id">
-              {state.consoleId} · {state.sectorId}
+            <span className="tb-live" aria-hidden>
+              ●
             </span>
+            <div className="tb-brand-stack">
+              <span className="tb-product mono">SECTOR 305</span>
+              <span className="id">
+                {state.consoleId} · {state.sectorId}
+              </span>
+            </div>
           </div>
           <div className="tb-chips">
+            <span className="tb-chip">A-CONSOLE</span>
             <span className="tb-chip">SE305-PRI</span>
             <span className="tb-chip dim">CHECKRIDE</span>
             <span className="tb-chip dim mono">SEED {state.seed}</span>
@@ -806,19 +812,19 @@ export function App() {
             <span className="tb-sim-k">SIM</span>
             <span className="tb-sim-v">T+{(state.clockMs / 1000).toFixed(1)}s</span>
           </div>
-          <div className="tb-actions">
+          <div className="tb-actions instrument-keys">
             <button
               type="button"
-              className={`audio-toggle tb-audio ${muted ? "is-muted" : ""}`}
+              className={`audio-toggle tb-key ${muted ? "is-muted" : ""}`}
               onClick={() => void toggleMute()}
-              title={muted ? "Unmute" : "Mute"}
+              title={muted ? "Unmute SFX" : "Mute SFX"}
               aria-pressed={!muted}
             >
-              {muted ? "🔇" : "🔊"}
+              {muted ? "SFX OFF" : "SFX"}
             </button>
             <button
               type="button"
-              className="tb-radio-test"
+              className="tb-key"
               onClick={() => void radioTest()}
               title="Radio path self-test"
             >
@@ -826,8 +832,8 @@ export function App() {
             </button>
             <button
               type="button"
-              className={`tb-score ${musicMuted ? "is-muted" : ""}`}
-              aria-label="Scenario score"
+              className={`tb-key tb-score ${musicMuted ? "is-muted" : ""}`}
+              aria-label="Scenario score bed"
               aria-pressed={!musicMuted}
               onClick={() => void toggleShellMusic()}
               title="Low scenario music bed; ducks automatically under radio traffic"
@@ -836,27 +842,33 @@ export function App() {
             </button>
             <button
               type="button"
-              className={`tb-score-desk ${scoreControlsOpen ? "is-open" : ""}`}
+              className={`tb-key tb-score-desk ${scoreControlsOpen ? "is-open" : ""}`}
               aria-label="Score controls"
               aria-expanded={scoreControlsOpen}
               onClick={() => setScoreControlsOpen((open) => !open)}
               title={`Scenario score controls · ${scoreTitle}`}
             >
-              ♫
+              SCORE
             </button>
-            <button onClick={() => cmd({ type: "Advance", ms: 5000 })}>+5s</button>
-            <button onClick={() => cmd({ type: "Advance", ms: 30000 })}>+30s</button>
-            <button onClick={exportSession}>Export</button>
+            <button type="button" className="tb-key" onClick={() => cmd({ type: "Advance", ms: 5000 })}>
+              +5s
+            </button>
+            <button type="button" className="tb-key" onClick={() => cmd({ type: "Advance", ms: 30000 })}>
+              +30s
+            </button>
+            <button type="button" className="tb-key" onClick={exportSession}>
+              EXPORT
+            </button>
             <button
               type="button"
-              className="tb-help"
+              className="tb-key tb-help"
               onClick={() => setHotkeyHelp((v) => !v)}
               title="Keyboard map (?)"
             >
-              ?
+              KEYS
             </button>
-            <button className="danger" onClick={() => endDebrief()}>
-              End / Debrief
+            <button type="button" className="danger tb-key tb-end" onClick={() => endDebrief()}>
+              DEBRIEF
             </button>
           </div>
         </div>
@@ -902,10 +914,10 @@ export function App() {
         </div>
       ) : null}
 
-      <div className="grid console-grid dense">
-        <div className="panel queue-panel">
+      <div className="grid console-grid dense instrument-grid">
+        <div className="panel queue-panel instrument-panel">
           <h2>
-            Incident queue
+            <span className="h2-title">Incident queue</span>
             <span className="h2-meta mono">
               CAD · PRI THEN AGE · ACK SUPPRESSES
             </span>
@@ -966,8 +978,11 @@ export function App() {
           })}
         </div>
 
-        <div className="panel cfs-panel">
-          <h2>CFS detail</h2>
+        <div className="panel cfs-panel instrument-panel">
+          <h2>
+            <span className="h2-title">CFS detail</span>
+            <span className="h2-meta mono">FORM · CAPTION · FLAGS</span>
+          </h2>
           {!selected ? (
             <p style={{ color: "var(--muted)" }}>Select a CFS</p>
           ) : (
@@ -1108,7 +1123,7 @@ export function App() {
           )}
         </div>
 
-        <div className="panel agency-panel">
+        <div className="panel agency-panel instrument-panel">
           <AgencyDesk
             units={units}
             incidents={state.incidents}
@@ -1155,7 +1170,7 @@ export function App() {
         </div>
 
         <div
-          className={`panel map-panel ${mapDockH != null ? "map-panel-custom-h" : ""}`}
+          className={`panel map-panel instrument-panel ${mapDockH != null ? "map-panel-custom-h" : ""}`}
           style={{
             // Outer window chrome — must match MapWorkspace dock size exactly
             width: mapDockW,
@@ -1212,13 +1227,15 @@ export function App() {
           />
         )}
 
-        <div className="panel bottom-rail">
+        <div className="panel bottom-rail instrument-panel instrument-rail">
           <div className="bottom-rail-grid">
             <div className="br-col">
               <h2>
-                Radio log ·{" "}
-                {watchChannel?.alpha ??
-                  (radioJson as { channelPrimary: string }).channelPrimary}
+                <span className="h2-title">
+                  Radio log ·{" "}
+                  {watchChannel?.alpha ??
+                    (radioJson as { channelPrimary: string }).channelPrimary}
+                </span>
               </h2>
               {watchChannel && (
                 <div className="watch-ch mono">
@@ -1282,9 +1299,18 @@ export function App() {
         </div>
       </div>
 
-      <div className="footer">
-        SECTOR 305 · instrument checkride · live grades · keys{" "}
-        <kbd>?</kbd> · CAD ACK · training fiction only · not a real cert
+      <div className="footer mono">
+        <span className="ft-main">
+          SECTOR 305 · A-CONSOLE · INSTRUMENT CHECKRIDE
+        </span>
+        <span className="ft-sep">·</span>
+        <span>
+          KEYS <kbd>?</kbd>
+        </span>
+        <span className="ft-sep">·</span>
+        <span>CAD ACK</span>
+        <span className="ft-sep">·</span>
+        <span className="ft-dim">TRAINING FICTION ONLY · NOT A REAL CERT</span>
       </div>
     </div>
   );

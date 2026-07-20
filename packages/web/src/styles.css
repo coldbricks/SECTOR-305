@@ -1,16 +1,29 @@
 :root {
-  --void: #050508;
-  --panel: #0c1018;
-  --surface: #141a24;
-  --elevated: #1c2433;
-  --cyan: #38beeB;
-  --green: #36cc6e;
-  --amber: #ffb31e;
-  --red: #ff3b30;
-  --text: #e8edf2;
-  --muted: #7a828e;
-  --hairline: #2a303a;
-  --neon: #ff2d7b;
+  /* Instrument desk — cool EFIS, not arcade neon */
+  --void: #04060b;
+  --panel: #0a0e15;
+  --surface: #101620;
+  --elevated: #161d2a;
+  --cyan: #3ec8f0;
+  --cyan-dim: rgba(62, 200, 240, 0.14);
+  --cyan-line: rgba(62, 200, 240, 0.28);
+  --green: #2fd67b;
+  --amber: #f0b429;
+  --red: #ff4d42;
+  --text: #e6edf5;
+  --text-dim: #a8b3c2;
+  --muted: #6d7888;
+  --hairline: #1e2633;
+  --hairline-bright: #2a3548;
+  --neon: #ff2d7b; /* shell marketing only — not CAD chrome */
+  --bezel: #070a10;
+  --glass: rgba(10, 14, 22, 0.92);
+  --shadow-deep: 0 18px 48px rgba(0, 0, 0, 0.55);
+  --font-ui: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --radius-xs: 2px;
+  --radius-sm: 3px;
+  --radius: 4px;
 }
 
 * {
@@ -24,8 +37,11 @@ body,
   height: 100%;
   background: var(--void);
   color: var(--text);
-  font-family: "Segoe UI", system-ui, sans-serif;
+  font-family: var(--font-ui);
   font-size: 13px;
+  font-feature-settings: "ss01" on, "tnum" on;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 button,
@@ -34,18 +50,26 @@ select,
 textarea {
   font: inherit;
   color: inherit;
-  background: var(--elevated);
-  border: 1px solid var(--hairline);
-  border-radius: 4px;
+  background: linear-gradient(180deg, #1a2230 0%, #141b27 100%);
+  border: 1px solid var(--hairline-bright);
+  border-radius: var(--radius-sm);
   padding: 6px 10px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease,
+    box-shadow 0.12s ease,
+    color 0.12s ease;
 }
 
 button {
   cursor: pointer;
+  letter-spacing: 0.04em;
 }
 
 button:hover {
-  border-color: var(--cyan);
+  border-color: var(--cyan-line);
+  background: linear-gradient(180deg, #1e2838 0%, #17202e 100%);
 }
 
 button:focus-visible,
@@ -5329,4 +5353,568 @@ button.ems-row {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   INSTRUMENT DESK v2 — pro console GUI (not arcade)
+   Shell may keep marketing neon; live glass stays EFIS / clinical.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.mono {
+  font-family: var(--font-mono) !important;
+  font-feature-settings: "tnum" on, "ss01" on;
+}
+
+.instrument-desk {
+  background:
+    radial-gradient(ellipse 90% 50% at 50% -10%, rgba(62, 200, 240, 0.06), transparent 55%),
+    linear-gradient(180deg, #06090f 0%, var(--void) 28%, #03050a 100%);
+  color: var(--text);
+}
+
+.instrument-desk::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.035;
+  background-image:
+    linear-gradient(rgba(62, 200, 240, 0.35) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(62, 200, 240, 0.35) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black, transparent);
+}
+
+.instrument-desk > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* —— Topbar: mission bar, not game HUD —— */
+.instrument-desk .instrument-topbar,
+.instrument-desk .topbar {
+  background:
+    linear-gradient(180deg, #0f1622 0%, #0a1018 100%);
+  border-bottom: 1px solid var(--cyan-line);
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 12px 28px rgba(0, 0, 0, 0.35);
+  min-height: 76px;
+  padding: 8px 16px;
+}
+
+.instrument-desk .prestige-console .topbar {
+  /* kill pink prestige streak on glass */
+  box-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+.instrument-desk .tb-brand {
+  gap: 0.55rem;
+}
+
+.instrument-desk .tb-brand-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.instrument-desk .tb-product {
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  color: var(--cyan);
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.instrument-desk .topbar .id {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--text);
+}
+
+.instrument-desk .tb-live {
+  font-size: 11px;
+  filter: drop-shadow(0 0 6px rgba(255, 77, 66, 0.75));
+}
+
+.instrument-desk .tb-chip {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  padding: 3px 8px;
+  border-radius: var(--radius-xs);
+  border-color: var(--cyan-line);
+  background: rgba(62, 200, 240, 0.05);
+  color: var(--text-dim);
+}
+
+.instrument-desk .tb-chip.dim {
+  border-color: var(--hairline-bright);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--muted);
+}
+
+.instrument-desk .tb-sim-k {
+  font-family: var(--font-mono);
+  letter-spacing: 0.2em;
+}
+
+.instrument-desk .tb-sim-v {
+  font-family: var(--font-mono);
+  color: var(--amber);
+  text-shadow: 0 0 12px rgba(240, 180, 41, 0.25);
+}
+
+/* Soft keys — FMS / PSAP softkey row */
+.instrument-desk .instrument-keys {
+  gap: 0.3rem;
+}
+
+.instrument-desk .instrument-keys .tb-key,
+.instrument-desk .instrument-keys button {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  min-height: 30px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--hairline-bright);
+  background:
+    linear-gradient(180deg, rgba(36, 46, 62, 0.95) 0%, rgba(18, 24, 34, 0.98) 100%);
+  color: var(--text-dim);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 1px 0 rgba(0, 0, 0, 0.45);
+}
+
+.instrument-desk .instrument-keys .tb-key:hover,
+.instrument-desk .instrument-keys button:hover {
+  color: var(--text);
+  border-color: var(--cyan-line);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 0 0 1px rgba(62, 200, 240, 0.08),
+    0 0 14px rgba(62, 200, 240, 0.08);
+}
+
+.instrument-desk .instrument-keys .tb-key.is-open,
+.instrument-desk .instrument-keys .tb-score-desk.is-open {
+  border-color: var(--cyan);
+  color: var(--cyan);
+  background: rgba(62, 200, 240, 0.1);
+}
+
+.instrument-desk .instrument-keys .audio-toggle:not(.is-muted) {
+  border-color: rgba(47, 214, 123, 0.45);
+  color: var(--green);
+  background: rgba(20, 55, 38, 0.45);
+}
+
+.instrument-desk .instrument-keys .tb-score:not(.is-muted) {
+  border-color: var(--cyan-line);
+  color: var(--cyan);
+  background: rgba(20, 40, 55, 0.45);
+}
+
+.instrument-desk .instrument-keys .tb-end.danger,
+.instrument-desk .instrument-keys button.danger {
+  border-color: rgba(255, 77, 66, 0.55);
+  color: #ffc9c5;
+  background: linear-gradient(180deg, rgba(70, 24, 24, 0.9), rgba(40, 12, 12, 0.95));
+}
+
+.instrument-desk .instrument-keys .tb-end.danger:hover {
+  border-color: var(--red);
+  color: #fff;
+}
+
+/* Zulu clock — instrument capsule */
+.instrument-desk .zulu-clock {
+  border-radius: var(--radius-xs);
+  border-color: var(--cyan-line);
+  background:
+    radial-gradient(ellipse 90% 120% at 50% 0%, rgba(62, 200, 240, 0.12), transparent 65%),
+    linear-gradient(180deg, #0b121c 0%, #060a10 100%);
+  box-shadow:
+    inset 0 0 24px rgba(62, 200, 240, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 0 0 1px rgba(0, 0, 0, 0.5);
+}
+
+.instrument-desk .zulu-hms {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 20px rgba(62, 200, 240, 0.28);
+}
+
+.instrument-desk .zulu-kicker {
+  font-family: var(--font-mono);
+}
+
+/* —— Panels: bezel CAD modules —— */
+.instrument-desk .instrument-grid {
+  gap: 0;
+  background: #05070c;
+  border-top: 1px solid rgba(0, 0, 0, 0.6);
+}
+
+.instrument-desk .instrument-panel,
+.instrument-desk .panel {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(14, 20, 30, 0.55) 0%, rgba(8, 12, 18, 0.2) 100%),
+    var(--panel);
+  border: 0;
+  border-right: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  padding: 10px 12px 12px;
+}
+
+.instrument-desk .instrument-panel::before {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  pointer-events: none;
+  border: 1px solid rgba(62, 200, 240, 0.06);
+  border-radius: 1px;
+}
+
+.instrument-desk .panel h2 {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin: 0 0 10px;
+  padding: 0 0 8px;
+  border-bottom: 1px solid rgba(62, 200, 240, 0.12);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.instrument-desk .h2-title {
+  color: var(--text-dim);
+}
+
+.instrument-desk .h2-meta {
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* Queue — dense professional list */
+.instrument-desk .queue-item {
+  border-radius: var(--radius-xs);
+  background: rgba(12, 18, 28, 0.72);
+  border: 1px solid rgba(42, 53, 72, 0.65);
+  margin-bottom: 5px;
+  padding: 8px 9px;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.instrument-desk .queue-item:hover {
+  border-color: var(--cyan-line);
+  background: rgba(18, 28, 40, 0.85);
+}
+
+.instrument-desk .queue-item.active {
+  border-color: rgba(62, 200, 240, 0.55);
+  background: linear-gradient(90deg, rgba(62, 200, 240, 0.12), rgba(20, 32, 48, 0.75));
+  box-shadow:
+    inset 3px 0 0 var(--cyan),
+    0 0 0 1px rgba(62, 200, 240, 0.08);
+}
+
+.instrument-desk .queue-item.is-new {
+  border-color: rgba(240, 180, 41, 0.4);
+  animation: newCallPulse 2.2s ease-in-out infinite;
+}
+
+.instrument-desk .queue-lane-h {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  border-bottom-color: rgba(62, 200, 240, 0.14);
+}
+
+.instrument-desk .qi-loc {
+  font-weight: 500;
+  color: var(--text);
+}
+
+.instrument-desk .qi-nature {
+  color: var(--text-dim);
+}
+
+/* Form fields — instrument inputs */
+.instrument-desk .form-grid label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+.instrument-desk input,
+.instrument-desk select,
+.instrument-desk textarea {
+  border-radius: var(--radius-xs);
+  border-color: var(--hairline-bright);
+  background: rgba(4, 8, 14, 0.85);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+.instrument-desk input:focus,
+.instrument-desk select:focus,
+.instrument-desk textarea:focus {
+  border-color: var(--cyan);
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(62, 200, 240, 0.2);
+}
+
+.instrument-desk .actions button {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: var(--radius-xs);
+}
+
+.instrument-desk button.primary {
+  background: linear-gradient(180deg, #4ad2f5 0%, #1a9fc4 100%);
+  color: #031018;
+  border-color: transparent;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 0 16px rgba(62, 200, 240, 0.18);
+}
+
+/* Unit rows */
+.instrument-desk .unit-row {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  border-bottom-color: rgba(30, 38, 51, 0.9);
+}
+
+.instrument-desk .unit-row:hover {
+  background: var(--cyan-dim);
+}
+
+.instrument-desk .unit-row.active {
+  background: rgba(62, 200, 240, 0.12);
+  border-left-color: var(--cyan);
+}
+
+/* Radio log — terminal but refined */
+.instrument-desk .radio-log {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.instrument-desk .radio-line {
+  border-bottom-color: rgba(30, 38, 51, 0.85);
+  padding: 4px 0;
+  color: var(--muted);
+}
+
+.instrument-desk .radio-line .cap {
+  color: var(--text);
+}
+
+/* Bottom rail */
+.instrument-desk .instrument-rail,
+.instrument-desk .bottom-rail {
+  background: linear-gradient(180deg, #0a0f16 0%, #070b11 100%);
+  border-top: 1px solid var(--cyan-line);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.instrument-desk .bottom-rail::before {
+  display: none;
+}
+
+/* Live grade strip — clinical ticker */
+.instrument-desk .live-grade-strip,
+.instrument-desk .lg-strip {
+  background: #070b12 !important;
+  border-bottom: 1px solid var(--hairline) !important;
+}
+
+/* Footer */
+.instrument-desk .footer {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  background: #05080e;
+  border-top: 1px solid var(--hairline);
+  color: var(--muted);
+}
+
+/* Hotkey help — modal instrument card */
+.instrument-desk .hotkey-help-inner {
+  background: rgba(8, 12, 18, 0.96);
+  border: 1px solid var(--cyan-line);
+  box-shadow: var(--shadow-deep), 0 0 0 1px rgba(0, 0, 0, 0.6);
+  border-radius: var(--radius-sm);
+}
+
+/* Debrief — formal after-action, still sexy */
+.prestige-debrief {
+  background:
+    radial-gradient(ellipse 55% 35% at 50% 0%, rgba(62, 200, 240, 0.09), transparent 60%),
+    var(--void) !important;
+  font-family: var(--font-ui);
+}
+
+.prestige-debrief .debrief-frame {
+  border: 1px solid var(--cyan-line);
+  background: rgba(8, 12, 18, 0.96);
+  box-shadow: var(--shadow-deep), 0 0 0 1px rgba(0, 0, 0, 0.5);
+  border-radius: var(--radius-sm);
+}
+
+.prestige-debrief .dh-kicker {
+  font-family: var(--font-mono);
+  letter-spacing: 0.22em;
+}
+
+.prestige-debrief .debrief-header h1 {
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.prestige-debrief .dh-stamp {
+  font-family: var(--font-mono);
+  border-radius: var(--radius-xs);
+  transform: none;
+}
+
+/* Score desk: no pink club chrome on glass */
+.instrument-desk .score-control-panel,
+.instrument-desk .scp {
+  border-color: var(--cyan-line) !important;
+}
+
+/* Kill arcade pink accents that leaked onto console softkeys */
+.instrument-desk .audio-toggle.music-toggle:not(.is-muted) {
+  border-color: var(--cyan-line) !important;
+  color: var(--cyan) !important;
+  background: rgba(20, 40, 55, 0.45) !important;
+}
+
+/* Map panel breathes as instrument surface */
+.instrument-desk .map-panel {
+  background: #070b11;
+  padding: 0;
+}
+
+.instrument-desk .map-panel::before {
+  inset: 0;
+  border-color: rgba(62, 200, 240, 0.08);
+}
+
+/* Training coach — floating instrument card, not game speech bubble */
+.instrument-desk .training-coach,
+.instrument-desk .coach-panel {
+  border-color: var(--cyan-line) !important;
+  background: rgba(8, 12, 18, 0.94) !important;
+  box-shadow: var(--shadow-deep) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+@media (max-width: 1100px) {
+  .instrument-desk .instrument-keys .tb-key,
+  .instrument-desk .instrument-keys button {
+    padding: 5px 8px;
+    font-size: 9px;
+  }
+}
+
+/* Score desk + live strip — instrument refinements */
+.instrument-desk .score-console {
+  background: rgba(8, 12, 18, 0.97) !important;
+  border: 1px solid var(--cyan-line) !important;
+  box-shadow: var(--shadow-deep), 0 0 0 1px rgba(0, 0, 0, 0.55) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.instrument-desk .score-console-head,
+.instrument-desk .score-console-kicker,
+.instrument-desk .score-console-foot {
+  font-family: var(--font-mono) !important;
+  letter-spacing: 0.12em;
+}
+
+.instrument-desk .live-grade-strip {
+  background: linear-gradient(180deg, #0a1018 0%, #070b12 100%) !important;
+  border-bottom: 1px solid var(--hairline) !important;
+  box-shadow: inset 0 -1px 0 rgba(62, 200, 240, 0.06);
+}
+
+.instrument-desk .lgs-pill {
+  font-family: var(--font-mono);
+  border-radius: var(--radius-xs) !important;
+}
+
+.instrument-desk .lgs-score-credit {
+  color: var(--muted) !important;
+  letter-spacing: 0.1em;
+}
+
+.instrument-desk .footer {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.instrument-desk .footer::before {
+  content: "INSTRUMENT";
+  color: var(--cyan);
+  opacity: 0.55;
+  letter-spacing: 0.18em;
+  font-size: 9px;
+}
+
+.instrument-desk .footer .ft-main {
+  color: var(--text-dim);
+}
+.instrument-desk .footer .ft-dim {
+  color: var(--muted);
+  opacity: 0.9;
+}
+.instrument-desk .footer .ft-sep {
+  opacity: 0.35;
+}
+.instrument-desk .footer kbd {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 1px 5px;
+  border: 1px solid var(--hairline-bright);
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.04);
 }
