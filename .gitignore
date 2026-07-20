@@ -24,3 +24,6 @@ packages/web/public/audio/channel-sfx/variants/
 
 # Local bake fingerprints (optional cache; do not require on clone)
 packages/web/public/audio/**/*.meta.json
+# Local reverse-engineering extracts (do not ship APKs)
+docs/research/premierone_mobile_xapk/
+
