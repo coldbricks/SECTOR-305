@@ -7,10 +7,12 @@
 |---|------|----------------|
 | 1 | Load app | Shell visible (South Beach swag), no neon CAD yet |
 | 2 | Read disclaimer | Not a real cert / not APCO language present |
-| 3 | OPEN WATCH · A07 | Clinical glass loads (EFIS colors) |
-| 4 | Top bar | Console ID A07, sector, sim clock, seed |
+| 3 | OPEN WATCH · A07 | Clinical glass loads (EFIS colors); **no pink neon CAD** |
+| 4 | Top bar | Soft keys (SFX / R/T / BED / SCORE / DEBRIEF); SECTOR 305 product mark; zulu |
 | 5 | Incident queue | ≥2 CFS; P-codes colored; loc confidence shown |
-| 6 | Select cfs-001 | Form shows nature, priority, location freeform |
+| 6 | Select cfs-001 | **CAD sheet** tabs: NATURE · LOCATION · FLAGS · RADIO |
+| 6b | Map plate | Zone chips + scale bar + GRID cursor; legend; **no truth pins** |
+| 6c | Debrief | Form **S305-AAR** letterhead/tables/signature — not a game win screen |
 | 7 | Verify → 1400 Ocean | Confidence becomes verified |
 | 8 | Set nature ROBBERY-IP | Nature updates |
 | 9 | Set priority P1 | Priority P1 |

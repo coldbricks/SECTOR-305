@@ -6,7 +6,6 @@ import {
   createMasteryProfile,
   recordMasteryWatch,
   type PlayerCommand,
-  type PriorityCode,
   type SectorState,
 } from "@sector305/core";
 import naturesJson from "../../../packs/miami-a07-police-v0/natures.json";
@@ -32,8 +31,8 @@ import { MapWorkspace } from "./components/MapWorkspace";
 import { TrainingCoach } from "./components/TrainingCoach";
 import { LiveGradeStrip } from "./components/LiveGradeStrip";
 import { CueWindowHud } from "./components/CueWindowHud";
-import { RadioCaptionMeter } from "./components/RadioCaptionMeter";
 import { ScoreControlPanel } from "./components/ScoreControlPanel";
+import { CfsCadSheet } from "./components/CfsCadSheet";
 import {
   HOTKEY_HELP_ROWS,
   useConsoleHotkeys,
@@ -656,69 +655,131 @@ export function App() {
   if (phase === "debrief" && debrief) {
     const stamp = new Date().toISOString().slice(0, 19).replace("T", " ");
     const nextFocus = projectedMastery.focus;
+    const resultWord = debrief.passed ? "PASS" : "FAIL";
+    const qualWord = debrief.passed ? "QUALIFIED" : "NOT QUALIFIED";
     return (
-      <div className={`debrief prestige-debrief ${debrief.passed ? "pass" : "fail"}`}>
-        <div className="debrief-frame">
-          <header className="debrief-header">
-            <div>
-              <div className="dh-kicker">S305 · AFTER-ACTION · TRAINING</div>
-              <h1>{debrief.passed ? "CHECKRIDE · PASS" : "CHECKRIDE · FAIL"}</h1>
+      <div
+        className={`debrief prestige-debrief aar-debrief ${debrief.passed ? "pass" : "fail"}`}
+      >
+        <article className="debrief-frame aar-frame" aria-label="After-action report">
+          <header className="aar-letterhead">
+            <div className="aar-brand mono">
+              <div className="aar-product">SECTOR 305</div>
+              <div className="aar-org">COLDBRICKS · TRAINING INSTRUMENT</div>
             </div>
-            <div className={`dh-stamp ${debrief.passed ? "ok" : "bad"}`}>
-              {debrief.passed ? "QUALIFIED" : "NOT QUALIFIED"}
+            <div className="aar-classification mono">
+              TRAINING USE ONLY · NOT AN OFFICIAL CERTIFICATE
             </div>
           </header>
-          <div className="debrief-meta mono">
-            <span>SCENARIO {debrief.scenarioId}</span>
-            <span>SEED {debrief.seed}</span>
-            <span>T+{(debrief.clockMs / 1000).toFixed(1)}s</span>
-            <span>EXPORT {stamp}Z</span>
+
+          <div className="aar-title-block">
+            <div className="aar-form-id mono">FORM S305-AAR · AFTER-ACTION REPORT</div>
+            <h1>A-CONSOLE CHECKRIDE EVALUATION</h1>
+            <div className={`aar-result-band ${debrief.passed ? "pass" : "fail"}`}>
+              <span className="aar-result-k mono">RESULT</span>
+              <span className="aar-result-v">{resultWord}</span>
+              <span className="aar-result-qual mono">{qualWord}</span>
+            </div>
           </div>
 
-          <section className="debrief-section">
-            <h2>Critical findings · hard fails ({debrief.hardFails.length})</h2>
+          <div className="aar-meta-grid mono">
+            <div>
+              <span className="aar-mk">SCENARIO</span>
+              <span className="aar-mv">{debrief.scenarioId}</span>
+            </div>
+            <div>
+              <span className="aar-mk">SEED</span>
+              <span className="aar-mv">{debrief.seed}</span>
+            </div>
+            <div>
+              <span className="aar-mk">SIM CLOCK</span>
+              <span className="aar-mv">T+{(debrief.clockMs / 1000).toFixed(1)}s</span>
+            </div>
+            <div>
+              <span className="aar-mk">EXPORT</span>
+              <span className="aar-mv">{stamp}Z</span>
+            </div>
+            <div>
+              <span className="aar-mk">WATCH ID</span>
+              <span className="aar-mv">{watchId.slice(0, 8)}…</span>
+            </div>
+            <div>
+              <span className="aar-mk">PROFILE</span>
+              <span className="aar-mv">
+                {projectedMastery.watchesCompleted} WATCH
+                {projectedMastery.watchesCompleted === 1 ? "" : "ES"} ·{" "}
+                {projectedMastery.cleanWatches} CLEAN
+              </span>
+            </div>
+          </div>
+
+          <section className="aar-section">
+            <h2 className="aar-h">
+              1 · Critical findings{" "}
+              <span className="aar-count">({debrief.hardFails.length})</span>
+            </h2>
             {debrief.hardFails.length === 0 ? (
-              <p className="ok-line">None recorded.</p>
+              <p className="ok-line aar-none">None recorded.</p>
             ) : (
-              <ul className="fail-list">
-                {debrief.hardFails.map((f) => (
-                  <li key={f.id}>
-                    <div className="fail-code">{f.code}</div>
-                    <div className="fail-msg">{f.message}</div>
-                    <div className="fail-meta mono">
-                      +{(f.atMs / 1000).toFixed(1)}s · {f.rubricId}
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              <table className="aar-table">
+                <thead>
+                  <tr>
+                    <th>TIME</th>
+                    <th>CODE</th>
+                    <th>FINDING</th>
+                    <th>RUBRIC</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {debrief.hardFails.map((f) => (
+                    <tr key={f.id}>
+                      <td className="mono">+{(f.atMs / 1000).toFixed(1)}s</td>
+                      <td className="mono fail-code">{f.code}</td>
+                      <td>{f.message}</td>
+                      <td className="mono dim">{f.rubricId}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
           </section>
 
-          <section className="debrief-section">
-            <h2>Coaching · soft marks ({debrief.softMarks.length})</h2>
+          <section className="aar-section">
+            <h2 className="aar-h">
+              2 · Coaching · soft marks{" "}
+              <span className="aar-count">({debrief.softMarks.length})</span>
+            </h2>
             {debrief.softBand ? (
-              <p className="dim-line mono" style={{ marginBottom: "0.5rem" }}>
+              <p className="dim-line mono aar-band-note">
                 SOFT BAND · {debrief.softBand.label} · weight {debrief.softBand.weight}/
                 {debrief.softBand.ceiling}
               </p>
             ) : null}
             {debrief.softMarks.length === 0 ? (
-              <p className="dim-line">None.</p>
+              <p className="dim-line aar-none">None.</p>
             ) : (
-              <ul className="fail-list soft">
-                {debrief.softMarks.map((f) => (
-                  <li key={f.id}>
-                    <div className="fail-code">{f.code}</div>
-                    <div className="fail-msg">{f.message}</div>
-                  </li>
-                ))}
-              </ul>
+              <table className="aar-table soft">
+                <thead>
+                  <tr>
+                    <th>CODE</th>
+                    <th>NOTE</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {debrief.softMarks.map((f) => (
+                    <tr key={f.id}>
+                      <td className="mono fail-code">{f.code}</td>
+                      <td>{f.message}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             )}
           </section>
 
-          <section className="debrief-section">
-            <h2>Watch metrics</h2>
-            <div className="metric-grid">
+          <section className="aar-section">
+            <h2 className="aar-h">3 · Watch metrics</h2>
+            <div className="metric-grid aar-metrics">
               <div className="metric">
                 <span className="mk">INCIDENTS</span>
                 <span className="mv">{debrief.metrics.incidentsTotal}</span>
@@ -738,46 +799,60 @@ export function App() {
             </div>
           </section>
 
-          <section className="debrief-section">
-            <h2>Evaluation timeline · chronological</h2>
+          <section className="aar-section">
+            <h2 className="aar-h">4 · Evaluation timeline</h2>
             {debrief.timeline.length === 0 ? (
-              <p className="dim-line">No timeline events.</p>
+              <p className="dim-line aar-none">No timeline events.</p>
             ) : (
-              <ul className="fail-list aar-timeline">
+              <ol className="aar-timeline">
                 {debrief.timeline.map((ev, i) => (
                   <li key={`${ev.atMs}-${ev.kind}-${i}`} className={`tl-${ev.kind}`}>
-                    <div className="fail-meta mono">
-                      +{(ev.atMs / 1000).toFixed(1)}s · {ev.kind}
-                    </div>
-                    <div className="fail-msg">{ev.summary}</div>
+                    <span className="aar-tl-t mono">+{(ev.atMs / 1000).toFixed(1)}s</span>
+                    <span className="aar-tl-k mono">{ev.kind}</span>
+                    <span className="aar-tl-m">{ev.summary}</span>
                   </li>
                 ))}
-              </ul>
+              </ol>
             )}
           </section>
 
           <section
-            className={`debrief-next mode-${nextFocus.mode}`}
+            className={`aar-section aar-next mode-${nextFocus.mode}`}
             aria-labelledby="next-watch-title"
           >
-            <div className="dn-kicker">NEXT WATCH · {nextFocus.label}</div>
-            <h2 id="next-watch-title">{nextFocus.title}</h2>
-            <p>{nextFocus.brief}</p>
-            <div className="dn-ledger mono">
-              PROFILE · {projectedMastery.watchesCompleted} WATCH
-              {projectedMastery.watchesCompleted === 1 ? "" : "ES"} OBSERVED ·{" "}
-              {projectedMastery.cleanWatches} CLEAN
-            </div>
+            <h2 className="aar-h" id="next-watch-title">
+              5 · Next watch directive
+            </h2>
+            <div className="dn-kicker mono">FOCUS · {nextFocus.label}</div>
+            <h3 className="aar-next-title">{nextFocus.title}</h3>
+            <p className="aar-next-brief">{nextFocus.brief}</p>
           </section>
 
-          <div className="actions debrief-actions">
-            <button className="primary" onClick={() => window.location.reload()}>
-              Run it cleaner
+          <footer className="aar-signature mono">
+            <div className="aar-sig-line">
+              <span>EVALUATOR</span>
+              <span className="aar-sig-blank">INSTRUMENT / SELF-REVIEW</span>
+            </div>
+            <div className="aar-sig-line">
+              <span>OPERATOR</span>
+              <span className="aar-sig-blank">________________</span>
+            </div>
+            <div className="aar-sig-line">
+              <span>DATE</span>
+              <span className="aar-sig-blank">{stamp}Z</span>
+            </div>
+          </footer>
+
+          <div className="actions debrief-actions aar-actions">
+            <button type="button" className="primary" onClick={() => window.location.reload()}>
+              Open next watch
             </button>
-            <button onClick={exportSession}>Export SessionRecord</button>
+            <button type="button" onClick={exportSession}>
+              Export SessionRecord
+            </button>
           </div>
-          <p className="disclaimer">{debrief.disclaimer}</p>
-        </div>
+          <p className="disclaimer aar-disclaimer">{debrief.disclaimer}</p>
+        </article>
       </div>
     );
   }
@@ -978,150 +1053,29 @@ export function App() {
           })}
         </div>
 
-        <div className="panel cfs-panel instrument-panel">
-          <h2>
-            <span className="h2-title">CFS detail</span>
-            <span className="h2-meta mono">FORM · CAPTION · FLAGS</span>
-          </h2>
-          {!selected ? (
-            <p style={{ color: "var(--muted)" }}>Select a CFS</p>
-          ) : (
-            <div className="form-grid">
-              <div>
-                <strong>{selected.cfsNumber}</strong> · {selected.id}
-              </div>
-              <label>
-                Priority
-                <select
-                  value={selected.priority}
-                  onChange={(e) =>
-                    cmd({
-                      type: "SetPriority",
-                      incidentId: selected.id,
-                      priority: e.target.value as PriorityCode,
-                    })
-                  }
-                >
-                  {["P0", "P1", "P2", "P3", "P4", "P5"].map((p) => (
-                    <option key={p} value={p}>
-                      {p}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Nature
-                <select
-                  value={selected.natureCode}
-                  onChange={(e) => {
-                    const code = e.target.value;
-                    cmd({
-                      type: "SetNature",
-                      incidentId: selected.id,
-                      natureCode: code,
-                    });
-                  }}
-                >
-                  {NATURES.map((n) => (
-                    <option key={n.code} value={n.code}>
-                      {n.code} — {n.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Location (display)
-                <input readOnly value={selected.location.freeform} />
-              </label>
-              <div className="actions">
-                <button
-                  onClick={() =>
-                    cmd({
-                      type: "VerifyLocation",
-                      incidentId: selected.id,
-                      confidence: "verified",
-                      location: {
-                        freeform: "1400 block Ocean Drive",
-                        block: "1400",
-                        street: "Ocean Drive",
-                        zoneId: "Z-OCEAN",
-                      },
-                    })
-                  }
-                >
-                  Verify → 1400 Ocean (truth)
-                </button>
-                <button
-                  onClick={() =>
-                    cmd({
-                      type: "SetFlag",
-                      incidentId: selected.id,
-                      flag: "WEAPONS",
-                      value: true,
-                    })
-                  }
-                >
-                  Flag WEAPONS
-                </button>
-                <button
-                  onClick={() =>
-                    cmd({
-                      type: "SetFlag",
-                      incidentId: selected.id,
-                      flag: "NEEDS_BACKUP",
-                      value: true,
-                    })
-                  }
-                >
-                  Flag BACKUP
-                </button>
-              </div>
-              <label>
-                Dispatch radio caption
-                <textarea
-                  rows={3}
-                  value={radioDraft}
-                  onChange={(e) => setRadioDraft(e.target.value)}
-                />
-              </label>
-              <RadioCaptionMeter caption={radioDraft} />
-              <div className="actions">
-                <button className="primary" onClick={() => dispatchTwo()}>
-                  Dispatch 2× AVL patrol
-                </button>
-                <button
-                  onClick={() => {
-                    const available = units.find((u) => u.status === "AVL");
-                    if (!available) return;
-                    cmd({
-                      type: "DispatchUnits",
-                      incidentId: selected.id,
-                      unitIds: [available.id],
-                      radioCaption: radioDraft,
-                    });
-                  }}
-                >
-                  Dispatch 1× (risk)
-                </button>
-                <button onClick={() => simAcks()}>Sim unit ACKs</button>
-                <button onClick={() => simOnScene()}>Sim on scene</button>
-                <button onClick={() => clearGoa()}>Clear GOA</button>
-              </div>
-              <h2 style={{ marginTop: 12 }}>CAD notes</h2>
-              <div className="radio-log">
-                {selected.notes.map((n, i) => (
-                  <div key={i} className="radio-line">
-                    +{(n.atMs / 1000).toFixed(1)}s [{n.author}] {n.text}
-                  </div>
-                ))}
-              </div>
-              <p style={{ color: "var(--muted)", fontSize: 11 }}>
-                Flags: {selected.flags.join(", ") || "—"} · Truth is hidden
-                (grader only)
-              </p>
-            </div>
-          )}
-        </div>
+        <CfsCadSheet
+          selected={selected}
+          units={units}
+          radioDraft={radioDraft}
+          onRadioDraft={setRadioDraft}
+          natures={NATURES}
+          onCmd={cmd}
+          onDispatchTwo={() => dispatchTwo()}
+          onDispatchOne={() => {
+            if (!selected) return;
+            const available = units.find((u) => u.status === "AVL");
+            if (!available) return;
+            cmd({
+              type: "DispatchUnits",
+              incidentId: selected.id,
+              unitIds: [available.id],
+              radioCaption: radioDraft,
+            });
+          }}
+          onSimAcks={() => simAcks()}
+          onSimOnScene={() => simOnScene()}
+          onClearGoa={() => clearGoa()}
+        />
 
         <div className="panel agency-panel instrument-panel">
           <AgencyDesk

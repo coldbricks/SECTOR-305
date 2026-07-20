@@ -1706,9 +1706,33 @@ export function SectorMap(props: {
           </div>
         )}
 
+        <div className="map-instrument-rail" aria-hidden>
+          <div className="map-zone-legend mono">
+            {ZONES.map((z) => (
+              <span
+                key={z.id}
+                className={`mz-chip zone-${z.short.toLowerCase()} ${z.handoff ? "is-handoff" : ""}`}
+                title={z.name}
+              >
+                {z.short}
+              </span>
+            ))}
+          </div>
+          <div className="map-scale-bar" title="Relative plate scale (fictional grid)">
+            <div className="msb-label mono">
+              SCALE <span className="msb-val">{Math.max(1, Math.round(view.w / 10))} u</span>
+            </div>
+            <div className="msb-track">
+              <span className="msb-bar" />
+              <span className="msb-ticks" />
+              <span className="msb-mid" />
+            </div>
+          </div>
+        </div>
+
         <div className="map-status mono" aria-hidden>
           <span>
-            CUR{" "}
+            GRID{" "}
             {cursor
               ? `${cursor.x.toFixed(1)},${cursor.y.toFixed(1)}`
               : "—,—"}
@@ -1716,9 +1740,10 @@ export function SectorMap(props: {
           <span>
             VIEW {view.x.toFixed(0)},{view.y.toFixed(0)} · {view.w.toFixed(0)}²
           </span>
-          <span>{zoomPct}%</span>
+          <span>ZOOM {zoomPct}%</span>
           {hit && <span className="map-status-hit">{hit.kind.toUpperCase()}</span>}
           {mapFocus && <span className="map-status-focus">KEYS</span>}
+          <span className="map-status-dim">NO TRUTH PINS</span>
         </div>
 
         <div className="tactical-legend">
