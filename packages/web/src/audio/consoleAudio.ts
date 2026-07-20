@@ -1,7 +1,16 @@
 /**
- * SECTOR 305 console audio — Web Audio synthesis + sample dings.
- * Session “notification” ding = Floyd-style BEEP BEEP sample (key of D),
- * used the way Grok uses a notification chime (CFS select, soft marks, etc.).
+ * SECTOR 305 console audio — Web Audio synthesis + sparse samples.
+ *
+ * Doctrine (2026-07-20):
+ * - UI pings = quiet synth ticks (not a roger lottery).
+ * - One house roger sample only — rare / explicit, never multi-beep spam.
+ * - Radio unkey: most closes are silent digital mute; SOME get a very subtle
+ *   P25-style end chirp (Phase-1 C4FM / encrypted-burst character from SIGID),
+ *   not MDC-1200 AFSK and not analog squelch crash.
+ *
+ * Research:
+ *   https://www.sigidwiki.com/wiki/Project_25_(P25)
+ *   https://www.sigidwiki.com/wiki/File:P25_Sound.mp3  (end-of-burst chirp character)
  */
 
 export type SoundId =
@@ -35,8 +44,8 @@ function noiseBuffer(ctx: AudioContext, seconds: number): AudioBuffer {
   return buf;
 }
 
-/** Fallback if roger pack missing. */
-const BEEP_BEEP_URL = "/audio/beep-beep.mp3";
+/** Single-file house roger (manifest must list at most one). */
+const ROGER_FALLBACK = "/audio/roger/roger-1.mp3";
 const ROGER_MANIFEST = "/audio/roger/manifest.json";
 
 class ConsoleAudio {
@@ -48,10 +57,10 @@ class ConsoleAudio {
   /** Intermittent squelch-break timer (not continuous hiss). */
   private ambientTimer: number | null = null;
   private wantedAmbient = false;
-  private notifVol = 0.52;
-  private rogerFiles: string[] = [];
+  /** Quiet — one house roger only, not a UI spam layer. */
+  private notifVol = 0.28;
+  private rogerFile: string | null = null;
   private rogerLoaded = false;
-  private lastRoger = -1;
 
   constructor() {
     try {
@@ -126,14 +135,16 @@ class ConsoleAudio {
     this.stopAmbientInternal();
   }
 
-  /** Full radio path self-test (key · crackle · rx · ding). */
+  /** Full radio path self-test (key · soft rx · forced P25 end chirp). */
   radioTest() {
     if (this.muted) return;
     this.play("radioKey");
-    window.setTimeout(() => this.play("radioCrackle"), 90);
-    window.setTimeout(() => this.play("radioRx"), 320);
-    window.setTimeout(() => this.play("ding"), 520);
-    window.setTimeout(() => this.play("channelUp"), 700);
+    window.setTimeout(() => this.play("radioRx"), 280);
+    window.setTimeout(
+      () => this.playP25EndChirp({ force: true, field: true }),
+      480
+    );
+    window.setTimeout(() => this.play("ui"), 720);
   }
 
   /**
@@ -151,11 +162,7 @@ class ConsoleAudio {
 
   play(id: SoundId) {
     if (this.muted) return;
-    // Radio-like roger / notification samples for UI pings
-    if (id === "ding" || id === "ack" || id === "assign" || id === "tick") {
-      void this.playRogerNotif(id === "ack" || id === "assign" ? 0.48 : 0.52);
-      return;
-    }
+    // UI pings stay on quiet synth — never the roger lottery
     const ctx = this.ensureCtx();
     if (ctx.state === "suspended") {
       void ctx.resume().then(() => this.playNow(id, ctx));
@@ -164,74 +171,171 @@ class ConsoleAudio {
     this.playNow(id, ctx);
   }
 
-  private async loadRogerPack(): Promise<string[]> {
-    if (this.rogerLoaded) return this.rogerFiles;
+  private async loadRogerPack(): Promise<string | null> {
+    if (this.rogerLoaded) return this.rogerFile;
     try {
       const res = await fetch(ROGER_MANIFEST, { cache: "no-cache" });
       if (res.ok) {
         const man = (await res.json()) as { files?: string[]; volume?: number };
-        this.rogerFiles = (man.files ?? []).filter(Boolean);
-        if (typeof man.volume === "number") this.notifVol = man.volume;
+        // HARD CAP: one house roger only (user order — kill multi-beep spam)
+        const first = (man.files ?? []).find(Boolean) ?? null;
+        this.rogerFile = first;
+        if (typeof man.volume === "number") {
+          this.notifVol = Math.min(0.4, Math.max(0.12, man.volume));
+        }
       }
     } catch {
       /* ignore */
     }
+    if (!this.rogerFile) this.rogerFile = ROGER_FALLBACK;
     this.rogerLoaded = true;
-    return this.rogerFiles;
-  }
-
-  private pickRogerUrl(): string {
-    const files = this.rogerFiles;
-    if (!files.length) return BEEP_BEEP_URL;
-    // Prefer short radio chirps (skip longer “ring” samples when possible)
-    const shortish = files.filter((f) => {
-      const n = f.toLowerCase();
-      // keep variety but avoid the longest ring* if we have alternatives
-      return !n.includes("ring5a") && !n.includes("ring12");
-    });
-    const pool = shortish.length >= 4 ? shortish : files;
-    let idx = Math.floor(Math.random() * pool.length);
-    if (pool.length > 1 && idx === this.lastRoger) idx = (idx + 1) % pool.length;
-    this.lastRoger = idx;
-    return pool[idx]!;
+    return this.rogerFile;
   }
 
   /**
-   * Radio roger / notif chirp — KC2UUM pack + fallbacks.
-   * Used like Grok notifications for CFS select, ACK, soft marks, etc.
+   * Single house roger — rare / explicit only (radio self-test, special moments).
+   * Not used for CFS select, map click, coach, soft marks, etc.
    */
   async playRogerNotif(vol = this.notifVol): Promise<void> {
     if (this.muted) return;
     try {
       await this.unlock();
-      await this.loadRogerPack();
-      const url = this.pickRogerUrl();
+      const url = (await this.loadRogerPack()) ?? ROGER_FALLBACK;
       const a = new Audio(url);
       a.volume = vol;
       a.preload = "auto";
       await a.play();
     } catch {
-      try {
-        const a = new Audio(BEEP_BEEP_URL);
-        a.volume = vol;
-        await a.play();
-      } catch {
-        const ctx = this.ensureCtx();
-        if (ctx.state === "suspended") {
-          try {
-            await ctx.resume();
-          } catch {
-            return;
-          }
+      const ctx = this.ensureCtx();
+      if (ctx.state === "suspended") {
+        try {
+          await ctx.resume();
+        } catch {
+          return;
         }
-        this.playNow("ding", ctx);
       }
+      this.playNow("ack", ctx);
     }
   }
 
-  /** @deprecated alias — session notif is roger pack now */
+  /** @deprecated — maps to soft synth ding, not multi-roger */
   async playBeepBeepNotif(): Promise<void> {
-    return this.playRogerNotif();
+    this.play("ding");
+  }
+
+  /**
+   * P25-style end-of-transmission chirp — VERY subtle, and only on SOME unkeys.
+   *
+   * Real Phase-1 C4FM / encrypted bursts (SIGID P25_Sound.mp3 character) often
+   * leave a short digital frame edge when the voice channel drops — not a roger
+   * beep, not MDC-1200 AFSK (1200/1800 mark-space), not analog squelch crash.
+   *
+   * Probability (unless force):
+   *   console ~18% · field ~32% · emergency ~45%
+   * Original synth only — training fiction, not a vendor sample.
+   */
+  playP25EndChirp(opts?: {
+    emergency?: boolean;
+    field?: boolean;
+    /** Always play (radio self-test). */
+    force?: boolean;
+  }): boolean {
+    if (this.muted) return false;
+    const hot = !!opts?.emergency;
+    const field = !!opts?.field;
+    const p = opts?.force ? 1 : hot ? 0.45 : field ? 0.32 : 0.18;
+    if (Math.random() > p) return false;
+
+    const ctx = this.ensureCtx();
+    if (ctx.state === "suspended") {
+      void ctx.resume().then(() => this.playP25EndChirpNow(ctx, { hot, field }));
+      return true;
+    }
+    this.playP25EndChirpNow(ctx, { hot, field });
+    return true;
+  }
+
+  /** @deprecated use playP25EndChirp — kept so old call sites don't throw */
+  playDigitalUnkeyTail(opts?: { emergency?: boolean; field?: boolean }) {
+    this.playP25EndChirp({ ...opts, force: true });
+  }
+
+  private playP25EndChirpNow(
+    ctx: AudioContext,
+    opts: { hot: boolean; field: boolean }
+  ) {
+    const t = ctx.currentTime;
+    const out = this.master(ctx, t);
+    // Keep it under the desk — listeners should almost miss it
+    const peak =
+      (opts.hot ? 0.028 : opts.field ? 0.02 : 0.014) * this.masterGain;
+
+    // 1) Abrupt digital mute floor (P25 closes hard vs analog squelch tail)
+    this.p25DigitalBurst(ctx, out, t, 0.028, peak * 0.55, 2100);
+
+    // 2) That little end chirp — ~45–70ms mid-high digital frame edge
+    //    (encrypted-burst / last-frame character, not a musical tone)
+    const chirpStart = t + 0.018;
+    const chirpDur = opts.hot ? 0.07 : 0.052;
+    this.p25DigitalBurst(ctx, out, chirpStart, chirpDur, peak, 2600);
+
+    // 3) Tiny residual blip (some scanners catch a last LC/ES frame edge)
+    if (opts.field || opts.hot || Math.random() < 0.4) {
+      this.tone(ctx, out, {
+        freq: 2450 + Math.random() * 400,
+        type: "triangle",
+        start: chirpStart + chirpDur * 0.55,
+        dur: 0.018,
+        peak: peak * 0.45,
+        attack: 0.001,
+        release: 0.01,
+      });
+    }
+  }
+
+  /**
+   * Short band-limited digital-sounding burst (C4FM-ish frame edge fiction).
+   * Noise through narrow bandpass + stutter — not AFSK dual-tone.
+   */
+  private p25DigitalBurst(
+    ctx: AudioContext,
+    dest: AudioNode,
+    start: number,
+    dur: number,
+    peak: number,
+    centerHz: number
+  ) {
+    const src = ctx.createBufferSource();
+    src.buffer = noiseBuffer(ctx, Math.max(0.05, dur + 0.04));
+    const bp = ctx.createBiquadFilter();
+    bp.type = "bandpass";
+    bp.frequency.value = centerHz;
+    bp.Q.value = 3.2;
+    const hp = ctx.createBiquadFilter();
+    hp.type = "highpass";
+    hp.frequency.value = 900;
+    const lp = ctx.createBiquadFilter();
+    lp.type = "lowpass";
+    lp.frequency.value = 4200;
+    const g = ctx.createGain();
+    const t0 = start;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(peak, t0 + 0.004);
+    // 2–3 digital frame stutters (IMBE-ish chunk edges)
+    const steps = 2 + Math.floor(Math.random() * 2);
+    for (let i = 1; i < steps; i++) {
+      const tt = t0 + (dur * i) / steps;
+      const v = peak * (0.25 + Math.random() * 0.55);
+      g.gain.exponentialRampToValueAtTime(Math.max(0.0002, v), tt);
+    }
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    src.connect(hp);
+    hp.connect(bp);
+    bp.connect(lp);
+    lp.connect(g);
+    g.connect(dest);
+    src.start(t0);
+    src.stop(t0 + dur + 0.03);
   }
 
   private startAmbientNow(ctx: AudioContext) {
@@ -263,31 +367,24 @@ class ConsoleAudio {
       } catch {
         /* ignore */
       }
-      // long quiet between breaks — channel mostly closed
-      const gap = 4500 + Math.random() * 11000;
+      // longer quiet between breaks — channel mostly closed
+      const gap = 9000 + Math.random() * 16000;
       this.scheduleSquelchBreak(ctx, gap);
     }, delayMs);
   }
 
-  /** One open-squelch tail: brief static + optional second tick. */
+  /** One open-squelch flutter — rare, single burst only (no double-roger tails). */
   private fireSquelchBreak(ctx: AudioContext) {
     const t = ctx.currentTime;
     const out = this.master(ctx, t);
-    // primary break — short (80–220ms), not a continuous bed
-    const dur = 0.08 + Math.random() * 0.14;
-    const peak = 0.028 * this.masterGain * (0.75 + Math.random() * 0.5);
+    // primary break — short (60–140ms), quiet
+    const dur = 0.06 + Math.random() * 0.08;
+    const peak = 0.018 * this.masterGain * (0.7 + Math.random() * 0.4);
     this.crackleBurst(ctx, out, t, dur, peak);
-    // occasional double-break (tail after tail)
-    if (Math.random() < 0.35) {
-      const gap = 0.12 + Math.random() * 0.22;
-      const dur2 = 0.05 + Math.random() * 0.09;
-      this.crackleBurst(
-        ctx,
-        out,
-        t + gap,
-        dur2,
-        peak * (0.45 + Math.random() * 0.35)
-      );
+    // almost never a second flutter (was 35% — felt like roger spam)
+    if (Math.random() < 0.08) {
+      const gap = 0.18 + Math.random() * 0.2;
+      this.crackleBurst(ctx, out, t + gap, 0.04, peak * 0.4);
     }
   }
 
@@ -457,65 +554,29 @@ class ConsoleAudio {
         break;
       }
       case "ding": {
-        // Synth fallback for BEEP BEEP (D-key dual telephone) if sample fails
-        // BEEP
+        // Single soft desk tick — never double-beep / roger
         this.tone(ctx, out, {
-          freq: 587.33,
+          freq: 740,
           type: "sine",
           start: t,
-          dur: 0.1,
-          peak: 0.14,
-          attack: 0.004,
-          release: 0.03,
-        });
-        this.tone(ctx, out, {
-          freq: 880,
-          type: "sine",
-          start: t,
-          dur: 0.1,
-          peak: 0.11,
-          attack: 0.004,
-          release: 0.03,
-        });
-        // BEEP
-        this.tone(ctx, out, {
-          freq: 587.33,
-          type: "sine",
-          start: t + 0.16,
-          dur: 0.1,
-          peak: 0.14,
-          attack: 0.004,
-          release: 0.03,
-        });
-        this.tone(ctx, out, {
-          freq: 880,
-          type: "sine",
-          start: t + 0.16,
-          dur: 0.1,
-          peak: 0.11,
-          attack: 0.004,
-          release: 0.03,
+          dur: 0.055,
+          peak: 0.07,
+          attack: 0.003,
+          release: 0.025,
         });
         break;
       }
       case "alertHi": {
-        // urgent double-beep
-        for (let i = 0; i < 3; i++) {
+        // urgent double-beep only (P0/P1) — keep short, not a roger cascade
+        for (let i = 0; i < 2; i++) {
           this.tone(ctx, out, {
             freq: 880,
             type: "square",
-            start: t + i * 0.14,
-            dur: 0.08,
-            peak: 0.12,
-            attack: 0.003,
-            release: 0.03,
-          });
-          this.tone(ctx, out, {
-            freq: 1175,
-            type: "square",
-            start: t + i * 0.14 + 0.04,
-            dur: 0.07,
+            start: t + i * 0.12,
+            dur: 0.06,
             peak: 0.1,
+            attack: 0.003,
+            release: 0.025,
           });
         }
         break;
@@ -525,34 +586,34 @@ class ConsoleAudio {
           freq: 660,
           type: "triangle",
           start: t,
-          dur: 0.09,
-          peak: 0.11,
-        });
-        this.tone(ctx, out, {
-          freq: 990,
-          type: "triangle",
-          start: t + 0.08,
-          dur: 0.12,
-          peak: 0.1,
+          dur: 0.07,
+          peak: 0.07,
         });
         break;
       }
       case "ack": {
+        // Soft single confirm — not dual-tone + crackle
         this.tone(ctx, out, {
-          freq: 520,
+          freq: 620,
           type: "sine",
           start: t,
-          dur: 0.07,
-          peak: 0.1,
+          dur: 0.06,
+          peak: 0.065,
+          attack: 0.004,
+          release: 0.03,
         });
+        break;
+      }
+      case "tick": {
         this.tone(ctx, out, {
-          freq: 780,
+          freq: 980,
           type: "sine",
-          start: t + 0.07,
-          dur: 0.1,
-          peak: 0.09,
+          start: t,
+          dur: 0.03,
+          peak: 0.04,
+          attack: 0.002,
+          release: 0.015,
         });
-        this.crackleBurst(ctx, out, t + 0.12, 0.1, 0.08);
         break;
       }
       case "clear": {
@@ -600,18 +661,6 @@ class ConsoleAudio {
             dur: 0.2,
             peak: 0.1,
           });
-        });
-        break;
-      }
-      case "tick": {
-        this.tone(ctx, out, {
-          freq: 1400,
-          type: "sine",
-          start: t,
-          dur: 0.03,
-          peak: 0.04,
-          attack: 0.001,
-          release: 0.015,
         });
         break;
       }

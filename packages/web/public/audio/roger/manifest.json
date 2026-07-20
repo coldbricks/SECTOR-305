@@ -1,23 +1,5 @@
 ﻿{
-    "volume":  0.5,
-    "files":  [
-                  "/audio/roger/roger-1.mp3",
-                  "/audio/roger/roger-10.mp3",
-                  "/audio/roger/roger-11.mp3",
-                  "/audio/roger/roger-12.mp3",
-                  "/audio/roger/roger-13.mp3",
-                  "/audio/roger/roger-14.mp3",
-                  "/audio/roger/roger-15.mp3",
-                  "/audio/roger/roger-16.mp3",
-                  "/audio/roger/roger-17.mp3",
-                  "/audio/roger/roger-18.mp3",
-                  "/audio/roger/roger-2.mp3",
-                  "/audio/roger/roger-3.mp3",
-                  "/audio/roger/roger-4.mp3",
-                  "/audio/roger/roger-5.mp3",
-                  "/audio/roger/roger-6.mp3",
-                  "/audio/roger/roger-7.mp3",
-                  "/audio/roger/roger-8.mp3",
-                  "/audio/roger/roger-9.mp3"
-              ]
+  "volume": 0.28,
+  "note": "Single house roger only — no random multi-beep lottery. Radio unkey uses synth digital tail (MDC/AFSK-inspired fiction), not these samples.",
+  "files": ["/audio/roger/roger-1.mp3"]
 }

@@ -645,39 +645,37 @@ class RadioSpeech {
 
   private async playRadioKeyFx(role: RadioRole, emergency = false) {
     await channelSfx.ensureLoaded();
+    // P25 key-up is soft open — not analog key + crackle + squelch stack
     const keyVol = emergency
       ? role === "field"
-        ? 0.62
-        : 0.55
+        ? 0.42
+        : 0.36
       : role === "field"
-        ? 0.5
-        : 0.42;
+        ? 0.32
+        : 0.26;
     const keyed = await channelSfx.play("radio_key_up", keyVol);
     if (!keyed) consoleAudio.play("radioKey");
-    // Field / emergency / some console: soft crackle
-    if (emergency || role === "field" || Math.random() < 0.45) {
+    // Rare soft grit only on field/emergency (not every TX)
+    if (emergency || (role === "field" && Math.random() < 0.2)) {
       window.setTimeout(() => {
-        void channelSfx
-          .play("radio_crackle_soft", emergency ? 0.38 : 0.28)
-          .then((ok) => {
-            if (!ok) consoleAudio.play("radioCrackle");
-          });
-      }, 45);
-    }
-    // Open squelch chirp — more often on field / emergency
-    if (emergency || Math.random() < (role === "field" ? 0.55 : 0.3)) {
-      window.setTimeout(() => {
-        void channelSfx.play(
-          "radio_squelch_open",
-          emergency ? 0.32 : 0.22
-        );
-      }, 70);
+        void channelSfx.play("radio_crackle_soft", emergency ? 0.18 : 0.12);
+      }, 40);
     }
   }
 
-  private async playRadioUnkeyFx() {
-    const tail = await channelSfx.play("radio_squelch_tail", 0.28);
-    if (!tail) await channelSfx.play("radio_key_down", 0.3);
+  /**
+   * Unkey: digital mute by default; SOME get a very subtle P25 end chirp
+   * (SIGID P25_Sound.mp3 character). No analog squelch-tail every TX.
+   */
+  private async playRadioUnkeyFx(role: RadioRole, emergency = false) {
+    const chirped = consoleAudio.playP25EndChirp({
+      field: role === "field",
+      emergency,
+    });
+    // If no end chirp this time, barely-there key-down only (digital mute feel)
+    if (!chirped) {
+      await channelSfx.play("radio_key_down", 0.12);
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -937,7 +935,8 @@ class RadioSpeech {
       channelSfx.stopBed();
       this.txBusy = false;
       if (bus === "phone") void this.playPhoneHangupFx();
-      else if (bus === "radio") void this.playRadioUnkeyFx();
+      else if (bus === "radio")
+        void this.playRadioUnkeyFx(radioRole, isEmergency);
     };
 
     this.stopTimer = window.setTimeout(() => {
