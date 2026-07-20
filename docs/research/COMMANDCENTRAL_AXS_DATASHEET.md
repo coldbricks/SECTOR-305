@@ -1,9 +1,13 @@
 # CommandCentral AXS — datasheet research (SECTOR 305)
 
-**Source:** [Motorola CommandCentral AXS datasheet PDF](https://www.motorolasolutions.com/content/dam/msi/docs/products/command-center-software/commandcentral_axs_datasheet.pdf)  
-**Local copy:** `Downloads/commandcentral_axs_datasheet.pdf`  
-**Doc mark:** ©2025 Motorola Solutions · 10-2025 [EV10] · 5 pages  
-**Product:** **CommandCentral AXS Dispatch Console** — radio dispatch console (ASTRO P25), not full CAD incident software  
+**Sources (two editions):**
+
+| Edition | URL / local | Mark |
+|---------|-------------|------|
+| **2025 MSI** | [motorolasolutions.com … commandcentral_axs_datasheet.pdf](https://www.motorolasolutions.com/content/dam/msi/docs/products/command-center-software/commandcentral_axs_datasheet.pdf) · `Downloads/commandcentral_axs_datasheet.pdf` | ©2025 · 10-2025 [EV10] · **5 pages** |
+| **2020 P&R / MSI** | [pandrcommunications.com … commandcentral-axs-data-sheet.pdf](https://pandrcommunications.com/wp-content/uploads/2021/04/commandcentral-axs-data-sheet.pdf) · `Downloads/commandcentral-axs-data-sheet-pandr-2021.pdf` | ©2020 · 04-2020 · **3 pages** |
+
+**Product:** **CommandCentral AXS Dispatch Console** — radio dispatch console (ASTRO 25 / P25), not full CAD incident software
 
 ## Legal / product boundary
 
@@ -143,8 +147,32 @@ SECTOR’s A-console can stay **CAD-primary** with a **radio panel that reads AX
 3. **TX strip** — timeout / “press to present” style caption under radio (training only)  
 4. **Top radio soft row** — GENERAL TX · TONE · FREQ metaphors as non-functional or sim-only controls labeled fiction  
 
+## 2020 datasheet deltas (P&R / 04-2020) vs 2025 MSI
+
+Same product family, earlier marketing + slightly different feature/hardware cut:
+
+| Topic | 2020 (P&R) | 2025 (MSI) |
+|-------|------------|------------|
+| Page count | 3 | 5 |
+| Hero UI | Same resource-tile dark console language | Same + “instantly familiar” MCC migration story |
+| Platform story | Extensible; **future multi-radio-system** integration; monthly software releases; subscription required for updates | ASTRO-native emphasis; MCC 7500/E migration; ecosystem UI consistency |
+| Client tech | **Supported browsers: Chromium or Chrome** (browser-class client called out) | Not emphasized on datasheet |
+| Extra console features | **On-screen speaker volume**, **channel-based** instant recall, **group text messaging** (trunking), customizable channel marker | Instant recall (not “channel-based” wording), alert tones, activity log; no group text on this sheet |
+| Secure voice extras | **Panic key zeroizing**, **keyset/indexset selection** | FIPS levels spelled out more; OTEK still present |
+| Speakers / logging | ≤**10** speakers · **3** local logging ports | ≤**8** speakers · **1** local logging port |
+| Hub | Lighter form (datasheet ~**3 lb**) | B1955/B1956 models; heavier with/without PC |
+| Cluster | **AXS Cluster**: **3 servers**, **64 GB ECC** each | Not on 2025 sheet (hub + HP Z2 Mini instead) |
+| Deploy | Not framed as inside/outside ASTRO infra | Explicit inside **or** outside ASTRO infrastructure |
+
+### SECTOR takeaway from the 2020 cut
+
+- **Browser/Chromium client** reinforces that modern radio consoles are **web-tech UIs** on dark glass — SECTOR’s React instrument path is in-family.
+- **On-screen speaker volume** + per-resource volume = mix board metaphor for channel bank.
+- **Group text messaging** on trunking = second channel of dispatcher↔field (fiction: CAD notes / radio caption dual path).
+- **Monthly/subscription update** culture = product-as-service (not relevant to open trainer except “ship often”).
+
 ## Observer
 
 - Fetched: 2026-07-20  
-- Method: official MSI datasheet PDF · full text extract · UI read from hero mock  
-- Pages: 5  
+- Method: MSI 2025 + P&R 2020 datasheets · full text extract · UI read from hero mocks  
+- Pages: 5 + 3  
