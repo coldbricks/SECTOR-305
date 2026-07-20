@@ -7,9 +7,10 @@ import type { Incident, PriorityCode, Unit } from "@sector305/core";
 import { RadioCaptionMeter } from "./RadioCaptionMeter";
 import { consoleAudio } from "../audio/consoleAudio";
 
-export type CadTab = "nature" | "location" | "flags" | "radio";
+export type CadTab = "nature" | "location" | "flags" | "radio" | "close";
 
 type NatureOpt = { code: string; label: string };
+type DispOpt = { code: string; label: string };
 
 type Props = {
   selected: Incident | null;
@@ -17,12 +18,14 @@ type Props = {
   radioDraft: string;
   onRadioDraft: (v: string) => void;
   natures: NatureOpt[];
+  dispositions?: DispOpt[];
   onCmd: (cmd: import("@sector305/core").PlayerCommand) => void;
   onDispatchTwo: () => void;
   onDispatchOne: () => void;
   onSimAcks: () => void;
   onSimOnScene: () => void;
   onClearGoa: () => void;
+  onClearWithDisposition?: (code: string) => void;
 };
 
 const TABS: { id: CadTab; label: string; hint: string }[] = [
@@ -30,6 +33,17 @@ const TABS: { id: CadTab; label: string; hint: string }[] = [
   { id: "location", label: "LOCATION", hint: "Display · confidence · verify" },
   { id: "flags", label: "FLAGS", hint: "Hazards · notes" },
   { id: "radio", label: "RADIO", hint: "Caption · dispatch · sim" },
+  { id: "close", label: "CLOSE", hint: "Disposition · clear" },
+];
+
+const DEFAULT_DISPS: DispOpt[] = [
+  { code: "GOA", label: "Gone on arrival" },
+  { code: "UTL", label: "Unable to locate" },
+  { code: "RPT", label: "Report taken" },
+  { code: "ADV", label: "Advised" },
+  { code: "ARR", label: "Arrest" },
+  { code: "UNF", label: "Unfounded" },
+  { code: "CAN", label: "Cancelled" },
 ];
 
 export function CfsCadSheet(props: Props) {
@@ -290,6 +304,49 @@ export function CfsCadSheet(props: Props) {
                 <p className="cad-footnote mono">
                   Captions are the training surface. Audio is a view over structured events.
                 </p>
+              </>
+            )}
+
+            {tab === "close" && (
+              <>
+                <h3 className="cad-subh">Disposition · close CFS</h3>
+                <p className="cad-footnote">
+                  Clearing without a disposition is a graded failure. Units should
+                  CLR → AVL before or as you close.
+                </p>
+                <div className="cad-disp-grid">
+                  {(props.dispositions ?? DEFAULT_DISPS).map((d) => (
+                    <button
+                      key={d.code}
+                      type="button"
+                      className="cad-disp-btn"
+                      disabled={
+                        selected.status === "CLEARED" ||
+                        selected.status === "CANCELLED"
+                      }
+                      onClick={() => {
+                        consoleAudio.play("clear");
+                        if (props.onClearWithDisposition) {
+                          props.onClearWithDisposition(d.code);
+                        } else {
+                          props.onCmd({
+                            type: "ClearIncident",
+                            incidentId: selected.id,
+                            disposition: d.code,
+                          });
+                        }
+                      }}
+                    >
+                      <span className="mono">{d.code}</span>
+                      <span>{d.label}</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="actions cad-radio-actions">
+                  <button type="button" onClick={() => props.onClearGoa()}>
+                    Quick clear GOA
+                  </button>
+                </div>
               </>
             )}
           </div>

@@ -36,6 +36,9 @@ import { CueWindowHud } from "./components/CueWindowHud";
 import { ScoreControlPanel } from "./components/ScoreControlPanel";
 import { CfsCadSheet } from "./components/CfsCadSheet";
 import { OpsPressureStrip } from "./components/OpsPressureStrip";
+import { CommandBar } from "./components/CommandBar";
+import { UnitStatusModal } from "./components/UnitStatusModal";
+import type { UnitStatus } from "@sector305/core";
 import {
   HOTKEY_HELP_ROWS,
   useConsoleHotkeys,
@@ -114,6 +117,10 @@ function browserPack(): DoctrinePack {
     dispositions: [
       { code: "RPT", label: "Report taken" },
       { code: "GOA", label: "Gone on arrival" },
+      { code: "UTL", label: "Unable to locate" },
+      { code: "ADV", label: "Advised" },
+      { code: "ARR", label: "Arrest" },
+      { code: "UNF", label: "Unfounded" },
       { code: "CAN", label: "Cancelled" },
     ],
     radio: {
@@ -254,6 +261,9 @@ export function App() {
   const [scoreControlsOpen, setScoreControlsOpen] = useState(false);
   /** Real-time sim clock — pause is first-class training control. */
   const [liveSim, setLiveSim] = useState(false);
+  const [statusModalUnitId, setStatusModalUnitId] = useState<string | null>(
+    null
+  );
   /** Field unit radio scripts fire at sim clock (ACK / enroute / on-scene). */
   const fieldScriptRef = useRef<
     Array<{
@@ -615,21 +625,28 @@ export function App() {
     }
   }, [selectedId, rt]);
 
+  const clearWithDisposition = useCallback(
+    (disposition: string) => {
+      if (!selectedId) return;
+      const snap = rt.snapshot();
+      const inc = snap.incidents[selectedId];
+      if (!inc) return;
+      for (const uid of [...inc.assignedUnitIds]) {
+        cmd({ type: "SetUnitStatus", unitId: uid, status: "CLR" });
+        cmd({ type: "SetUnitStatus", unitId: uid, status: "AVL" });
+      }
+      cmd({
+        type: "ClearIncident",
+        incidentId: selectedId,
+        disposition,
+      });
+    },
+    [selectedId, rt]
+  );
+
   const clearGoa = useCallback(() => {
-    if (!selectedId) return;
-    const snap = rt.snapshot();
-    const inc = snap.incidents[selectedId];
-    if (!inc) return;
-    for (const uid of [...inc.assignedUnitIds]) {
-      cmd({ type: "SetUnitStatus", unitId: uid, status: "CLR" });
-      cmd({ type: "SetUnitStatus", unitId: uid, status: "AVL" });
-    }
-    cmd({
-      type: "ClearIncident",
-      incidentId: selectedId,
-      disposition: "GOA",
-    });
-  }, [selectedId, rt]);
+    clearWithDisposition("GOA");
+  }, [clearWithDisposition]);
 
   const endDebrief = useCallback(() => {
     consoleAudio.stopAmbient();
@@ -639,6 +656,28 @@ export function App() {
   }, []);
 
   // Keyboard-first M16 path (UI_ACCEPTANCE #20) — ? toggles help
+  // Desktop File → Open .305 (preload bridge); full library switch is next
+  useEffect(() => {
+    const api = (
+      window as unknown as {
+        sector305Desktop?: {
+          onOpenScenarioPack?: (h: (p: unknown) => void) => () => void;
+        };
+      }
+    ).sector305Desktop;
+    if (!api?.onOpenScenarioPack) return;
+    return api.onOpenScenarioPack((pack) => {
+      try {
+        localStorage.setItem("s305.lastOpened305", JSON.stringify(pack));
+        consoleAudio.play("assign");
+        // eslint-disable-next-line no-console
+        console.info("[SECTOR 305] Loaded .305 pack (stored). Full switch TBD.", pack);
+      } catch {
+        /* ignore */
+      }
+    });
+  }, []);
+
   useConsoleHotkeys(phase === "console", {
     onSelectIndex: (i: number) => {
       const snap = rt.snapshot();
@@ -1138,6 +1177,31 @@ export function App() {
         }}
       />
 
+      <CommandBar
+        selectedIncidentId={selectedId}
+        units={units}
+        radioDraft={radioDraft}
+        onCmd={cmd}
+      />
+
+      <UnitStatusModal
+        open={!!statusModalUnitId}
+        unit={
+          statusModalUnitId
+            ? units.find((u) => u.id === statusModalUnitId) ?? null
+            : null
+        }
+        cfsHint={
+          selected
+            ? `${selected.cfsNumber} · ${selected.priority}`
+            : null
+        }
+        onClose={() => setStatusModalUnitId(null)}
+        onSetStatus={(unitId, status: UnitStatus) => {
+          cmd({ type: "SetUnitStatus", unitId, status });
+        }}
+      />
+
       {hotkeyHelp ? (
         <div className="hotkey-help" role="dialog" aria-label="Keyboard map">
           <div className="hotkey-help-inner">
@@ -1209,7 +1273,7 @@ export function App() {
                     <button
                       type="button"
                       key={inc.id}
-                      className={`queue-item lane-${lane} sla-${sla.band} ${selectedId === inc.id ? "active" : ""} ${lane === "pending" && sla.band !== "na" && sla.ratio < 0.15 ? "is-new" : ""}`}
+                      className={`queue-item lane-${lane} sla-${sla.band} pri-row-${inc.priority} ${selectedId === inc.id ? "active" : ""} ${lane === "pending" && sla.band !== "na" && sla.ratio < 0.15 ? "is-new" : ""}`}
                       onClick={() => selectCfs(inc.id)}
                     >
                       <div className="qi-top">
@@ -1254,6 +1318,7 @@ export function App() {
           radioDraft={radioDraft}
           onRadioDraft={setRadioDraft}
           natures={NATURES}
+          dispositions={browserPack().dispositions}
           onCmd={cmd}
           onDispatchTwo={() => dispatchTwo()}
           onDispatchOne={() => {
@@ -1270,6 +1335,7 @@ export function App() {
           onSimAcks={() => simAcks()}
           onSimOnScene={() => simOnScene()}
           onClearGoa={() => clearGoa()}
+          onClearWithDisposition={(code) => clearWithDisposition(code)}
         />
 
         <div className="panel agency-panel instrument-panel">
@@ -1278,6 +1344,7 @@ export function App() {
             incidents={state.incidents}
             selectedUnitId={selectedUnitId}
             onSelectUnit={selectUnit}
+            onStatusRequest={(id) => setStatusModalUnitId(id)}
             clockMs={state.clockMs}
             selectedCfsLabel={
               selected ? `${selected.cfsNumber} · ${selected.priority}` : null

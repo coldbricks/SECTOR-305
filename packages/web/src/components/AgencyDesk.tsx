@@ -12,6 +12,8 @@ type Props = {
   incidents: Record<string, Incident>;
   selectedUnitId: string | null;
   onSelectUnit: (id: string | null) => void;
+  /** Open status-change modal (double-click / STATUS). */
+  onStatusRequest?: (unitId: string) => void;
   clockMs: number;
   selectedCfsLabel?: string | null;
   onFireToneOut?: (ev: FireToneEvent) => void;
@@ -38,6 +40,7 @@ export function AgencyDesk({
   incidents,
   selectedUnitId,
   onSelectUnit,
+  onStatusRequest,
   clockMs,
   selectedCfsLabel,
   onFireToneOut,
@@ -75,29 +78,51 @@ export function AgencyDesk({
         {tab === "pd" && (
           <div className="agency-pd">
             <div className="agency-subhead mono">
-              POLICE · UNIT BOARD · LAST-KNOWN
+              POLICE · UNIT BOARD · DBL-CLICK STATUS
             </div>
-            <div className="agency-pd-list">
-              {units.map((u) => (
-                <button
-                  type="button"
-                  key={u.id}
-                  className={`unit-row ${selectedUnitId === u.id ? "active" : ""}`}
-                  aria-pressed={selectedUnitId === u.id}
-                  onClick={() =>
-                    onSelectUnit(u.id === selectedUnitId ? null : u.id)
-                  }
-                >
-                  <span>{u.callsign}</span>
-                  <span className={`st-${u.status}`}>{u.status}</span>
-                  <span className="unit-row-meta">
-                    {u.assignedIncidentId
-                      ? incidents[u.assignedIncidentId]?.cfsNumber
-                      : u.zoneId}
-                  </span>
-                </button>
-              ))}
+            <div className="agency-pd-list agency-aww">
+              {(["AVL", "DIS", "ER", "OS", "OOS", "EMR"] as const).map((col) => {
+                const colUnits = units.filter((u) => u.status === col);
+                if (!colUnits.length && col !== "AVL" && col !== "DIS") return null;
+                return (
+                  <div key={col} className={`aww-col aww-${col.toLowerCase()}`}>
+                    <div className="aww-col-h mono">
+                      {col} <span>{colUnits.length}</span>
+                    </div>
+                    {colUnits.map((u) => (
+                      <button
+                        type="button"
+                        key={u.id}
+                        className={`unit-row st-row-${u.status} ${selectedUnitId === u.id ? "active" : ""}`}
+                        aria-pressed={selectedUnitId === u.id}
+                        title="Click select · double-click change status"
+                        onClick={() =>
+                          onSelectUnit(u.id === selectedUnitId ? null : u.id)
+                        }
+                        onDoubleClick={() => onStatusRequest?.(u.id)}
+                      >
+                        <span>{u.callsign}</span>
+                        <span className={`st-${u.status}`}>{u.status}</span>
+                        <span className="unit-row-meta">
+                          {u.assignedIncidentId
+                            ? incidents[u.assignedIncidentId]?.cfsNumber
+                            : u.zoneId}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                );
+              })}
             </div>
+            {selectedUnitId ? (
+              <button
+                type="button"
+                className="agency-status-open"
+                onClick={() => onStatusRequest?.(selectedUnitId)}
+              >
+                Change status…
+              </button>
+            ) : null}
             {pdFooter}
           </div>
         )}

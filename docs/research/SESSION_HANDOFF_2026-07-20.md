@@ -119,12 +119,34 @@ npm run dev
 
 ---
 
+## Shipped after handoff (catch-up)
+
+| Item | Status |
+|------|--------|
+| Blank desk fix (ops strip stole 1fr) | done |
+| P0 air panel tiles / activity log / P25 chirp | done |
+| `.305` scenario pack standard + CLI | done |
+| Windows Electron **installer + portable** | `packages/desktop/release/` |
+| Priority-tinted queue · command bar · unit status modal · CLOSE disposition · AWW board | done |
+| File → Open `.305` (desktop IPC; full runtime switch TBD) | partial |
+
+**Installer artifacts (local, gitignored release/):**
+
+- `SECTOR 305-0.1.0-win-x64.exe` — NSIS install
+- `SECTOR 305-0.1.0-portable.exe` — portable
+
+```powershell
+npm run desktop:dist     # rebuild installer
+npm run desktop:dev      # Electron + vite :3050
+npm run scenario:pack -- scenarios/checkride_a07_ocean_robbery_v1
+```
+
 ## Next session trigger (paste)
 
 ```
 Follow SECTOR 305 handoff: docs/research/SESSION_HANDOFF_2026-07-20.md
 Working repo: C:\Users\coldb\SECTOR-305
 MAX COMPUTE ON.
-Direction: modern CommandCentral AXS air-side + clinical CAD.
-Next: P0 channel bank tile grid + activity log + TX strip.
+Direction: modern CommandCentral AXS air-side + clinical CAD + installable desktop.
+Next: wire Open .305 into full scenario load; dual CFS pin / call stack.
 ```

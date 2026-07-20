@@ -1114,10 +1114,9 @@ button.danger {
   height: 100%;
   min-height: 0;
   display: grid;
-  /* topbar · live grade · ops pressure · main desk · footer
-     Extra auto strips MUST stay auto — never let them steal 1fr
-     (OpsPressureStrip did that and blanked queue/CAD/map). */
-  grid-template-rows: auto auto auto minmax(0, 1fr) 28px;
+  /* topbar · live grade · ops · command · main desk · footer
+     Extra auto strips MUST stay auto — never let them steal 1fr */
+  grid-template-rows: auto auto auto auto minmax(0, 1fr) 28px;
   overflow: hidden;
 }
 
@@ -1132,16 +1131,20 @@ button.danger {
 .console > .ops-pressure-strip {
   grid-row: 3;
 }
-.console > .console-grid {
+.console > .command-bar {
   grid-row: 4;
+}
+.console > .console-grid {
+  grid-row: 5;
   min-height: 0;
 }
 .console > .footer {
-  grid-row: 5;
+  grid-row: 6;
 }
 /* Fixed overlays must not auto-place into the 1fr desk track */
 .console > .score-console,
-.console > .hotkey-help {
+.console > .hotkey-help,
+.console > .unit-status-modal-backdrop {
   grid-row: 1;
   grid-column: 1;
 }
@@ -1433,7 +1436,7 @@ button.danger {
 
 @media (max-width: 1100px) {
   .console {
-    grid-template-rows: auto auto auto minmax(0, 1fr) 28px;
+    grid-template-rows: auto auto auto auto minmax(0, 1fr) 28px;
   }
   .topbar {
     grid-template-columns: 1fr;
@@ -5751,7 +5754,7 @@ button.ems-row {
 
 @media (max-width: 760px) {
   .console {
-    grid-template-rows: auto auto auto minmax(0, 1fr) 24px;
+    grid-template-rows: auto auto auto auto minmax(0, 1fr) 24px;
   }
 
   .topbar {
@@ -7718,3 +7721,228 @@ button.ems-row {
 .queue-item.sla-critical { border-color: rgba(255, 77, 66, 0.3) !important; }
 .queue-item.sla-warn { border-color: rgba(240, 180, 41, 0.28) !important; }
 @media (max-width: 900px) { .ops-hint { display: none; } }
+
+/* —— Priority-tinted queue rows (clinical, not neon) —— */
+.queue-item.pri-row-P0 {
+  border-left: 3px solid var(--red);
+  background: linear-gradient(90deg, rgba(255, 77, 66, 0.1), transparent 55%);
+}
+.queue-item.pri-row-P1 {
+  border-left: 3px solid #ff6b5c;
+  background: linear-gradient(90deg, rgba(255, 77, 66, 0.07), transparent 50%);
+}
+.queue-item.pri-row-P2 {
+  border-left: 3px solid var(--amber);
+  background: linear-gradient(90deg, rgba(240, 180, 41, 0.07), transparent 50%);
+}
+.queue-item.pri-row-P3 {
+  border-left: 3px solid rgba(62, 200, 240, 0.55);
+}
+.queue-item.pri-row-P4,
+.queue-item.pri-row-P5 {
+  border-left: 3px solid rgba(109, 120, 136, 0.55);
+}
+
+/* —— Fiction command line —— */
+.command-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  background: linear-gradient(180deg, #0a1018 0%, #070b12 100%);
+  border-bottom: 1px solid rgba(62, 200, 240, 0.16);
+  min-height: 36px;
+}
+.command-bar .cb-prompt {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--cyan);
+}
+.command-bar .cb-input {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  padding: 5px 10px;
+  background: #0c121c;
+  border: 1px solid var(--hairline-bright);
+  border-radius: 2px;
+  letter-spacing: 0.04em;
+}
+.command-bar .cb-input:focus {
+  border-color: var(--cyan-line);
+  outline: none;
+}
+.command-bar .cb-go {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  padding: 5px 12px;
+}
+.command-bar .cb-echo {
+  font-size: 10px;
+  color: var(--muted);
+  max-width: 28%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.command-bar .cb-echo.err {
+  color: var(--amber);
+}
+
+/* —— Unit status modal —— */
+.unit-status-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(2px);
+}
+.unit-status-modal {
+  width: min(420px, 92vw);
+  background: linear-gradient(180deg, #0e1622, #0a1018);
+  border: 1px solid var(--cyan-line);
+  border-radius: 4px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+  padding: 0 0 8px;
+}
+.usm-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 14px 8px;
+  border-bottom: 1px solid var(--hairline);
+}
+.usm-kicker {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+.usm-head strong {
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 16px;
+}
+.usm-cur {
+  font-size: 11px;
+  padding: 2px 6px;
+  border: 1px solid var(--hairline);
+  border-radius: 2px;
+}
+.usm-x {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: var(--muted);
+  box-shadow: none;
+  line-height: 1;
+}
+.usm-cfs {
+  padding: 6px 14px 0;
+  font-size: 10px;
+  color: var(--cyan);
+}
+.usm-hint {
+  margin: 8px 14px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.usm-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 0 14px 10px;
+}
+.usm-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 8px 10px;
+  text-align: left;
+}
+.usm-code {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.usm-label {
+  font-size: 10px;
+  color: var(--muted);
+}
+.usm-empty {
+  grid-column: 1 / -1;
+  padding: 12px;
+  text-align: center;
+  color: var(--muted);
+}
+.usm-foot {
+  padding: 4px 14px;
+  font-size: 8px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+}
+
+/* —— AWW-style unit columns —— */
+.agency-aww {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: min(420px, 48vh);
+  overflow-y: auto;
+}
+.aww-col {
+  border: 1px solid rgba(42, 53, 72, 0.65);
+  border-radius: 2px;
+  background: rgba(8, 12, 18, 0.55);
+}
+.aww-col-h {
+  display: flex;
+  justify-content: space-between;
+  padding: 3px 8px;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  border-bottom: 1px solid rgba(42, 53, 72, 0.65);
+  background: rgba(0, 0, 0, 0.25);
+}
+.aww-col-h span {
+  color: var(--text-dim);
+}
+.aww-avl .aww-col-h { color: var(--green); }
+.aww-dis .aww-col-h { color: var(--amber); }
+.aww-er .aww-col-h { color: var(--cyan); }
+.aww-os .aww-col-h { color: #9ec9ff; }
+.aww-emr .aww-col-h { color: var(--red); }
+.agency-status-open {
+  margin-top: 6px;
+  width: 100%;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+/* —— CAD disposition close —— */
+.cad-disp-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  margin: 8px 0 12px;
+}
+.cad-disp-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 8px 10px;
+  text-align: left;
+}
+.cad-disp-btn span:last-child {
+  font-size: 10px;
+  color: var(--muted);
+}
+.cad-disp-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

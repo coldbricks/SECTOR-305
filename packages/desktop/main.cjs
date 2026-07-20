@@ -3,7 +3,15 @@
  * Loads the Vite-built A-console UI as a native Windows window.
  * Training fiction only — not a production CAD or radio console.
  */
-const { app, BrowserWindow, shell, Menu, session } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  shell,
+  Menu,
+  session,
+  dialog,
+  ipcMain,
+} = require("electron");
 const path = require("node:path");
 const fs = require("node:fs");
 
@@ -76,12 +84,50 @@ function createWindow() {
   return win;
 }
 
-function buildMenu() {
+async function openScenario305(win) {
+  const res = await dialog.showOpenDialog(win, {
+    title: "Open SECTOR 305 scenario",
+    filters: [
+      { name: "SECTOR 305 scenario", extensions: ["305"] },
+      { name: "All files", extensions: ["*"] },
+    ],
+    properties: ["openFile"],
+  });
+  if (res.canceled || !res.filePaths[0]) return;
+  try {
+    const text = fs.readFileSync(res.filePaths[0], "utf8");
+    const pack = JSON.parse(text);
+    if (pack.schema !== "s305.scenario_pack.v1" || pack.format !== "305") {
+      dialog.showErrorBox(
+        "Invalid .305",
+        "File is not a s305.scenario_pack.v1 pack."
+      );
+      return;
+    }
+    win.webContents.send("s305:open-scenario-pack", pack);
+  } catch (e) {
+    dialog.showErrorBox(
+      "Failed to open .305",
+      e instanceof Error ? e.message : String(e)
+    );
+  }
+}
+
+function buildMenu(getWin) {
   const template = [
     {
       label: "SECTOR 305",
       submenu: [
         { role: "about", label: "About SECTOR 305" },
+        { type: "separator" },
+        {
+          label: "Open scenario (.305)…",
+          accelerator: "CmdOrCtrl+O",
+          click: () => {
+            const w = getWin();
+            if (w) void openScenario305(w);
+          },
+        },
         { type: "separator" },
         { role: "quit", label: "Quit" },
       ],
@@ -132,11 +178,16 @@ app.whenReady().then(() => {
     cb({ cancel: true });
   });
 
-  buildMenu();
-  createWindow();
+  let mainWin = null;
+  buildMenu(() => mainWin ?? BrowserWindow.getFocusedWindow());
+  mainWin = createWindow();
+
+  ipcMain.handle("s305:is-desktop", () => true);
 
   app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) {
+      mainWin = createWindow();
+    }
   });
 });
 
