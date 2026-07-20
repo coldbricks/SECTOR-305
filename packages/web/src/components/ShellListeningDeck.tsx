@@ -146,7 +146,12 @@ export function ShellListeningDeck({
 
       <div className="listen-title-block">
         <div className="listen-title">{SHELL_TRACK_META.title}</div>
-        <div className="listen-artist">{SHELL_TRACK_META.artist}</div>
+        <div className="listen-artist">
+          {SHELL_TRACK_META.artist}
+          {SHELL_TRACK_META.publisher
+            ? ` · ${SHELL_TRACK_META.publisher}`
+            : ""}
+        </div>
         <div className="listen-credit mono">{SHELL_TRACK_META.credit}</div>
       </div>
 

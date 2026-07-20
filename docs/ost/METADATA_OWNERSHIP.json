@@ -1,0 +1,19 @@
+{
+  "scrubbedAt": "2026-07-20T01:52:03.927Z",
+  "artist": "David Lombardo",
+  "publisher": "Coldbricks",
+  "album": "SECTOR 305 (Original Soundtrack)",
+  "copyright": "Copyright 2026 David Lombardo / Coldbricks. All rights reserved.",
+  "sunoResidual": false,
+  "method": "ffmpeg -map_metadata -1 + rewrite",
+  "tracks": [
+    "shell-theme.mp3",
+    "shell-theme.wav",
+    "17 scenario masters"
+  ],
+  "zips": [
+    "SECTOR-305-OST-16-tracks.zip",
+    "SECTOR-305-OST-17-tracks.zip",
+    "SECTOR-305-OST-18-tracks.zip"
+  ]
+}

@@ -28,10 +28,12 @@ Reference: <https://www.radioreference.com/terms/>
 
 ## Audio
 
-“Dispatch in Miami” and the complete 17-track scenario-score collection are
-original music owned by David Lombardo. Audio files under
-`packages/web/public/audio/` are separate creative assets and are not licensed
-under MIT. See the audio-directory license for the permitted repository use.
+“Dispatch in Miami” and the complete scenario-score collection are original
+music owned by **David Lombardo** (publisher credit: **Coldbricks**). Audio
+files under `packages/web/public/audio/` are separate creative assets and are
+not licensed under MIT. See the audio-directory license for the permitted
+repository use. Embedded metadata is ownership-only (no third-party generator
+watermarks).
 
 ## Product boundary
 

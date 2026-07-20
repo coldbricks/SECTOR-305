@@ -19,9 +19,19 @@ This is a **full track**, not a 3-second sting. The shell has a listening deck
 
 - **Title:** Dispatch in Miami  
 - **Artist:** David Lombardo  
+- **Publisher:** Coldbricks  
 - **Credit line:** Guitar — David Lombardo  
 
 Edit `SHELL_TRACK_META` in `src/audio/shellMusic.ts` if title/credit text should change.
+
+## Metadata ownership
+
+All music masters must ship with **David Lombardo / Coldbricks** tags only.
+Strip generator watermarks (including Suno) before commit or OST zip:
+
+```bash
+node scripts/retag-music-coldbricks.mjs --zip
+```
 
 ## Behavior
 

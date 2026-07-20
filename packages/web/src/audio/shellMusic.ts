@@ -28,15 +28,17 @@ const SCORE_CURSOR_KEY = "s305.score.cursor";
 export type ShellMusicMeta = {
   title: string;
   artist: string;
+  publisher: string;
   credit: string;
   note: string;
 };
 
-/** Liner notes — David Lombardo on guitar. */
+/** Liner notes — David Lombardo / Coldbricks. */
 export const SHELL_TRACK_META: ShellMusicMeta = {
   title: "Dispatch in Miami",
   artist: "David Lombardo",
-  credit: "Lead guitar — David Lombardo",
+  publisher: "Coldbricks",
+  credit: "Lead guitar — David Lombardo · Coldbricks",
   note: "Full title track for the prestige shell. Sit with it. The watch can wait.",
 };
 
