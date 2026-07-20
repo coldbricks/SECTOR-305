@@ -253,14 +253,21 @@ class ShellMusic {
     this.emit();
   }
 
-  /** Protect dispatch and unit traffic by pushing the bed below radio audio. */
-  duckForRadio(holdMs = 1300) {
+  /**
+   * Protect traffic by pushing the bed under radio / phone / coach.
+   * @param holdMs how long to stay ducked
+   * @param depth 0–1 fraction of current bed level to keep (lower = deeper duck)
+   */
+  duckForRadio(holdMs = 1300, depth = 0.2) {
     if (this.mode === "title" || this.musicMuted || this.masterMuted || !this.el) return;
     if (this.duckRestoreTimer != null) window.clearTimeout(this.duckRestoreTimer);
-    this.fadeTo(Math.max(0.008, this.volume * 0.2), 0.1);
+    const keep = Math.max(0.004, Math.min(0.9, depth));
+    const attack = depth < 0.12 ? 0.06 : 0.1;
+    const release = depth < 0.12 ? 0.9 : 0.7;
+    this.fadeTo(Math.max(0.004, this.volume * keep), attack);
     this.duckRestoreTimer = window.setTimeout(() => {
       this.duckRestoreTimer = null;
-      this.fadeTo(this.volume, 0.7);
+      this.fadeTo(this.volume, release);
     }, holdMs);
   }
 

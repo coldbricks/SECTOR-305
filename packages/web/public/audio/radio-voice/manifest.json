@@ -1,12 +1,12 @@
 {
   "schema": "s305.radio_voice_manifest.v1",
-  "generatedAt": "2026-07-19T14:35:11.065Z",
+  "generatedAt": "2026-07-20T01:55:46.832Z",
   "model_id": "eleven_v3",
-  "catalogLines": 1515,
-  "clipCount": 498,
-  "missingCount": 1017,
-  "rebuiltFromDisk": true,
-  "note": "Checkpoint after interrupted full-matrix bake; resume with npm run radio:tts:full",
+  "characterEstimate": 13758,
+  "clipCount": 582,
+  "generated": 96,
+  "skipped": 80,
+  "dryRun": false,
   "clips": [
     {
       "id": "unit_3a12_copy",
@@ -9235,6 +9235,7 @@
         "checkride_a07_ocean_robbery_v1",
         "*"
       ],
+      "channel": "phone",
       "bytes": 47273,
       "status": "cached",
       "textFp": "ed4cf5584bb63572"
@@ -9257,6 +9258,7 @@
         "checkride_a07_ocean_robbery_v1",
         "*"
       ],
+      "channel": "phone",
       "bytes": 43511,
       "status": "cached",
       "textFp": "bb53c10dd74bbcd9"
@@ -9279,6 +9281,7 @@
         "checkride_a07_ocean_robbery_v1",
         "*"
       ],
+      "channel": "phone",
       "bytes": 75276,
       "status": "cached",
       "textFp": "37baf1c4f8cbae61"
@@ -9301,6 +9304,7 @@
       "scenarioIds": [
         "*"
       ],
+      "channel": "phone",
       "bytes": 38078,
       "status": "cached",
       "textFp": "d97365a1d20c635f"
@@ -9321,6 +9325,7 @@
       "scenarioIds": [
         "*"
       ],
+      "channel": "phone",
       "bytes": 63991,
       "status": "cached",
       "textFp": "89e623303eb29cb9"
@@ -9341,6 +9346,7 @@
       "scenarioIds": [
         "*"
       ],
+      "channel": "phone",
       "bytes": 88233,
       "status": "cached",
       "textFp": "0aa2db381c146c33"
@@ -9362,6 +9368,7 @@
       "scenarioIds": [
         "*"
       ],
+      "channel": "phone",
       "bytes": 43511,
       "status": "cached",
       "textFp": "a51bcd46a92ded55"
@@ -9383,6 +9390,7 @@
       "scenarioIds": [
         "*"
       ],
+      "channel": "phone",
       "bytes": 65245,
       "status": "cached",
       "textFp": "9a1005c574d650d1"
@@ -9403,6 +9411,7 @@
       "scenarioIds": [
         "*"
       ],
+      "channel": "phone",
       "bytes": 75276,
       "status": "cached",
       "textFp": "85a7d7e127e7fdee"
@@ -9423,6 +9432,7 @@
       "scenarioIds": [
         "*"
       ],
+      "channel": "phone",
       "bytes": 47273,
       "status": "cached",
       "textFp": "3a7ea12b65b3cba2"
@@ -9444,6 +9454,7 @@
       "scenarioIds": [
         "*"
       ],
+      "channel": "phone",
       "bytes": 95756,
       "status": "cached",
       "textFp": "f7481c44a6019d25"
@@ -9465,6 +9476,7 @@
       "scenarioIds": [
         "*"
       ],
+      "channel": "phone",
       "bytes": 56050,
       "status": "cached",
       "textFp": "7450ef88eca1df5f"
@@ -9486,6 +9498,7 @@
       "scenarioIds": [
         "*"
       ],
+      "channel": "phone",
       "bytes": 88233,
       "status": "cached",
       "textFp": "003669a777587a55"
@@ -9506,6 +9519,7 @@
       "scenarioIds": [
         "*"
       ],
+      "channel": "phone",
       "bytes": 75276,
       "status": "cached",
       "textFp": "ff83c37b8948ac1b"
@@ -9527,6 +9541,7 @@
       "scenarioIds": [
         "*"
       ],
+      "channel": "phone",
       "bytes": 51035,
       "status": "cached",
       "textFp": "91b19caa773728c6"
@@ -9548,6 +9563,7 @@
       "scenarioIds": [
         "*"
       ],
+      "channel": "phone",
       "bytes": 86979,
       "status": "cached",
       "textFp": "da30e01865742fd3"
@@ -9570,6 +9586,7 @@
         "checkride_a07_ocean_robbery_v1",
         "*"
       ],
+      "channel": "phone",
       "bytes": 56050,
       "status": "cached",
       "textFp": "392355505df63c84"
@@ -9591,6 +9608,7 @@
       "scenarioIds": [
         "*"
       ],
+      "channel": "phone",
       "bytes": 77784,
       "status": "cached",
       "textFp": "72f3fe2c909e9820"
@@ -9611,9 +9629,11 @@
       "scenarioIds": [
         "*"
       ],
-      "bytes": 136716,
-      "status": "cached",
-      "textFp": null
+      "channel": "trainer",
+      "bytes": 150927,
+      "status": "regenerated",
+      "sha256": "fa86a8b7add8e9f1",
+      "textFp": "4577c6e272097c15"
     },
     {
       "id": "trainer_own_the_call",
@@ -9631,9 +9651,11 @@
       "scenarioIds": [
         "*"
       ],
-      "bytes": 119998,
-      "status": "cached",
-      "textFp": null
+      "channel": "trainer",
+      "bytes": 127939,
+      "status": "regenerated",
+      "sha256": "6b24fd9900f0d6d6",
+      "textFp": "6631df44f140a306"
     },
     {
       "id": "trainer_wait_cues",
@@ -9652,9 +9674,11 @@
       "scenarioIds": [
         "*"
       ],
-      "bytes": 191887,
-      "status": "cached",
-      "textFp": null
+      "channel": "trainer",
+      "bytes": 195648,
+      "status": "regenerated",
+      "sha256": "ea3a65f1ac6ab44b",
+      "textFp": "d2b56c6a5764ec1c"
     },
     {
       "id": "trainer_reclass",
@@ -9673,9 +9697,11 @@
       "scenarioIds": [
         "*"
       ],
-      "bytes": 148419,
-      "status": "cached",
-      "textFp": null
+      "channel": "trainer",
+      "bytes": 154688,
+      "status": "regenerated",
+      "sha256": "0594dc9e547443f4",
+      "textFp": "6fd792ee4f067263"
     },
     {
       "id": "trainer_flags",
@@ -9693,9 +9719,11 @@
       "scenarioIds": [
         "*"
       ],
-      "bytes": 85725,
-      "status": "cached",
-      "textFp": null
+      "channel": "trainer",
+      "bytes": 102026,
+      "status": "regenerated",
+      "sha256": "395e126b235eac40",
+      "textFp": "25abaed155398c34"
     },
     {
       "id": "trainer_verify",
@@ -9714,9 +9742,11 @@
       "scenarioIds": [
         "*"
       ],
-      "bytes": 84471,
-      "status": "cached",
-      "textFp": null
+      "channel": "trainer",
+      "bytes": 103279,
+      "status": "regenerated",
+      "sha256": "183cda93621ba23c",
+      "textFp": "3dd3e92ed4ee65ea"
     },
     {
       "id": "trainer_dispatch",
@@ -9735,9 +9765,11 @@
       "scenarioIds": [
         "*"
       ],
-      "bytes": 147165,
-      "status": "cached",
-      "textFp": null
+      "channel": "trainer",
+      "bytes": 141732,
+      "status": "regenerated",
+      "sha256": "8c4467a2273a0ac1",
+      "textFp": "59242b74bc74dba2"
     },
     {
       "id": "trainer_readback",
@@ -9756,9 +9788,11 @@
       "scenarioIds": [
         "*"
       ],
-      "bytes": 126685,
-      "status": "cached",
-      "textFp": null
+      "channel": "trainer",
+      "bytes": 129193,
+      "status": "regenerated",
+      "sha256": "5f29bef65241da36",
+      "textFp": "3c77bc84ec30da62"
     },
     {
       "id": "trainer_clear",
@@ -9777,9 +9811,11 @@
       "scenarioIds": [
         "*"
       ],
+      "channel": "trainer",
       "bytes": 137970,
-      "status": "cached",
-      "textFp": null
+      "status": "regenerated",
+      "sha256": "092a45479d6744c8",
+      "textFp": "c4e579fb5bcceda0"
     },
     {
       "id": "trainer_good_work",
@@ -9798,9 +9834,11 @@
       "scenarioIds": [
         "*"
       ],
-      "bytes": 113728,
-      "status": "cached",
-      "textFp": null
+      "channel": "trainer",
+      "bytes": 90741,
+      "status": "regenerated",
+      "sha256": "6039bd7b4d984518",
+      "textFp": "1256ef7097233081"
     },
     {
       "id": "trainer_hold_air",
@@ -9818,9 +9856,11 @@
       "scenarioIds": [
         "*"
       ],
-      "bytes": 75276,
-      "status": "cached",
-      "textFp": null
+      "channel": "trainer",
+      "bytes": 63991,
+      "status": "regenerated",
+      "sha256": "d51a188390c61733",
+      "textFp": "5f1ea9885fb713c7"
     },
     {
       "id": "trainer_concurrency",
@@ -9839,9 +9879,1770 @@
       "scenarioIds": [
         "*"
       ],
-      "bytes": 82799,
-      "status": "cached",
-      "textFp": null
+      "channel": "trainer",
+      "bytes": 69007,
+      "status": "regenerated",
+      "sha256": "a962fd7e6b8e7e44",
+      "textFp": "da23c80be86739fc"
+    },
+    {
+      "id": "unit_3a31_responding",
+      "file": "/audio/radio-voice/unit_3a31_responding.mp3",
+      "voice": "unit_dt_b",
+      "voiceId": "2EiwWnXFnvU5JabPnv8n",
+      "kind": "ACK",
+      "text": "[calm] three Adam thirty-one, responding.",
+      "plainText": "three Adam thirty-one, responding.",
+      "match": [
+        "three adam thirty one responding",
+        "3a31 responding",
+        "3a31 is responding"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 35570,
+      "status": "regenerated",
+      "sha256": "2c7ca794a964c532",
+      "textFp": "19dc139225633ad7"
+    },
+    {
+      "id": "unit_3a31_responding_enroute",
+      "file": "/audio/radio-voice/unit_3a31_responding_enroute.mp3",
+      "voice": "unit_dt_b",
+      "voiceId": "2EiwWnXFnvU5JabPnv8n",
+      "kind": "ACK",
+      "text": "[calm] three Adam thirty-one, responding, en route.",
+      "plainText": "three Adam thirty-one, responding, en route.",
+      "match": [
+        "three adam thirty one responding en route",
+        "3a31 responding en route"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 43511,
+      "status": "regenerated",
+      "sha256": "42109a19662c798c",
+      "textFp": "32149df4d7f8cc7f"
+    },
+    {
+      "id": "unit_3a40_responding",
+      "file": "/audio/radio-voice/unit_3a40_responding.mp3",
+      "voice": "unit_wyn_a",
+      "voiceId": "N2lVS1w4EtoT3dr4eOWO",
+      "kind": "ACK",
+      "text": "[calm] three Adam forty, responding.",
+      "plainText": "three Adam forty, responding.",
+      "match": [
+        "three adam forty responding",
+        "3a40 responding",
+        "3a40 is responding"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 35570,
+      "status": "regenerated",
+      "sha256": "e1c97370b8874302",
+      "textFp": "16c865c3202df00b"
+    },
+    {
+      "id": "unit_3a40_responding_enroute",
+      "file": "/audio/radio-voice/unit_3a40_responding_enroute.mp3",
+      "voice": "unit_wyn_a",
+      "voiceId": "N2lVS1w4EtoT3dr4eOWO",
+      "kind": "ACK",
+      "text": "[calm] three Adam forty, responding, en route.",
+      "plainText": "three Adam forty, responding, en route.",
+      "match": [
+        "three adam forty responding en route",
+        "3a40 responding en route"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 48527,
+      "status": "regenerated",
+      "sha256": "dbda1eda9e0ae9ad",
+      "textFp": "6c875f17692b0591"
+    },
+    {
+      "id": "unit_3a41_responding",
+      "file": "/audio/radio-voice/unit_3a41_responding.mp3",
+      "voice": "unit_wyn_b",
+      "voiceId": "29vD33N1CtxCmqQRPOHJ",
+      "kind": "ACK",
+      "text": "[calm] three Adam forty-one, responding.",
+      "plainText": "three Adam forty-one, responding.",
+      "match": [
+        "three adam forty one responding",
+        "3a41 responding",
+        "3a41 is responding"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 38078,
+      "status": "regenerated",
+      "sha256": "ca3d5aee17258766",
+      "textFp": "85751dc1050e9feb"
+    },
+    {
+      "id": "unit_3a41_responding_enroute",
+      "file": "/audio/radio-voice/unit_3a41_responding_enroute.mp3",
+      "voice": "unit_wyn_b",
+      "voiceId": "29vD33N1CtxCmqQRPOHJ",
+      "kind": "ACK",
+      "text": "[calm] three Adam forty-one, responding, en route.",
+      "plainText": "three Adam forty-one, responding, en route.",
+      "match": [
+        "three adam forty one responding en route",
+        "3a41 responding en route"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 47273,
+      "status": "regenerated",
+      "sha256": "7cdb08cf188691de",
+      "textFp": "384972436cd17d21"
+    },
+    {
+      "id": "unit_3s1_responding",
+      "file": "/audio/radio-voice/unit_3s1_responding.mp3",
+      "voice": "unit_sup",
+      "voiceId": "UgBBYS2sOqTuMpoF3BR0",
+      "kind": "ACK",
+      "text": "[calm] three Sam one, responding.",
+      "plainText": "three Sam one, responding.",
+      "match": [
+        "three sam one responding",
+        "3s1 responding",
+        "3s1 is responding"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 36824,
+      "status": "regenerated",
+      "sha256": "a1618c13f8d210bd",
+      "textFp": "a2061e436579faad"
+    },
+    {
+      "id": "unit_3s1_responding_enroute",
+      "file": "/audio/radio-voice/unit_3s1_responding_enroute.mp3",
+      "voice": "unit_sup",
+      "voiceId": "UgBBYS2sOqTuMpoF3BR0",
+      "kind": "ACK",
+      "text": "[calm] three Sam one, responding, en route.",
+      "plainText": "three Sam one, responding, en route.",
+      "match": [
+        "three sam one responding en route",
+        "3s1 responding en route"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 36824,
+      "status": "regenerated",
+      "sha256": "d63aa33713b2391f",
+      "textFp": "2997c775db3eb056"
+    },
+    {
+      "id": "unit_3t1_responding",
+      "file": "/audio/radio-voice/unit_3t1_responding.mp3",
+      "voice": "unit_traf",
+      "voiceId": "SOYHLrjzK2X1ezoPC6cr",
+      "kind": "ACK",
+      "text": "[calm] three Tom one, responding.",
+      "plainText": "three Tom one, responding.",
+      "match": [
+        "three tom one responding",
+        "3t1 responding",
+        "3t1 is responding"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 29301,
+      "status": "regenerated",
+      "sha256": "8534f34d75ce92a1",
+      "textFp": "83606ed9c9bce04b"
+    },
+    {
+      "id": "unit_3t1_responding_enroute",
+      "file": "/audio/radio-voice/unit_3t1_responding_enroute.mp3",
+      "voice": "unit_traf",
+      "voiceId": "SOYHLrjzK2X1ezoPC6cr",
+      "kind": "ACK",
+      "text": "[calm] three Tom one, responding, en route.",
+      "plainText": "three Tom one, responding, en route.",
+      "match": [
+        "three tom one responding en route",
+        "3t1 responding en route"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 49781,
+      "status": "regenerated",
+      "sha256": "096f4c22aab59565",
+      "textFp": "00b42d3d69e3ce86"
+    },
+    {
+      "id": "disp_copy_available_time_3a12_0000",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a12_0000.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twelve, available zero zero zero zero.",
+      "plainText": "Copy three Adam twelve, available zero zero zero zero.",
+      "match": [
+        "copy three adam twelve available zero zero zero zero",
+        "copy 3a12",
+        "available 0000"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 58558,
+      "status": "regenerated",
+      "sha256": "fe3c516368493b53",
+      "textFp": "80abf80a1a74e584"
+    },
+    {
+      "id": "disp_copy_available_time_3a12_0030",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a12_0030.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twelve, available zero zero three zero.",
+      "plainText": "Copy three Adam twelve, available zero zero three zero.",
+      "match": [
+        "copy three adam twelve available zero zero three zero",
+        "copy 3a12",
+        "available 0030"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 51035,
+      "status": "regenerated",
+      "sha256": "57b71e273bcf19e0",
+      "textFp": "aacd84072f94d260"
+    },
+    {
+      "id": "disp_copy_available_time_3a12_0600",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a12_0600.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twelve, available zero six zero zero.",
+      "plainText": "Copy three Adam twelve, available zero six zero zero.",
+      "match": [
+        "copy three adam twelve available zero six zero zero",
+        "copy 3a12",
+        "available 0600"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 54796,
+      "status": "regenerated",
+      "sha256": "6858cbd9b446f688",
+      "textFp": "b9a104c755d2443e"
+    },
+    {
+      "id": "disp_copy_available_time_3a12_0830",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a12_0830.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twelve, available zero eight three zero.",
+      "plainText": "Copy three Adam twelve, available zero eight three zero.",
+      "match": [
+        "copy three adam twelve available zero eight three zero",
+        "copy 3a12",
+        "available 0830"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 57304,
+      "status": "regenerated",
+      "sha256": "01a17b3e27209066",
+      "textFp": "6696873132fca231"
+    },
+    {
+      "id": "disp_copy_available_time_3a12_0900",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a12_0900.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twelve, available zero nine zero zero.",
+      "plainText": "Copy three Adam twelve, available zero nine zero zero.",
+      "match": [
+        "copy three adam twelve available zero nine zero zero",
+        "copy 3a12",
+        "available 0900"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 56050,
+      "status": "regenerated",
+      "sha256": "3d6cf5221b2fa4dd",
+      "textFp": "cd5373dc70a4bc2e"
+    },
+    {
+      "id": "disp_copy_available_time_3a12_1015",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a12_1015.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twelve, available one zero one five.",
+      "plainText": "Copy three Adam twelve, available one zero one five.",
+      "match": [
+        "copy three adam twelve available one zero one five",
+        "copy 3a12",
+        "available 1015"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 65245,
+      "status": "regenerated",
+      "sha256": "1536c2a0e7314d76",
+      "textFp": "300ce79ce61dc78c"
+    },
+    {
+      "id": "disp_copy_available_time_3a12_1200",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a12_1200.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twelve, available one two zero zero.",
+      "plainText": "Copy three Adam twelve, available one two zero zero.",
+      "match": [
+        "copy three adam twelve available one two zero zero",
+        "copy 3a12",
+        "available 1200"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 53542,
+      "status": "regenerated",
+      "sha256": "d63f08e53c98a9aa",
+      "textFp": "5c5327848edcdded"
+    },
+    {
+      "id": "disp_copy_available_time_3a12_1310",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a12_1310.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twelve, available one three one zero.",
+      "plainText": "Copy three Adam twelve, available one three one zero.",
+      "match": [
+        "copy three adam twelve available one three one zero",
+        "copy 3a12",
+        "available 1310"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 57304,
+      "status": "regenerated",
+      "sha256": "3877383b40631c0b",
+      "textFp": "d028aebb5cb26d61"
+    },
+    {
+      "id": "disp_copy_available_time_3a12_1430",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a12_1430.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twelve, available one four three zero.",
+      "plainText": "Copy three Adam twelve, available one four three zero.",
+      "match": [
+        "copy three adam twelve available one four three zero",
+        "copy 3a12",
+        "available 1430"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 52288,
+      "status": "regenerated",
+      "sha256": "abb3904eaf249f71",
+      "textFp": "02a59e55d44a68e0"
+    },
+    {
+      "id": "disp_copy_available_time_3a12_1515",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a12_1515.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twelve, available one five one five.",
+      "plainText": "Copy three Adam twelve, available one five one five.",
+      "match": [
+        "copy three adam twelve available one five one five",
+        "copy 3a12",
+        "available 1515"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 52288,
+      "status": "regenerated",
+      "sha256": "6a7f04a9def75362",
+      "textFp": "16cd4b0101e4241f"
+    },
+    {
+      "id": "disp_copy_available_time_3a12_1721",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a12_1721.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twelve, available one seven two one.",
+      "plainText": "Copy three Adam twelve, available one seven two one.",
+      "match": [
+        "copy three adam twelve available one seven two one",
+        "copy 3a12",
+        "available 1721"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 59812,
+      "status": "regenerated",
+      "sha256": "75edf5c2e4e63a73",
+      "textFp": "d86a731009f8a750"
+    },
+    {
+      "id": "disp_copy_available_time_3a12_1800",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a12_1800.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twelve, available one eight zero zero.",
+      "plainText": "Copy three Adam twelve, available one eight zero zero.",
+      "match": [
+        "copy three adam twelve available one eight zero zero",
+        "copy 3a12",
+        "available 1800"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 65245,
+      "status": "regenerated",
+      "sha256": "18c7119708a31132",
+      "textFp": "5d485c53b7c880fb"
+    },
+    {
+      "id": "disp_copy_available_time_3a12_1930",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a12_1930.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twelve, available one nine three zero.",
+      "plainText": "Copy three Adam twelve, available one nine three zero.",
+      "match": [
+        "copy three adam twelve available one nine three zero",
+        "copy 3a12",
+        "available 1930"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 51035,
+      "status": "regenerated",
+      "sha256": "932b8b7326bff843",
+      "textFp": "92ab08eb33caff10"
+    },
+    {
+      "id": "disp_copy_available_time_3a12_2045",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a12_2045.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twelve, available two zero four five.",
+      "plainText": "Copy three Adam twelve, available two zero four five.",
+      "match": [
+        "copy three adam twelve available two zero four five",
+        "copy 3a12",
+        "available 2045"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 51035,
+      "status": "regenerated",
+      "sha256": "f02d83f442902b1e",
+      "textFp": "4322528a5f1022e0"
+    },
+    {
+      "id": "disp_copy_available_time_3a12_2121",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a12_2121.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twelve, available two one two one.",
+      "plainText": "Copy three Adam twelve, available two one two one.",
+      "match": [
+        "copy three adam twelve available two one two one",
+        "copy 3a12",
+        "available 2121"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 43511,
+      "status": "regenerated",
+      "sha256": "facd9c2731fa56fc",
+      "textFp": "18a79e222d7aa2de"
+    },
+    {
+      "id": "disp_copy_available_time_3a12_2210",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a12_2210.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twelve, available two two one zero.",
+      "plainText": "Copy three Adam twelve, available two two one zero.",
+      "match": [
+        "copy three adam twelve available two two one zero",
+        "copy 3a12",
+        "available 2210"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 56050,
+      "status": "regenerated",
+      "sha256": "922aff0eab080122",
+      "textFp": "693e452da513b4c2"
+    },
+    {
+      "id": "disp_copy_available_time_3a12_2345",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a12_2345.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twelve, available two three four five.",
+      "plainText": "Copy three Adam twelve, available two three four five.",
+      "match": [
+        "copy three adam twelve available two three four five",
+        "copy 3a12",
+        "available 2345"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 59812,
+      "status": "regenerated",
+      "sha256": "d400f9555c71052a",
+      "textFp": "22120241397c7157"
+    },
+    {
+      "id": "disp_copy_available_time_3a14_0000",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a14_0000.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam fourteen, available zero zero zero zero.",
+      "plainText": "Copy three Adam fourteen, available zero zero zero zero.",
+      "match": [
+        "copy three adam fourteen available zero zero zero zero",
+        "copy 3a14",
+        "available 0000"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 61066,
+      "status": "regenerated",
+      "sha256": "3632f69fe4d03485",
+      "textFp": "accb150505ea116f"
+    },
+    {
+      "id": "disp_copy_available_time_3a14_0030",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a14_0030.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam fourteen, available zero zero three zero.",
+      "plainText": "Copy three Adam fourteen, available zero zero three zero.",
+      "match": [
+        "copy three adam fourteen available zero zero three zero",
+        "copy 3a14",
+        "available 0030"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 59812,
+      "status": "regenerated",
+      "sha256": "b78e8f0b6e9ebb9f",
+      "textFp": "08aad2f943247572"
+    },
+    {
+      "id": "disp_copy_available_time_3a14_0600",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a14_0600.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam fourteen, available zero six zero zero.",
+      "plainText": "Copy three Adam fourteen, available zero six zero zero.",
+      "match": [
+        "copy three adam fourteen available zero six zero zero",
+        "copy 3a14",
+        "available 0600"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 69007,
+      "status": "regenerated",
+      "sha256": "02f6801d203f821d",
+      "textFp": "b90ea5a41156296e"
+    },
+    {
+      "id": "disp_copy_available_time_3a14_0830",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a14_0830.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam fourteen, available zero eight three zero.",
+      "plainText": "Copy three Adam fourteen, available zero eight three zero.",
+      "match": [
+        "copy three adam fourteen available zero eight three zero",
+        "copy 3a14",
+        "available 0830"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 56050,
+      "status": "regenerated",
+      "sha256": "1f96b8f5494d4440",
+      "textFp": "2a95c0386a38a95e"
+    },
+    {
+      "id": "disp_copy_available_time_3a14_0900",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a14_0900.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam fourteen, available zero nine zero zero.",
+      "plainText": "Copy three Adam fourteen, available zero nine zero zero.",
+      "match": [
+        "copy three adam fourteen available zero nine zero zero",
+        "copy 3a14",
+        "available 0900"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 63991,
+      "status": "regenerated",
+      "sha256": "e6d23095e2bec4f3",
+      "textFp": "fc5cf062ed2371ad"
+    },
+    {
+      "id": "disp_copy_available_time_3a14_1015",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a14_1015.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam fourteen, available one zero one five.",
+      "plainText": "Copy three Adam fourteen, available one zero one five.",
+      "match": [
+        "copy three adam fourteen available one zero one five",
+        "copy 3a14",
+        "available 1015"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 54796,
+      "status": "regenerated",
+      "sha256": "eaab006255ffed64",
+      "textFp": "5433555052cdb98e"
+    },
+    {
+      "id": "disp_copy_available_time_3a14_1200",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a14_1200.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam fourteen, available one two zero zero.",
+      "plainText": "Copy three Adam fourteen, available one two zero zero.",
+      "match": [
+        "copy three adam fourteen available one two zero zero",
+        "copy 3a14",
+        "available 1200"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 62319,
+      "status": "regenerated",
+      "sha256": "573237f295cab868",
+      "textFp": "33ebe76610cc1b39"
+    },
+    {
+      "id": "disp_copy_available_time_3a14_1310",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a14_1310.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam fourteen, available one three one zero.",
+      "plainText": "Copy three Adam fourteen, available one three one zero.",
+      "match": [
+        "copy three adam fourteen available one three one zero",
+        "copy 3a14",
+        "available 1310"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 76530,
+      "status": "regenerated",
+      "sha256": "5abd9ddf4ee63291",
+      "textFp": "ba5427d2a1c5e950"
+    },
+    {
+      "id": "disp_copy_available_time_3a14_1430",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a14_1430.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam fourteen, available one four three zero.",
+      "plainText": "Copy three Adam fourteen, available one four three zero.",
+      "match": [
+        "copy three adam fourteen available one four three zero",
+        "copy 3a14",
+        "available 1430"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 61066,
+      "status": "regenerated",
+      "sha256": "0cb651de315f0fb1",
+      "textFp": "d8df5d6ebe327454"
+    },
+    {
+      "id": "disp_copy_available_time_3a14_1515",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a14_1515.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam fourteen, available one five one five.",
+      "plainText": "Copy three Adam fourteen, available one five one five.",
+      "match": [
+        "copy three adam fourteen available one five one five",
+        "copy 3a14",
+        "available 1515"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 61066,
+      "status": "regenerated",
+      "sha256": "27208bf361b0d8bc",
+      "textFp": "113f121f0bb0a06a"
+    },
+    {
+      "id": "disp_copy_available_time_3a14_1721",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a14_1721.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam fourteen, available one seven two one.",
+      "plainText": "Copy three Adam fourteen, available one seven two one.",
+      "match": [
+        "copy three adam fourteen available one seven two one",
+        "copy 3a14",
+        "available 1721"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 61066,
+      "status": "regenerated",
+      "sha256": "02e8a89b7ed9d05b",
+      "textFp": "0c33454e2ced1add"
+    },
+    {
+      "id": "disp_copy_available_time_3a14_1800",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a14_1800.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam fourteen, available one eight zero zero.",
+      "plainText": "Copy three Adam fourteen, available one eight zero zero.",
+      "match": [
+        "copy three adam fourteen available one eight zero zero",
+        "copy 3a14",
+        "available 1800"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 63991,
+      "status": "regenerated",
+      "sha256": "3d9e8189d8aca915",
+      "textFp": "02fb329e5ae94251"
+    },
+    {
+      "id": "disp_copy_available_time_3a14_1930",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a14_1930.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam fourteen, available one nine three zero.",
+      "plainText": "Copy three Adam fourteen, available one nine three zero.",
+      "match": [
+        "copy three adam fourteen available one nine three zero",
+        "copy 3a14",
+        "available 1930"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 65245,
+      "status": "regenerated",
+      "sha256": "cc7422fd6ec8cb7d",
+      "textFp": "cacc21fccbe20ced"
+    },
+    {
+      "id": "disp_copy_available_time_3a14_2045",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a14_2045.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam fourteen, available two zero four five.",
+      "plainText": "Copy three Adam fourteen, available two zero four five.",
+      "match": [
+        "copy three adam fourteen available two zero four five",
+        "copy 3a14",
+        "available 2045"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 58558,
+      "status": "regenerated",
+      "sha256": "51be2c4422d2f258",
+      "textFp": "068058dc9a1ad067"
+    },
+    {
+      "id": "disp_copy_available_time_3a14_2121",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a14_2121.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam fourteen, available two one two one.",
+      "plainText": "Copy three Adam fourteen, available two one two one.",
+      "match": [
+        "copy three adam fourteen available two one two one",
+        "copy 3a14",
+        "available 2121"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 62319,
+      "status": "regenerated",
+      "sha256": "9153211b4ca2e1da",
+      "textFp": "0eca25051bd9157b"
+    },
+    {
+      "id": "disp_copy_available_time_3a14_2210",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a14_2210.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam fourteen, available two two one zero.",
+      "plainText": "Copy three Adam fourteen, available two two one zero.",
+      "match": [
+        "copy three adam fourteen available two two one zero",
+        "copy 3a14",
+        "available 2210"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 75276,
+      "status": "regenerated",
+      "sha256": "f41d0e561aa7ed7b",
+      "textFp": "4bd4f5edac812a4f"
+    },
+    {
+      "id": "disp_copy_available_time_3a14_2345",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a14_2345.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam fourteen, available two three four five.",
+      "plainText": "Copy three Adam fourteen, available two three four five.",
+      "match": [
+        "copy three adam fourteen available two three four five",
+        "copy 3a14",
+        "available 2345"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 62319,
+      "status": "regenerated",
+      "sha256": "342eb4b69d971b54",
+      "textFp": "78b34feb26cac5fc"
+    },
+    {
+      "id": "disp_copy_available_time_3a21_0000",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a21_0000.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-one, available zero zero zero zero.",
+      "plainText": "Copy three Adam twenty-one, available zero zero zero zero.",
+      "match": [
+        "copy three adam twenty one available zero zero zero zero",
+        "copy 3a21",
+        "available 0000"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 65245,
+      "status": "regenerated",
+      "sha256": "9cea508f76f82ed3",
+      "textFp": "f37b556002c337ca"
+    },
+    {
+      "id": "disp_copy_available_time_3a21_0030",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a21_0030.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-one, available zero zero three zero.",
+      "plainText": "Copy three Adam twenty-one, available zero zero three zero.",
+      "match": [
+        "copy three adam twenty one available zero zero three zero",
+        "copy 3a21",
+        "available 0030"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 69007,
+      "status": "regenerated",
+      "sha256": "a070806648204407",
+      "textFp": "c78e33e151d0e610"
+    },
+    {
+      "id": "disp_copy_available_time_3a21_0600",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a21_0600.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-one, available zero six zero zero.",
+      "plainText": "Copy three Adam twenty-one, available zero six zero zero.",
+      "match": [
+        "copy three adam twenty one available zero six zero zero",
+        "copy 3a21",
+        "available 0600"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 69007,
+      "status": "regenerated",
+      "sha256": "89af379d32a4e321",
+      "textFp": "ec96ba6b33de3ca3"
+    },
+    {
+      "id": "disp_copy_available_time_3a21_0830",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a21_0830.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-one, available zero eight three zero.",
+      "plainText": "Copy three Adam twenty-one, available zero eight three zero.",
+      "match": [
+        "copy three adam twenty one available zero eight three zero",
+        "copy 3a21",
+        "available 0830"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 63991,
+      "status": "regenerated",
+      "sha256": "a62f5ba6ffea507a",
+      "textFp": "35ff61cb7e04abe3"
+    },
+    {
+      "id": "disp_copy_available_time_3a21_0900",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a21_0900.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-one, available zero nine zero zero.",
+      "plainText": "Copy three Adam twenty-one, available zero nine zero zero.",
+      "match": [
+        "copy three adam twenty one available zero nine zero zero",
+        "copy 3a21",
+        "available 0900"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 59812,
+      "status": "regenerated",
+      "sha256": "a56964ce72aef6be",
+      "textFp": "d0ae4cd3f53126c4"
+    },
+    {
+      "id": "disp_copy_available_time_3a21_1015",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a21_1015.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-one, available one zero one five.",
+      "plainText": "Copy three Adam twenty-one, available one zero one five.",
+      "match": [
+        "copy three adam twenty one available one zero one five",
+        "copy 3a21",
+        "available 1015"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 67753,
+      "status": "regenerated",
+      "sha256": "c6b9521fcb61afb9",
+      "textFp": "89b9115ac441dd36"
+    },
+    {
+      "id": "disp_copy_available_time_3a21_1200",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a21_1200.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-one, available one two zero zero.",
+      "plainText": "Copy three Adam twenty-one, available one two zero zero.",
+      "match": [
+        "copy three adam twenty one available one two zero zero",
+        "copy 3a21",
+        "available 1200"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 58558,
+      "status": "regenerated",
+      "sha256": "9761a00238e7c5cf",
+      "textFp": "b114e252c690ab8c"
+    },
+    {
+      "id": "disp_copy_available_time_3a21_1310",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a21_1310.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-one, available one three one zero.",
+      "plainText": "Copy three Adam twenty-one, available one three one zero.",
+      "match": [
+        "copy three adam twenty one available one three one zero",
+        "copy 3a21",
+        "available 1310"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 57304,
+      "status": "regenerated",
+      "sha256": "86234ca3e7f81241",
+      "textFp": "1e4b00114777a0be"
+    },
+    {
+      "id": "disp_copy_available_time_3a21_1430",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a21_1430.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-one, available one four three zero.",
+      "plainText": "Copy three Adam twenty-one, available one four three zero.",
+      "match": [
+        "copy three adam twenty one available one four three zero",
+        "copy 3a21",
+        "available 1430"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 53542,
+      "status": "regenerated",
+      "sha256": "f4fa69f2dcc42ebf",
+      "textFp": "a81a376dcef3e7d1"
+    },
+    {
+      "id": "disp_copy_available_time_3a21_1515",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a21_1515.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-one, available one five one five.",
+      "plainText": "Copy three Adam twenty-one, available one five one five.",
+      "match": [
+        "copy three adam twenty one available one five one five",
+        "copy 3a21",
+        "available 1515"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 51035,
+      "status": "regenerated",
+      "sha256": "9ef717873b74d583",
+      "textFp": "2a430af1cb7e5b9f"
+    },
+    {
+      "id": "disp_copy_available_time_3a21_1721",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a21_1721.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-one, available one seven two one.",
+      "plainText": "Copy three Adam twenty-one, available one seven two one.",
+      "match": [
+        "copy three adam twenty one available one seven two one",
+        "copy 3a21",
+        "available 1721"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 59812,
+      "status": "regenerated",
+      "sha256": "3ed8e1c77ccac088",
+      "textFp": "fb51ca3eb9d16999"
+    },
+    {
+      "id": "disp_copy_available_time_3a21_1800",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a21_1800.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-one, available one eight zero zero.",
+      "plainText": "Copy three Adam twenty-one, available one eight zero zero.",
+      "match": [
+        "copy three adam twenty one available one eight zero zero",
+        "copy 3a21",
+        "available 1800"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 59812,
+      "status": "regenerated",
+      "sha256": "832e645ac57ad56a",
+      "textFp": "6490103a38e4facd"
+    },
+    {
+      "id": "disp_copy_available_time_3a21_1930",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a21_1930.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-one, available one nine three zero.",
+      "plainText": "Copy three Adam twenty-one, available one nine three zero.",
+      "match": [
+        "copy three adam twenty one available one nine three zero",
+        "copy 3a21",
+        "available 1930"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 65245,
+      "status": "regenerated",
+      "sha256": "a332ffc3f3f9565f",
+      "textFp": "5918804e45e4431c"
+    },
+    {
+      "id": "disp_copy_available_time_3a21_2045",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a21_2045.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-one, available two zero four five.",
+      "plainText": "Copy three Adam twenty-one, available two zero four five.",
+      "match": [
+        "copy three adam twenty one available two zero four five",
+        "copy 3a21",
+        "available 2045"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 62319,
+      "status": "regenerated",
+      "sha256": "9a51a1e85b61b34c",
+      "textFp": "26fc26c437e56400"
+    },
+    {
+      "id": "disp_copy_available_time_3a21_2121",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a21_2121.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-one, available two one two one.",
+      "plainText": "Copy three Adam twenty-one, available two one two one.",
+      "match": [
+        "copy three adam twenty one available two one two one",
+        "copy 3a21",
+        "available 2121"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 54796,
+      "status": "regenerated",
+      "sha256": "add57f10c37eef46",
+      "textFp": "d5f5740dce06d492"
+    },
+    {
+      "id": "disp_copy_available_time_3a21_2210",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a21_2210.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-one, available two two one zero.",
+      "plainText": "Copy three Adam twenty-one, available two two one zero.",
+      "match": [
+        "copy three adam twenty one available two two one zero",
+        "copy 3a21",
+        "available 2210"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 54796,
+      "status": "regenerated",
+      "sha256": "9f487a8cc806fbf5",
+      "textFp": "51b82b8ecaeb9f58"
+    },
+    {
+      "id": "disp_copy_available_time_3a21_2345",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a21_2345.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-one, available two three four five.",
+      "plainText": "Copy three Adam twenty-one, available two three four five.",
+      "match": [
+        "copy three adam twenty one available two three four five",
+        "copy 3a21",
+        "available 2345"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 59812,
+      "status": "regenerated",
+      "sha256": "bf05d63a64ebfd7f",
+      "textFp": "3b9dcf0497a35997"
+    },
+    {
+      "id": "disp_copy_available_time_3a22_0000",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a22_0000.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-two, available zero zero zero zero.",
+      "plainText": "Copy three Adam twenty-two, available zero zero zero zero.",
+      "match": [
+        "copy three adam twenty two available zero zero zero zero",
+        "copy 3a22",
+        "available 0000"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 67753,
+      "status": "regenerated",
+      "sha256": "a29204b9dc663a73",
+      "textFp": "e2450862d645030f"
+    },
+    {
+      "id": "disp_copy_available_time_3a22_0030",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a22_0030.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-two, available zero zero three zero.",
+      "plainText": "Copy three Adam twenty-two, available zero zero three zero.",
+      "match": [
+        "copy three adam twenty two available zero zero three zero",
+        "copy 3a22",
+        "available 0030"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 63991,
+      "status": "regenerated",
+      "sha256": "980a811409f7bcd6",
+      "textFp": "879fe98435f8f9c8"
+    },
+    {
+      "id": "disp_copy_available_time_3a22_0600",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a22_0600.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-two, available zero six zero zero.",
+      "plainText": "Copy three Adam twenty-two, available zero six zero zero.",
+      "match": [
+        "copy three adam twenty two available zero six zero zero",
+        "copy 3a22",
+        "available 0600"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 61066,
+      "status": "regenerated",
+      "sha256": "aa79b727f6621f25",
+      "textFp": "ea529cd2583b4b03"
+    },
+    {
+      "id": "disp_copy_available_time_3a22_0830",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a22_0830.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-two, available zero eight three zero.",
+      "plainText": "Copy three Adam twenty-two, available zero eight three zero.",
+      "match": [
+        "copy three adam twenty two available zero eight three zero",
+        "copy 3a22",
+        "available 0830"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 57304,
+      "status": "regenerated",
+      "sha256": "a6ac616d08534723",
+      "textFp": "c0d027bc4e4f1838"
+    },
+    {
+      "id": "disp_copy_available_time_3a22_0900",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a22_0900.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-two, available zero nine zero zero.",
+      "plainText": "Copy three Adam twenty-two, available zero nine zero zero.",
+      "match": [
+        "copy three adam twenty two available zero nine zero zero",
+        "copy 3a22",
+        "available 0900"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 56050,
+      "status": "regenerated",
+      "sha256": "ba9f1a96daef8df2",
+      "textFp": "a21062b057ad150d"
+    },
+    {
+      "id": "disp_copy_available_time_3a22_1015",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a22_1015.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-two, available one zero one five.",
+      "plainText": "Copy three Adam twenty-two, available one zero one five.",
+      "match": [
+        "copy three adam twenty two available one zero one five",
+        "copy 3a22",
+        "available 1015"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 61066,
+      "status": "regenerated",
+      "sha256": "f4a576dfa7adb3fe",
+      "textFp": "088fa4a112b75105"
+    },
+    {
+      "id": "disp_copy_available_time_3a22_1200",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a22_1200.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-two, available one two zero zero.",
+      "plainText": "Copy three Adam twenty-two, available one two zero zero.",
+      "match": [
+        "copy three adam twenty two available one two zero zero",
+        "copy 3a22",
+        "available 1200"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 57304,
+      "status": "regenerated",
+      "sha256": "7821ffad4d6095bb",
+      "textFp": "348446550b9ac78c"
+    },
+    {
+      "id": "disp_copy_available_time_3a22_1310",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a22_1310.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-two, available one three one zero.",
+      "plainText": "Copy three Adam twenty-two, available one three one zero.",
+      "match": [
+        "copy three adam twenty two available one three one zero",
+        "copy 3a22",
+        "available 1310"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 61066,
+      "status": "regenerated",
+      "sha256": "11c304b98c315e07",
+      "textFp": "0e9041b2dbbd172d"
+    },
+    {
+      "id": "disp_copy_available_time_3a22_1430",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a22_1430.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-two, available one four three zero.",
+      "plainText": "Copy three Adam twenty-two, available one four three zero.",
+      "match": [
+        "copy three adam twenty two available one four three zero",
+        "copy 3a22",
+        "available 1430"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 71515,
+      "status": "regenerated",
+      "sha256": "8d410ba157fef1ca",
+      "textFp": "4ddc0f5e34fe01ca"
+    },
+    {
+      "id": "disp_copy_available_time_3a22_1515",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a22_1515.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-two, available one five one five.",
+      "plainText": "Copy three Adam twenty-two, available one five one five.",
+      "match": [
+        "copy three adam twenty two available one five one five",
+        "copy 3a22",
+        "available 1515"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 62319,
+      "status": "regenerated",
+      "sha256": "f170dc9a0756e9c1",
+      "textFp": "22bfe3e7f441e3c5"
+    },
+    {
+      "id": "disp_copy_available_time_3a22_1721",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a22_1721.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-two, available one seven two one.",
+      "plainText": "Copy three Adam twenty-two, available one seven two one.",
+      "match": [
+        "copy three adam twenty two available one seven two one",
+        "copy 3a22",
+        "available 1721"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 53542,
+      "status": "regenerated",
+      "sha256": "8565e826558d60cf",
+      "textFp": "aa1e7d8ba1f0555e"
+    },
+    {
+      "id": "disp_copy_available_time_3a22_1800",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a22_1800.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-two, available one eight zero zero.",
+      "plainText": "Copy three Adam twenty-two, available one eight zero zero.",
+      "match": [
+        "copy three adam twenty two available one eight zero zero",
+        "copy 3a22",
+        "available 1800"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 65245,
+      "status": "regenerated",
+      "sha256": "1454f03a0dd0d746",
+      "textFp": "a6f8aba3c7217729"
+    },
+    {
+      "id": "disp_copy_available_time_3a22_1930",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a22_1930.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-two, available one nine three zero.",
+      "plainText": "Copy three Adam twenty-two, available one nine three zero.",
+      "match": [
+        "copy three adam twenty two available one nine three zero",
+        "copy 3a22",
+        "available 1930"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 57304,
+      "status": "regenerated",
+      "sha256": "29fdc5dc4d966699",
+      "textFp": "4666d72bd8c2926e"
+    },
+    {
+      "id": "disp_copy_available_time_3a22_2045",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a22_2045.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-two, available two zero four five.",
+      "plainText": "Copy three Adam twenty-two, available two zero four five.",
+      "match": [
+        "copy three adam twenty two available two zero four five",
+        "copy 3a22",
+        "available 2045"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 63991,
+      "status": "regenerated",
+      "sha256": "ca1af6df283a6932",
+      "textFp": "5764acda4a004c4b"
+    },
+    {
+      "id": "disp_copy_available_time_3a22_2121",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a22_2121.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-two, available two one two one.",
+      "plainText": "Copy three Adam twenty-two, available two one two one.",
+      "match": [
+        "copy three adam twenty two available two one two one",
+        "copy 3a22",
+        "available 2121"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 58558,
+      "status": "regenerated",
+      "sha256": "eaf59416fa2bf1d1",
+      "textFp": "68928a8c6c56be25"
+    },
+    {
+      "id": "disp_copy_available_time_3a22_2210",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a22_2210.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-two, available two two one zero.",
+      "plainText": "Copy three Adam twenty-two, available two two one zero.",
+      "match": [
+        "copy three adam twenty two available two two one zero",
+        "copy 3a22",
+        "available 2210"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 71515,
+      "status": "regenerated",
+      "sha256": "ff557150bbd03fd1",
+      "textFp": "a94a3a50381f75d6"
+    },
+    {
+      "id": "disp_copy_available_time_3a22_2345",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a22_2345.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam twenty-two, available two three four five.",
+      "plainText": "Copy three Adam twenty-two, available two three four five.",
+      "match": [
+        "copy three adam twenty two available two three four five",
+        "copy 3a22",
+        "available 2345"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 58558,
+      "status": "regenerated",
+      "sha256": "1b96169e6869834c",
+      "textFp": "a4e94dc2d229c9a0"
+    },
+    {
+      "id": "disp_copy_available_time_3a30_0000",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a30_0000.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam thirty, available zero zero zero zero.",
+      "plainText": "Copy three Adam thirty, available zero zero zero zero.",
+      "match": [
+        "copy three adam thirty available zero zero zero zero",
+        "copy 3a30",
+        "available 0000"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 54796,
+      "status": "regenerated",
+      "sha256": "1f9a60291a626923",
+      "textFp": "b487d1e9a3e17536"
+    },
+    {
+      "id": "disp_copy_available_time_3a30_0030",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a30_0030.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam thirty, available zero zero three zero.",
+      "plainText": "Copy three Adam thirty, available zero zero three zero.",
+      "match": [
+        "copy three adam thirty available zero zero three zero",
+        "copy 3a30",
+        "available 0030"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 61066,
+      "status": "regenerated",
+      "sha256": "5aa4b5718f814912",
+      "textFp": "f01a51337aac2261"
+    },
+    {
+      "id": "disp_copy_available_time_3a30_0600",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a30_0600.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam thirty, available zero six zero zero.",
+      "plainText": "Copy three Adam thirty, available zero six zero zero.",
+      "match": [
+        "copy three adam thirty available zero six zero zero",
+        "copy 3a30",
+        "available 0600"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 66499,
+      "status": "regenerated",
+      "sha256": "67d37f885c707f4d",
+      "textFp": "bced2d26cec4d58c"
+    },
+    {
+      "id": "disp_copy_available_time_3a30_0830",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a30_0830.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam thirty, available zero eight three zero.",
+      "plainText": "Copy three Adam thirty, available zero eight three zero.",
+      "match": [
+        "copy three adam thirty available zero eight three zero",
+        "copy 3a30",
+        "available 0830"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 54796,
+      "status": "regenerated",
+      "sha256": "18810e1110a5ebe4",
+      "textFp": "92a38c1dbcd0b6c2"
+    },
+    {
+      "id": "disp_copy_available_time_3a30_0900",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a30_0900.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam thirty, available zero nine zero zero.",
+      "plainText": "Copy three Adam thirty, available zero nine zero zero.",
+      "match": [
+        "copy three adam thirty available zero nine zero zero",
+        "copy 3a30",
+        "available 0900"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 47273,
+      "status": "regenerated",
+      "sha256": "2ef5461e52d0a2a3",
+      "textFp": "13a4cffb79770af2"
+    },
+    {
+      "id": "disp_copy_available_time_3a30_1015",
+      "file": "/audio/radio-voice/disp_copy_available_time_3a30_1015.mp3",
+      "voice": "dispatch",
+      "voiceId": "B4mQ18VPQVeQGS9ZcnZy",
+      "kind": "ACK",
+      "text": "[calm] [dispatch] Copy three Adam thirty, available one zero one five.",
+      "plainText": "Copy three Adam thirty, available one zero one five.",
+      "match": [
+        "copy three adam thirty available one zero one five",
+        "copy 3a30",
+        "available 1015"
+      ],
+      "scenarioIds": [
+        "*"
+      ],
+      "bytes": 67753,
+      "status": "regenerated",
+      "sha256": "0206e541641fd434",
+      "textFp": "c57206a67abddece"
     }
   ]
 }

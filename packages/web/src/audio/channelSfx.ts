@@ -1,6 +1,6 @@
 /**
- * Baked channel SFX (ElevenLabs sound-generation) with synth fallback.
- * Radio vs phone use different beds — never cross-wire.
+ * Baked channel SFX (ElevenLabs sound-generation) with Web Audio playback
+ * and HTMLAudio / synth fallback. Radio vs phone beds never cross-wire.
  */
 
 type SfxId =
@@ -27,12 +27,28 @@ class ChannelSfx {
   private loaded = false;
   private loadPromise: Promise<void> | null = null;
   private bed: HTMLAudioElement | null = null;
+  private bedSource: AudioBufferSourceNode | null = null;
+  private bedGain: GainNode | null = null;
   private enabled = true;
   private volume = 0.55;
+  private ctx: AudioContext | null = null;
+  private bufferCache = new Map<string, AudioBuffer>();
+  private oneshots: AudioBufferSourceNode[] = [];
 
   setEnabled(on: boolean) {
     this.enabled = on;
     if (!on) this.stopBed();
+  }
+
+  private ensureCtx(): AudioContext {
+    if (!this.ctx) {
+      const AC =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext })
+          .webkitAudioContext;
+      this.ctx = new AC();
+    }
+    return this.ctx;
   }
 
   async ensureLoaded(): Promise<void> {
@@ -61,12 +77,80 @@ class ChannelSfx {
     return this.byId.has(id);
   }
 
+  /** Decode + cache hot SFX for snappy key-ups. */
+  async prewarm(ids?: SfxId[]): Promise<void> {
+    await this.ensureLoaded();
+    const list =
+      ids ??
+      ([
+        "radio_key_up",
+        "radio_key_down",
+        "radio_squelch_open",
+        "radio_squelch_tail",
+        "radio_crackle_soft",
+        "radio_static_bed",
+        "phone_line_seize",
+        "phone_line_hangup",
+        "phone_line_bed",
+      ] as SfxId[]);
+    await Promise.all(list.map((id) => this.decode(id)));
+  }
+
+  private async decode(id: SfxId | string): Promise<AudioBuffer | null> {
+    const url = this.byId.get(id);
+    if (!url) return null;
+    const hit = this.bufferCache.get(url);
+    if (hit) return hit;
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const raw = await res.arrayBuffer();
+      const ctx = this.ensureCtx();
+      if (ctx.state === "suspended") {
+        try {
+          await ctx.resume();
+        } catch {
+          /* autoplay */
+        }
+      }
+      const buf = await ctx.decodeAudioData(raw.slice(0));
+      this.bufferCache.set(url, buf);
+      return buf;
+    } catch {
+      return null;
+    }
+  }
+
   /** One-shot SFX. Returns true if baked file played. */
   async play(id: SfxId, vol = this.volume): Promise<boolean> {
     if (!this.enabled) return false;
     await this.ensureLoaded();
     const url = this.byId.get(id);
     if (!url) return false;
+
+    // Prefer Web Audio for tight timing with speech chain
+    try {
+      const buf = await this.decode(id);
+      if (buf) {
+        const ctx = this.ensureCtx();
+        if (ctx.state === "suspended") await ctx.resume();
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        const g = ctx.createGain();
+        g.gain.value = Math.max(0, Math.min(1, vol));
+        src.connect(g);
+        g.connect(ctx.destination);
+        this.oneshots.push(src);
+        src.onended = () => {
+          this.oneshots = this.oneshots.filter((s) => s !== src);
+        };
+        src.start();
+        return true;
+      }
+    } catch {
+      /* fall through */
+    }
+
     try {
       const a = new Audio(url);
       a.volume = Math.max(0, Math.min(1, vol));
@@ -84,6 +168,28 @@ class ChannelSfx {
     const url = this.byId.get(id);
     if (!url) return false;
     this.stopBed();
+
+    try {
+      const buf = await this.decode(id);
+      if (buf) {
+        const ctx = this.ensureCtx();
+        if (ctx.state === "suspended") await ctx.resume();
+        const src = ctx.createBufferSource();
+        src.buffer = buf;
+        src.loop = true;
+        const g = ctx.createGain();
+        g.gain.value = vol;
+        src.connect(g);
+        g.connect(ctx.destination);
+        src.start();
+        this.bedSource = src;
+        this.bedGain = g;
+        return true;
+      }
+    } catch {
+      /* HTMLAudio fallback */
+    }
+
     try {
       const a = new Audio(url);
       a.loop = true;
@@ -98,6 +204,15 @@ class ChannelSfx {
   }
 
   stopBed() {
+    if (this.bedSource) {
+      try {
+        this.bedSource.stop();
+      } catch {
+        /* ignore */
+      }
+      this.bedSource = null;
+      this.bedGain = null;
+    }
     if (this.bed) {
       try {
         this.bed.pause();

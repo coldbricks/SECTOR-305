@@ -1,26 +1,36 @@
 # Radio TTS bake status
 
-**Updated:** 2026-07-19 (checkpoint — bake interrupted for project switch)  
-**Continue full matrix:** YES — `npm run radio:tts:full` (skips cached)
+**Updated:** 2026-07-19 (live full-matrix bake in progress)  
+**Continue full matrix:** YES — `npm run radio:tts:full` (skips cached; priority-ordered)
 
-## Progress
+## Progress (live)
 
 | Metric | Value |
 |--------|------:|
 | Catalog lines (full) | **1515** |
-| Playable in app (manifest) | **498** |
-| Still missing | **1017** |
-| Approx complete | **~33%** of full matrix |
+| Playable in app (manifest) | **~570+** (climbing) |
+| Approx complete | **~38%+** of full matrix |
 | **Trainer (Dave) clips** | **12 / 12 baked** |
-| **Responding ACKs** | **10 / 20** (3A12–3A30 done; 3A31, 3A40, 3A41, 3S1, 3T1 pending) |
+| **Responding ACKs** | **20 / 20** ✅ |
+| **CALLER / DISPATCH / EMERGENCY / BOLO / UPDATE** | content matrix preferred first |
+
+## Bake physics (current script)
+
+- Priority order: trainer → caller → emergency → dispatch → bolo/update → responding → ack → query → system → status
+- Crash-safe: flushes playable manifest every **12** new clips (merge prior)
+- Fingerprint invalidates stale turbo bakes without v3 tags
+- Secrets: `ELEVENLABS_API_KEY` from `.env` only (never commit)
 
 ## Wired now
 
+- Clean **trainer bus** (studio coach — no RF grit)
+- **Emergency heat** radio chain + deeper music duck + alert
+- **Step-on** crackle when TX cuts TX
+- Speech attack/release envelope
+- Channel SFX via **Web Audio** (snappy key-up)
+- `prewarmHot()` on BEGIN into watch
 - Dispatch / unit / caller matches from on-disk clips
-- Channel SFX (key-up, phone seize, static beds)
-- Academy COACH plays Dave trainer via `trainerClipId`
-- Sim unit ACKs emit `{callsign}, responding.` → matches baked `unit_*_responding` where present
-- Soft-band debrief, 17 scenarios
+- Sim unit ACKs emit `{callsign}, responding.` → baked `unit_*_responding`
 
 ## Resume bake
 
@@ -29,27 +39,6 @@ cd C:\Users\coldb\SECTOR-305
 npm run radio:tts:full
 ```
 
-Skips existing files. `.env` holds API key (gitignored).  
-After finish (or interrupt), rebuild playable manifest if bake was killed mid-run:
+## Responding units — complete
 
-```powershell
-# bake script writes manifest on clean exit; if killed mid-pass, re-run dry-run won't refresh —
-# prefer completing a short `npm run radio:tts:full` pass or re-run the disk rebuild helper used at checkpoint.
-```
-
-## TODO — remaining responding units
-
-| Spoken (LAPD) | Caption match | Status |
-|---------------|----------------|--------|
-| `three Adam twelve, responding.` | `3A12, responding.` | baked |
-| `three Adam fourteen, responding.` | `3A14, responding.` | baked |
-| `three Adam twenty-one, responding.` | `3A21, responding.` | baked |
-| `three Adam twenty-two, responding.` | `3A22, responding.` | baked |
-| `three Adam thirty, responding.` | `3A30, responding.` | baked |
-| `three Adam thirty-one, responding.` | `3A31, responding.` | **pending** |
-| `three Adam forty, responding.` | `3A40, responding.` | **pending** |
-| `three Adam forty-one, responding.` | `3A41, responding.` | **pending** |
-| `three Sam one, responding.` | `3S1, responding.` | **pending** |
-| `three Tom one, responding.` | `3T1, responding.` | **pending** |
-
-(+ matching `responding_enroute` for each)
+All 10 units × responding + responding_enroute = **20/20** baked.

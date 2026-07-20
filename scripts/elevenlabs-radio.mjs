@@ -29,6 +29,25 @@ const args = new Set(process.argv.slice(2));
 const force = args.has("--force");
 const dryRun = args.has("--dry-run");
 
+/** Lower = bake first (so kills leave the most useful air first). */
+function bakePriority(line) {
+  const id = String(line.id ?? "");
+  const kind = String(line.kind ?? "");
+  if (kind === "TRAINER") return 0;
+  if (kind === "CALLER") return 1;
+  if (kind === "EMERGENCY") return 2;
+  if (kind === "DISPATCH") return 3;
+  if (kind === "BOLO") return 4;
+  if (kind === "UPDATE") return 5;
+  if (/responding/i.test(id) || /responding/i.test(line.plainText || line.text || ""))
+    return 6;
+  if (kind === "ACK") return 7;
+  if (kind === "QUERY") return 8;
+  if (kind === "SYSTEM") return 9;
+  if (kind === "STATUS") return 10;
+  return 11;
+}
+
 function normalizeCaption(s) {
   return String(s ?? "")
     .toLowerCase()
@@ -42,6 +61,55 @@ function loadLines() {
     throw new Error(`Missing lines catalog: ${linesPath}`);
   }
   return JSON.parse(readFileSync(linesPath, "utf8"));
+}
+
+function writePlayableManifest(catalog, clips, { generated, skipped, dryRun, charTotal, partial }) {
+  // Clips visited this run that exist on disk
+  const fromRun = clips.filter(
+    (c) => c.status === "generated" || c.status === "regenerated" || c.status === "cached"
+  );
+  let playable = fromRun;
+
+  // Dry-run: never wipe the live library
+  // Partial checkpoint: merge prior playable so unvisited ids stay live
+  if ((dryRun || partial) && existsSync(manifestPath)) {
+    try {
+      const prev = JSON.parse(readFileSync(manifestPath, "utf8"));
+      if (Array.isArray(prev.clips) && prev.clips.length) {
+        if (dryRun) {
+          playable = prev.clips;
+        } else {
+          const byId = new Map(prev.clips.map((c) => [c.id, c]));
+          for (const c of fromRun) byId.set(c.id, c);
+          playable = [...byId.values()];
+        }
+      }
+    } catch {
+      /* keep fromRun */
+    }
+  }
+
+  const manifest = {
+    schema: "s305.radio_voice_manifest.v1",
+    generatedAt: dryRun ? undefined : new Date().toISOString(),
+    model_id: catalog.model_id,
+    characterEstimate: charTotal,
+    clipCount: playable.length,
+    generated,
+    skipped,
+    dryRun,
+    clips: playable,
+    planned: dryRun
+      ? {
+          lineCount: clips.length,
+          characterEstimate: charTotal,
+          newOrChanged: clips.filter((c) => c.status !== "cached").length,
+        }
+      : undefined,
+  };
+  if (!dryRun) manifest.generatedAt = new Date().toISOString();
+  writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n", "utf8");
+  return playable.length;
 }
 
 async function tts({ apiKey, voiceId, text, modelId, outputFormat, settings }) {
@@ -99,7 +167,17 @@ ELEVENLABS_API_KEY is not set.
   let generated = 0;
   let skipped = 0;
 
-  for (const line of catalog.lines) {
+  // Priority order: coach/caller/dispatch/responding before bulk STATUS matrix
+  const ordered = [...catalog.lines].sort((a, b) => {
+    const d = bakePriority(a) - bakePriority(b);
+    if (d !== 0) return d;
+    return String(a.id).localeCompare(String(b.id));
+  });
+
+  const { statSync } = await import("node:fs");
+  const FLUSH_EVERY = 12;
+
+  for (const line of ordered) {
     const voice = catalog.voices[line.voice];
     if (!voice) throw new Error(`Unknown voice key: ${line.voice}`);
     const voiceId =
@@ -147,9 +225,11 @@ ELEVENLABS_API_KEY is not set.
         voiceId,
         kind: line.kind,
         text,
+        plainText: plain,
         match: matchKeys,
         scenarioIds: line.scenarioIds ?? ["*"],
-        bytes: (await import("node:fs")).statSync(abs).size,
+        channel: line.channel,
+        bytes: statSync(abs).size,
         status: "cached",
         textFp: textFingerprint,
       });
@@ -164,8 +244,10 @@ ELEVENLABS_API_KEY is not set.
         voiceId,
         kind: line.kind,
         text,
+        plainText: plain,
         match: matchKeys,
         scenarioIds: line.scenarioIds ?? ["*"],
+        channel: line.channel,
         status: "dry-run",
       });
       continue;
@@ -199,60 +281,46 @@ ELEVENLABS_API_KEY is not set.
       voiceId,
       kind: line.kind,
       text,
+      plainText: plain,
       match: matchKeys,
       scenarioIds: line.scenarioIds ?? ["*"],
+      channel: line.channel,
       bytes: buf.length,
       status: textChanged ? "regenerated" : "generated",
       sha256: createHash("sha256").update(buf).digest("hex").slice(0, 16),
       textFp: textFingerprint,
     });
 
-    // polite pacing
-    await new Promise((r) => setTimeout(r, 120));
-  }
-
-  // Dry-run: keep existing playable manifest so we don't wipe a live library.
-  // Live bake: only clips that exist on disk (generated or cached).
-  let playable = clips.filter(
-    (c) => c.status === "generated" || c.status === "regenerated" || c.status === "cached"
-  );
-  if (dryRun && existsSync(manifestPath)) {
-    try {
-      const prev = JSON.parse(readFileSync(manifestPath, "utf8"));
-      if (Array.isArray(prev.clips) && prev.clips.length) {
-        playable = prev.clips;
-        console.log(
-          `(dry-run) preserving existing manifest with ${playable.length} playable clips`
-        );
-      } else {
-        playable = [];
-      }
-    } catch {
-      playable = [];
+    // Crash-safe: flush playable manifest every N new clips (merge prior)
+    if (generated % FLUSH_EVERY === 0) {
+      const n = writePlayableManifest(catalog, clips, {
+        generated,
+        skipped,
+        dryRun: false,
+        charTotal,
+        partial: true,
+      });
+      console.log(`  ↳ checkpoint manifest ${n} playable`);
     }
+
+    // polite pacing
+    await new Promise((r) => setTimeout(r, 100));
   }
 
-  const manifest = {
-    schema: "s305.radio_voice_manifest.v1",
-    generatedAt: dryRun ? (playable.length ? undefined : null) : new Date().toISOString(),
-    model_id: catalog.model_id,
-    characterEstimate: charTotal,
-    clipCount: dryRun ? playable.length : playable.length,
+  const playableCount = writePlayableManifest(catalog, clips, {
     generated,
     skipped,
     dryRun,
-    clips: dryRun ? playable : playable,
-    planned: dryRun
-      ? {
-          lineCount: clips.length,
-          characterEstimate: charTotal,
-          newOrChanged: clips.filter((c) => c.status !== "cached").length,
-        }
-      : undefined,
-  };
-  // Always refresh generatedAt on real bake
-  if (!dryRun) manifest.generatedAt = new Date().toISOString();
-  writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n", "utf8");
+    charTotal,
+    partial: false,
+  });
+  if (dryRun) {
+    console.log(
+      `(dry-run) playable preserved/estimated · catalog ${catalog.lines.length} · newOrChanged ${
+        clips.filter((c) => c.status !== "cached").length
+      } · cached ${skipped}`
+    );
+  }
 
   console.log(`
 Radio voice bake complete
@@ -260,7 +328,9 @@ Radio voice bake complete
   characters: ${charTotal} (estimate; credits depend on your ElevenLabs plan)
   generated:  ${generated}
   cached:     ${skipped}
+  playable:   ${playableCount}
   dry-run:    ${dryRun}
+  order:      priority (trainer→caller→dispatch→responding→ack→status)
   manifest:   ${manifestPath}
 `);
 }

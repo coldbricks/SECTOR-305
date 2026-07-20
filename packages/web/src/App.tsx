@@ -585,9 +585,13 @@ export function App() {
 
   async function openWatch() {
     await consoleAudio.unlock();
-    // Warm radio/phone buses before glass (manifests + optional baked SFX)
-    void radioSpeech.ensureLoaded();
-    void channelSfx.ensureLoaded();
+    // Warm radio/phone buses before glass (manifests + hot clip decode)
+    void radioSpeech.ensureLoaded().then(() => {
+      void radioSpeech.prewarmHot(56);
+    });
+    void channelSfx.ensureLoaded().then(() => {
+      void channelSfx.prewarm();
+    });
     splashFxBed.stop();
     // Long cinematic fade of title theme, then boot into glass
     if (musicReady && !musicMuted && !muted) {

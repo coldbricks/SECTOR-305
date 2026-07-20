@@ -118,6 +118,9 @@ class RadioSpeech {
   private activeSources: AudioBufferSourceNode[] = [];
   private activeDisconnects: Array<() => void> = [];
   private stopTimer: number | null = null;
+  /** True while a speech TX is scheduled / running. */
+  private txBusy = false;
+  private lastClipId: string | null = null;
 
   setEnabled(on: boolean) {
     this.enabled = on;
@@ -126,6 +129,14 @@ class RadioSpeech {
 
   isEnabled(): boolean {
     return this.enabled;
+  }
+
+  isBusy(): boolean {
+    return this.txBusy;
+  }
+
+  lastPlayedClipId(): string | null {
+    return this.lastClipId;
   }
 
   private ensureCtx(): AudioContext {
@@ -220,6 +231,8 @@ class RadioSpeech {
       window.clearTimeout(this.stopTimer);
       this.stopTimer = null;
     }
+    this.txBusy = false;
+    channelSfx.stopBed();
   }
 
   private async decodeClip(url: string): Promise<AudioBuffer | null> {
@@ -238,6 +251,50 @@ class RadioSpeech {
     }
   }
 
+  /**
+   * Decode hot clips so the first TX of a watch is zero-latency.
+   * Prefers trainer + responding ACKs + dispatch + callers.
+   */
+  async prewarmHot(limit = 48): Promise<number> {
+    await this.ensureLoaded();
+    await consoleAudio.unlock();
+    const rank = (c: RadioClip) => {
+      if (c.kind === "TRAINER") return 0;
+      if (c.kind === "CALLER") return 1;
+      if (c.kind === "EMERGENCY") return 2;
+      if (c.kind === "DISPATCH") return 3;
+      if (/responding/i.test(c.id) || /responding/i.test(c.text || "")) return 4;
+      if (c.kind === "ACK") return 5;
+      if (c.kind === "BOLO" || c.kind === "UPDATE") return 6;
+      return 9;
+    };
+    const ordered = [...this.clips].sort((a, b) => rank(a) - rank(b));
+    const pick = ordered.slice(0, Math.max(8, limit));
+    let n = 0;
+    // Parallel decode in small batches so we don't stampede the network
+    const batch = 6;
+    for (let i = 0; i < pick.length; i += batch) {
+      const slice = pick.slice(i, i + batch);
+      const results = await Promise.all(
+        slice.map((c) => this.decodeClip(c.file).then((b) => !!b))
+      );
+      n += results.filter(Boolean).length;
+    }
+    void channelSfx.prewarm();
+    return n;
+  }
+
+  async prewarmClipIds(ids: string[]): Promise<number> {
+    await this.ensureLoaded();
+    let n = 0;
+    for (const id of ids) {
+      const clip = this.clips.find((c) => c.id === id);
+      if (!clip) continue;
+      if (await this.decodeClip(clip.file)) n += 1;
+    }
+    return n;
+  }
+
   // ---------------------------------------------------------------------------
   // RADIO maker — TX/RX only
   // ---------------------------------------------------------------------------
@@ -250,8 +307,10 @@ class RadioSpeech {
   private buildRadioChannel(
     ctx: AudioContext,
     role: RadioRole,
-    withStatic: boolean
+    withStatic: boolean,
+    heat: "normal" | "emergency" = "normal"
   ): ChannelGraph {
+    const hot = heat === "emergency";
     const input = ctx.createGain();
     input.gain.value = 1;
 
@@ -266,7 +325,8 @@ class RadioSpeech {
     presence.type = "peaking";
     presence.frequency.value = role === "field" ? 1850 : 1650;
     presence.Q.value = 1.05;
-    presence.gain.value = role === "field" ? 4.0 : 2.6;
+    presence.gain.value =
+      (role === "field" ? 4.0 : 2.6) + (hot ? 1.4 : 0);
 
     // Scoop a little boxiness
     const scoop = ctx.createBiquadFilter();
@@ -288,19 +348,22 @@ class RadioSpeech {
     shelf.gain.value = role === "field" ? -4.5 : -2.8;
 
     const grit = ctx.createWaveShaper();
-    grit.curve = makeDistortionCurve(role === "field" ? 14 : 7);
+    grit.curve = makeDistortionCurve(
+      (role === "field" ? 14 : 7) + (hot ? 4 : 0)
+    );
     grit.oversample = "2x";
 
     // AGC crush — radio limiter feel
     const comp = ctx.createDynamicsCompressor();
     comp.threshold.value = role === "field" ? -30 : -22;
-    comp.knee.value = 10;
-    comp.ratio.value = role === "field" ? 12 : 7;
+    comp.knee.value = hot ? 6 : 10;
+    comp.ratio.value = (role === "field" ? 12 : 7) + (hot ? 2 : 0);
     comp.attack.value = 0.0025;
     comp.release.value = 0.11;
 
     const wet = ctx.createGain();
-    wet.gain.value = this.volume * (role === "field" ? 0.9 : 1.0);
+    wet.gain.value =
+      this.volume * (role === "field" ? 0.9 : 1.0) * (hot ? 1.06 : 1.0);
 
     // Static bus — only if this TX rolled static
     const noiseGain = ctx.createGain();
@@ -393,6 +456,68 @@ class RadioSpeech {
     );
     noiseGain.gain.exponentialRampToValueAtTime(tail, tEnd - 0.01);
     noiseGain.gain.exponentialRampToValueAtTime(0.0001, tEnd + 0.07);
+  }
+
+  // ---------------------------------------------------------------------------
+  // TRAINER maker — academy coach (clean headset, never RF)
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Studio-adjacent coach path: gentle presence, soft limiter, zero grit/static.
+   * Dave must feel like a training officer on your earpiece — not a field unit.
+   */
+  private buildTrainerChannel(ctx: AudioContext): ChannelGraph {
+    const input = ctx.createGain();
+    input.gain.value = 1;
+
+    const hp = ctx.createBiquadFilter();
+    hp.type = "highpass";
+    hp.frequency.value = 90;
+    hp.Q.value = 0.7;
+
+    const presence = ctx.createBiquadFilter();
+    presence.type = "peaking";
+    presence.frequency.value = 2800;
+    presence.Q.value = 0.9;
+    presence.gain.value = 1.8;
+
+    const air = ctx.createBiquadFilter();
+    air.type = "highshelf";
+    air.frequency.value = 6000;
+    air.gain.value = 1.2;
+
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -18;
+    comp.knee.value = 20;
+    comp.ratio.value = 3.2;
+    comp.attack.value = 0.008;
+    comp.release.value = 0.22;
+
+    const wet = ctx.createGain();
+    wet.gain.value = this.volume * 0.92;
+
+    // noiseGain present but always silent (API parity with other chains)
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.value = 0;
+
+    const out = ctx.createGain();
+    out.gain.value = 1;
+
+    input.connect(hp).connect(presence).connect(air).connect(comp).connect(wet).connect(out);
+    out.connect(ctx.destination);
+
+    return {
+      input,
+      output: out,
+      noiseGain,
+      disconnect: () => {
+        try {
+          out.disconnect();
+        } catch {
+          /* ignore */
+        }
+      },
+    };
   }
 
   // ---------------------------------------------------------------------------
@@ -518,22 +643,34 @@ class RadioSpeech {
     if (!ok) consoleAudio.play("tick");
   }
 
-  private async playRadioKeyFx(role: RadioRole) {
+  private async playRadioKeyFx(role: RadioRole, emergency = false) {
     await channelSfx.ensureLoaded();
-    const keyed = await channelSfx.play("radio_key_up", role === "field" ? 0.5 : 0.42);
+    const keyVol = emergency
+      ? role === "field"
+        ? 0.62
+        : 0.55
+      : role === "field"
+        ? 0.5
+        : 0.42;
+    const keyed = await channelSfx.play("radio_key_up", keyVol);
     if (!keyed) consoleAudio.play("radioKey");
-    // Field / some console: soft crackle
-    if (role === "field" || Math.random() < 0.45) {
+    // Field / emergency / some console: soft crackle
+    if (emergency || role === "field" || Math.random() < 0.45) {
       window.setTimeout(() => {
-        void channelSfx.play("radio_crackle_soft", 0.28).then((ok) => {
-          if (!ok) consoleAudio.play("radioCrackle");
-        });
+        void channelSfx
+          .play("radio_crackle_soft", emergency ? 0.38 : 0.28)
+          .then((ok) => {
+            if (!ok) consoleAudio.play("radioCrackle");
+          });
       }, 45);
     }
-    // Optional open squelch chirp
-    if (Math.random() < (role === "field" ? 0.55 : 0.3)) {
+    // Open squelch chirp — more often on field / emergency
+    if (emergency || Math.random() < (role === "field" ? 0.55 : 0.3)) {
       window.setTimeout(() => {
-        void channelSfx.play("radio_squelch_open", 0.22);
+        void channelSfx.play(
+          "radio_squelch_open",
+          emergency ? 0.32 : 0.22
+        );
       }, 70);
     }
   }
@@ -605,6 +742,7 @@ class RadioSpeech {
     await consoleAudio.unlock();
 
     const clip = this.findClip(opts.caption, opts.kind);
+    const kind = (opts.kind ?? clip?.kind ?? "") as RadioSpeechKind;
     const isTrainer =
       opts.kind === "TRAINER" ||
       opts.direction === "trainer" ||
@@ -622,6 +760,12 @@ class RadioSpeech {
       (opts.direction === "unit_tx" ||
         opts.kind === "ACK" ||
         opts.kind === "STATUS");
+    const isEmergency =
+      kind === "EMERGENCY" ||
+      kind === "BOLO" ||
+      /emergency|mayday|shots? fired|officer down/i.test(
+        opts.caption + " " + (clip?.text ?? "")
+      );
     const radioRole: RadioRole = isUnit ? "field" : "console";
     const bus: ChannelBus = isTrainer
       ? "trainer"
@@ -629,14 +773,34 @@ class RadioSpeech {
         ? "phone"
         : "radio";
 
+    // Step-on: cut prior TX hard so concurrent traffic still feels like radio
+    const steppedOn = this.txBusy;
+    if (steppedOn && bus === "radio") {
+      void channelSfx.play("radio_crackle_soft", 0.35);
+    }
+
     if (bus === "radio") {
-      void this.playRadioKeyFx(radioRole);
+      void this.playRadioKeyFx(radioRole, isEmergency);
+      if (isEmergency) {
+        window.setTimeout(() => consoleAudio.play("alertHi"), 40);
+      }
     } else if (bus === "phone") {
       void this.playPhonePickupFx();
     } else {
       // Trainer: soft UI only — clear headset, not RF
       consoleAudio.play("ui");
     }
+
+    // Duck depth: emergency punches through, trainer is polite, phone is mid
+    const duckDepth = isEmergency
+      ? 0.06
+      : bus === "trainer"
+        ? 0.35
+        : bus === "phone"
+          ? 0.18
+          : isUnit
+            ? 0.16
+            : 0.12;
 
     if (!clip) {
       if (bus === "radio") {
@@ -645,7 +809,7 @@ class RadioSpeech {
           200
         );
       }
-      shellMusic.duckForRadio(isUnit ? 1300 : 1700);
+      shellMusic.duckForRadio(isUnit ? 1300 : 1700, duckDepth);
       return { played: false, clipId: null, durationMs: isUnit ? 1300 : 1700 };
     }
 
@@ -670,45 +834,62 @@ class RadioSpeech {
     }
 
     this.stop();
+    this.txBusy = true;
+    this.lastClipId = clip.id;
 
     const withStatic =
-      bus === "radio" && this.shouldHaveRadioStatic(clip.id, radioRole);
-    // Trainer: light console chain, never static (clear coach voice)
+      bus === "radio" &&
+      (isEmergency || this.shouldHaveRadioStatic(clip.id, radioRole));
     const chain =
       bus === "phone"
         ? this.buildPhoneChannel(ctx)
-        : this.buildRadioChannel(
-            ctx,
-            bus === "trainer" ? "console" : radioRole,
-            bus === "radio" ? withStatic : false
-          );
+        : bus === "trainer"
+          ? this.buildTrainerChannel(ctx)
+          : this.buildRadioChannel(
+              ctx,
+              radioRole,
+              withStatic,
+              isEmergency ? "emergency" : "normal"
+            );
 
     this.activeDisconnects.push(chain.disconnect);
 
+    // Soft speech envelope — no hard digital edge on key-up
+    const env = ctx.createGain();
+    env.gain.value = 0.0001;
     const speech = ctx.createBufferSource();
     speech.buffer = buf;
-    speech.connect(chain.input);
+    speech.connect(env);
+    env.connect(chain.input);
     this.activeSources.push(speech);
 
     const hiss = ctx.createBufferSource();
     hiss.buffer =
       bus === "phone"
         ? phoneLineNoiseBuffer(ctx, 1.4)
-        : noiseBuffer(ctx, 1.2);
+        : bus === "trainer"
+          ? noiseBuffer(ctx, 0.4)
+          : noiseBuffer(ctx, 1.2);
     hiss.loop = true;
     hiss.connect(chain.noiseGain);
     this.activeSources.push(hiss);
 
-    const leadIn = bus === "phone" ? 0.06 : 0.09;
+    const leadIn =
+      bus === "phone" ? 0.06 : bus === "trainer" ? 0.04 : 0.09;
     const t0 = ctx.currentTime + leadIn;
     const dur = buf.duration;
     const tEnd = t0 + dur;
+
+    // Attack / release on speech
+    env.gain.setValueAtTime(0.0001, t0);
+    env.gain.exponentialRampToValueAtTime(1, t0 + 0.018);
+    env.gain.setValueAtTime(1, Math.max(t0 + 0.02, tEnd - 0.04));
+    env.gain.exponentialRampToValueAtTime(0.0001, tEnd + 0.03);
 
     if (bus === "phone") {
       this.schedulePhoneLine(chain.noiseGain, t0, tEnd);
       void channelSfx.startBed("phone_line_bed", 0.08);
     } else if (bus === "trainer") {
-      // Clean coach path — minimal noise bed
       chain.noiseGain.gain.setValueAtTime(0.0001, t0);
     } else {
       this.scheduleRadioSquelch(
@@ -721,20 +902,30 @@ class RadioSpeech {
       if (withStatic) {
         void channelSfx.startBed(
           "radio_static_bed",
-          radioRole === "field" ? 0.1 : 0.06
+          isEmergency
+            ? 0.12
+            : radioRole === "field"
+              ? 0.1
+              : 0.06
         );
       }
     }
 
-    const duckMs = Math.ceil((leadIn + dur + (bus === "phone" ? 0.18 : 0.24)) * 1000);
-    shellMusic.duckForRadio(Math.max(1200, duckMs));
+    const duckMs = Math.ceil(
+      (leadIn + dur + (bus === "phone" ? 0.18 : bus === "trainer" ? 0.12 : 0.24)) *
+        1000
+    );
+    shellMusic.duckForRadio(Math.max(1200, duckMs), duckDepth);
 
     try {
-      hiss.start(t0 - (bus === "phone" ? 0.04 : 0.05));
+      if (bus !== "trainer") {
+        hiss.start(t0 - (bus === "phone" ? 0.04 : 0.05));
+        hiss.stop(tEnd + (bus === "phone" ? 0.1 : 0.12));
+      }
       speech.start(t0);
-      hiss.stop(tEnd + (bus === "phone" ? 0.1 : 0.12));
-      speech.stop(tEnd + 0.02);
+      speech.stop(tEnd + 0.05);
     } catch {
+      this.txBusy = false;
       channelSfx.stopBed();
       return { played: false, clipId: clip.id, durationMs: 0 };
     }
@@ -744,6 +935,7 @@ class RadioSpeech {
         (s) => s !== speech && s !== hiss
       );
       channelSfx.stopBed();
+      this.txBusy = false;
       if (bus === "phone") void this.playPhoneHangupFx();
       else if (bus === "radio") void this.playRadioUnkeyFx();
     };
@@ -753,6 +945,7 @@ class RadioSpeech {
         (s) => s !== speech && s !== hiss
       );
       channelSfx.stopBed();
+      this.txBusy = false;
       for (const d of this.activeDisconnects) {
         try {
           d();
