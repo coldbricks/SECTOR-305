@@ -8,6 +8,8 @@ dist/
 coverage/
 packages/web/dist/
 packages/core/dist/
+packages/desktop/release/
+packages/desktop/dist/
 .vite/
 
 test-results/
@@ -15,6 +17,8 @@ playwright-report/
 
 # Local OST cover bake scratch (shipped assets live under docs/ost/)
 exports/
+# Keep packed scenario examples if committed under docs; local packs:
+exports/scenarios/
 
 # Prefer mp3 in-repo; source wav stays local
 packages/web/public/audio/shell-theme.wav

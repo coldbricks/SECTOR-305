@@ -23,7 +23,15 @@
     "radio:sfx": "node scripts/elevenlabs-sfx.mjs",
     "radio:sfx:dry": "node scripts/elevenlabs-sfx.mjs --dry-run",
     "radio:sfx:force": "node scripts/elevenlabs-sfx.mjs --force",
-    "radio:sfx:lab": "node scripts/elevenlabs-sfx-lab.mjs"
+    "radio:sfx:lab": "node scripts/elevenlabs-sfx-lab.mjs",
+    "desktop:dev": "npm run start -w @sector305/desktop -- --dev",
+    "desktop:pack": "npm run build && npm run pack -w @sector305/desktop",
+    "desktop:dist": "npm run build && npm run dist -w @sector305/desktop",
+    "desktop:installer": "npm run build && npm run dist:nsis -w @sector305/desktop",
+    "scenario:list": "node scripts/scenario-305.mjs list",
+    "scenario:validate": "node scripts/scenario-305.mjs validate",
+    "scenario:pack": "node scripts/scenario-305.mjs pack",
+    "scenario:unpack": "node scripts/scenario-305.mjs unpack"
   },
   "workspaces": [
     "packages/*"

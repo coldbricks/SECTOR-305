@@ -2,6 +2,8 @@
 
 Phase 0 scenarios are JSON documents validated by `ScenarioSchema` in `@sector305/core`.
 
+**Shipping / sharing:** use the **`.305` pack** standard — folder for authoring, single file for desktop. See **[SCENARIO_PACK_305.md](./SCENARIO_PACK_305.md)**.
+
 ```json
 {
   "id": "checkride_ocean_robbery_v0",

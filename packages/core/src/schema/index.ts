@@ -11,3 +11,4 @@ export * from "./gradeEvent.js";
 export * from "./playerCommand.js";
 export * from "./sessionRecord.js";
 export * from "./scenario.js";
+export * from "./scenarioPack305.js";

@@ -67,6 +67,11 @@ export {
   ScenarioTimelineEventSchema,
   PassConditionsSchema,
   FailDemoSchema,
+  ScenarioPack305Schema,
+  ScenarioPack305ManifestSchema,
+  SCENARIO_PACK_305_SCHEMA_ID,
+  SCENARIO_PACK_305_EXT,
+  manifestFromScenarioJson,
 } from "./schema/index.js";
 
 // loadPack (node:fs) is CLI/test only — import from ./loadPack.js in Node, not the browser bundle.
