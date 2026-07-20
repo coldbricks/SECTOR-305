@@ -1,0 +1,71 @@
+{
+  "name": "@sector305/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SECTOR 305 Windows desktop shell (Electron) — installable A-console",
+  "main": "main.cjs",
+  "type": "commonjs",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --win",
+    "dist:nsis": "electron-builder --win nsis",
+    "dist:portable": "electron-builder --win portable"
+  },
+  "author": "David Lombardo / Coldbricks <coldbricks@gmail.com>",
+  "devDependencies": {
+    "electron": "37.10.3",
+    "electron-builder": "26.15.3"
+  },
+  "build": {
+    "appId": "com.coldbricks.sector305",
+    "productName": "SECTOR 305",
+    "electronVersion": "37.10.3",
+    "copyright": "Copyright © David Lombardo / Coldbricks",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../web/dist",
+        "to": "app-ui",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        },
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "artifactName": "${productName}-${version}-${os}-${arch}.${ext}",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "SECTOR 305",
+      "installerLanguages": ["en_US"],
+      "language": "1033",
+      "differentialPackage": false
+    },
+    "portable": {
+      "artifactName": "${productName}-${version}-portable.${ext}"
+    },
+    "publish": null
+  }
+}

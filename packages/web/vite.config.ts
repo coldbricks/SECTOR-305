@@ -4,6 +4,8 @@ import path from "node:path";
 
 export default defineConfig({
   plugins: [react()],
+  // Relative asset paths so Electron can load dist via file:// / loadFile
+  base: "./",
   resolve: {
     alias: {
       "@sector305/core": path.resolve(__dirname, "../core/src/index.ts"),
@@ -15,6 +17,11 @@ export default defineConfig({
     host: "127.0.0.1",
     port: 3050,
     strictPort: true,
+  },
+  build: {
+    outDir: "dist",
+    emptyOutDir: true,
+    sourcemap: true,
   },
 });
 
