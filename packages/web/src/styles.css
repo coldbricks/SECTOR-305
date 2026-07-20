@@ -1114,10 +1114,36 @@ button.danger {
   height: 100%;
   min-height: 0;
   display: grid;
-  /* topbar · live grade strip · main grid · footer
-     (strip must NOT steal the 1fr row — that blanked the map) */
-  grid-template-rows: auto auto minmax(0, 1fr) 28px;
+  /* topbar · live grade · ops pressure · main desk · footer
+     Extra auto strips MUST stay auto — never let them steal 1fr
+     (OpsPressureStrip did that and blanked queue/CAD/map). */
+  grid-template-rows: auto auto auto minmax(0, 1fr) 28px;
   overflow: hidden;
+}
+
+/* Explicit placement so chrome order changes can't collapse the desk again */
+.console > .topbar,
+.console > .instrument-topbar {
+  grid-row: 1;
+}
+.console > .live-grade-strip {
+  grid-row: 2;
+}
+.console > .ops-pressure-strip {
+  grid-row: 3;
+}
+.console > .console-grid {
+  grid-row: 4;
+  min-height: 0;
+}
+.console > .footer {
+  grid-row: 5;
+}
+/* Fixed overlays must not auto-place into the 1fr desk track */
+.console > .score-console,
+.console > .hotkey-help {
+  grid-row: 1;
+  grid-column: 1;
 }
 
 .topbar {
@@ -1407,7 +1433,7 @@ button.danger {
 
 @media (max-width: 1100px) {
   .console {
-    grid-template-rows: auto auto minmax(0, 1fr) 28px;
+    grid-template-rows: auto auto auto minmax(0, 1fr) 28px;
   }
   .topbar {
     grid-template-columns: 1fr;
@@ -2271,7 +2297,7 @@ button.ems-row {
   overflow: hidden;
 }
 
-/* Fictional SECTOR 305 channel bank */
+/* Fictional SECTOR 305 resource bank — modern tile grid (AXS-inspired) */
 .channel-bank {
   display: flex;
   flex-direction: column;
@@ -2279,6 +2305,7 @@ button.ems-row {
   min-height: 0;
   font-size: 9px;
   letter-spacing: 0.04em;
+  background: linear-gradient(180deg, #070b12 0%, #05080e 100%);
 }
 
 .cb-head,
@@ -2295,6 +2322,242 @@ button.ems-row {
   font-size: 10px;
 }
 
+.cb-softrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-bottom: 1px solid rgba(56, 190, 235, 0.1);
+  background: rgba(6, 10, 16, 0.85);
+}
+
+.cb-soft-key {
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  padding: 2px 6px;
+  border: 1px solid rgba(62, 200, 240, 0.22);
+  border-radius: 2px;
+  color: var(--text-dim);
+  background: rgba(16, 24, 34, 0.7);
+}
+
+.cb-soft-meta {
+  margin-left: auto;
+  font-size: 9px;
+  color: var(--cyan);
+  letter-spacing: 0.06em;
+  max-width: 55%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cb-folders {
+  display: flex;
+  gap: 2px;
+  padding: 4px 6px;
+  border-bottom: 1px solid rgba(56, 190, 235, 0.1);
+  flex-wrap: wrap;
+}
+
+.cb-folder {
+  font-size: 8px;
+  padding: 3px 8px;
+  letter-spacing: 0.1em;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  color: var(--muted);
+  box-shadow: none;
+}
+
+.cb-folder.on {
+  color: var(--text);
+  border-color: rgba(56, 190, 235, 0.35);
+  background: rgba(56, 190, 235, 0.1);
+}
+
+.cb-folder--pd.on {
+  border-color: rgba(64, 140, 220, 0.55);
+  color: #7ec0ff;
+  background: rgba(40, 100, 180, 0.16);
+}
+.cb-folder--fire.on {
+  border-color: rgba(220, 80, 70, 0.55);
+  color: #ff9a8a;
+  background: rgba(160, 40, 30, 0.18);
+}
+.cb-folder--ems.on {
+  border-color: rgba(47, 180, 100, 0.55);
+  color: #7eefb0;
+  background: rgba(20, 100, 55, 0.18);
+}
+
+.cb-tile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 5px;
+  padding: 6px;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  align-content: start;
+}
+
+.cb-tile {
+  position: relative;
+  display: grid;
+  grid-template-columns: 4px 1fr auto;
+  min-height: 58px;
+  border: 1px solid rgba(42, 53, 72, 0.75);
+  border-radius: 3px;
+  background: linear-gradient(160deg, #121a26 0%, #0a1018 100%);
+  overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.cb-tile.on {
+  border-color: rgba(62, 200, 240, 0.55);
+  box-shadow:
+    inset 0 0 0 1px rgba(62, 200, 240, 0.12),
+    0 0 14px rgba(62, 200, 240, 0.1);
+}
+
+.cb-tile.is-muted {
+  opacity: 0.45;
+}
+
+.cb-tile-rail {
+  background: #3a4558;
+}
+.cb-tile.disc-pd .cb-tile-rail {
+  background: linear-gradient(180deg, #3a8adf, #1e5a9a);
+}
+.cb-tile.disc-fire .cb-tile-rail {
+  background: linear-gradient(180deg, #e05548, #9a2a22);
+}
+.cb-tile.disc-ems .cb-tile-rail {
+  background: linear-gradient(180deg, #2fd67b, #1a8a4e);
+}
+.cb-tile.disc-svc .cb-tile-rail {
+  background: linear-gradient(180deg, #6d7888, #3a4450);
+}
+
+.cb-tile-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: stretch;
+  text-align: left;
+  padding: 5px 6px 5px 7px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  color: var(--text-dim);
+  min-width: 0;
+  cursor: pointer;
+}
+
+.cb-tile-main:hover {
+  background: rgba(62, 200, 240, 0.06);
+  border-color: transparent;
+}
+
+.cb-tile-top {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.cb-tile-bolt {
+  font-size: 9px;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.cb-tile-alpha {
+  font-weight: 700;
+  font-size: 10px;
+  color: var(--text);
+  letter-spacing: 0.04em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.cb-tile.disc-pd .cb-tile-alpha {
+  color: #9ec9ff;
+}
+.cb-tile.disc-fire .cb-tile-alpha {
+  color: #ffb0a4;
+}
+.cb-tile.disc-ems .cb-tile-alpha {
+  color: #8ef0b8;
+}
+
+.cb-tile-badge {
+  margin-left: auto;
+  font-size: 8px;
+  padding: 1px 4px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.cb-tile-sub {
+  font-size: 8px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cb-tile-meta {
+  display: flex;
+  gap: 6px;
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.cb-mute {
+  align-self: stretch;
+  width: 22px;
+  padding: 0;
+  margin: 0;
+  border: none;
+  border-left: 1px solid rgba(42, 53, 72, 0.75);
+  border-radius: 0;
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--muted);
+  font-size: 8px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.cb-mute:hover,
+.cb-mute.on {
+  color: var(--amber);
+  background: rgba(240, 180, 41, 0.1);
+  border-color: rgba(240, 180, 41, 0.25);
+}
+
+.cb-empty {
+  grid-column: 1 / -1;
+  padding: 12px;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* legacy list rows kept for any residual markup */
 .cb-filters {
   display: flex;
   gap: 2px;
@@ -2396,6 +2659,205 @@ button.ems-row {
   color: var(--muted);
   border-top: 1px solid rgba(56, 190, 235, 0.1);
   letter-spacing: 0.06em;
+}
+
+/* —— Activity log (Time · Resource · Unit · Event) —— */
+.br-activity {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0 !important;
+}
+
+.activity-log {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 8px 10px 0;
+}
+
+.activity-log .al-head h2 {
+  margin-bottom: 4px;
+}
+
+.al-cols,
+.al-row {
+  display: grid;
+  grid-template-columns: 52px 78px 64px minmax(0, 1fr);
+  gap: 6px;
+  align-items: baseline;
+}
+
+.al-cols {
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  padding: 2px 0 4px;
+  border-bottom: 1px solid rgba(62, 200, 240, 0.14);
+  flex-shrink: 0;
+}
+
+.al-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.al-row {
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(30, 38, 51, 0.85);
+  color: var(--muted);
+}
+
+.al-row .cap {
+  color: var(--text);
+}
+
+.al-kind {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.al-row.dir-unit .al-c-unit {
+  color: var(--cyan);
+}
+
+.al-row.dir-dispatch .al-c-unit {
+  color: var(--amber);
+}
+
+.al-row.dir-emr {
+  color: #ffb0a4;
+}
+
+.al-row.dir-emr .cap {
+  color: #ffcfc8;
+}
+
+.al-row.needs-rb .cap {
+  color: var(--amber);
+}
+
+.al-quiet {
+  opacity: 0.65;
+}
+
+.al-c-time,
+.al-c-res,
+.al-c-unit {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.al-c-evt {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* —— TX present strip (training timeout chrome) —— */
+.tx-present-strip {
+  position: relative;
+  flex-shrink: 0;
+  margin-top: auto;
+  padding: 5px 10px 6px;
+  border-top: 1px solid rgba(62, 200, 240, 0.16);
+  background: #060a10;
+  overflow: hidden;
+}
+
+.tx-strip-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(62, 200, 240, 0.22),
+    rgba(62, 200, 240, 0.06)
+  );
+  transition: width 0.08s linear;
+  pointer-events: none;
+}
+
+.tx-present-strip.hot .tx-strip-bar {
+  background: linear-gradient(
+    90deg,
+    rgba(240, 180, 41, 0.28),
+    rgba(240, 180, 41, 0.06)
+  );
+}
+
+.tx-present-strip.emr .tx-strip-bar {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 77, 66, 0.32),
+    rgba(255, 77, 66, 0.06)
+  );
+}
+
+.tx-strip-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  z-index: 1;
+}
+
+.tx-flag {
+  font-weight: 700;
+  color: var(--muted);
+  min-width: 78px;
+}
+
+.tx-flag.on {
+  color: var(--amber);
+  text-shadow: 0 0 10px rgba(240, 180, 41, 0.35);
+}
+
+.tx-present-strip.emr .tx-flag.on {
+  color: var(--red);
+  text-shadow: 0 0 10px rgba(255, 77, 66, 0.4);
+}
+
+.tx-res {
+  color: var(--cyan);
+  max-width: 28%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tx-from {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-dim);
+}
+
+.tx-timeout {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.tx-strip-hint {
+  position: relative;
+  z-index: 1;
+  margin-top: 2px;
+  font-size: 7px;
+  letter-spacing: 0.12em;
+  color: rgba(109, 120, 136, 0.85);
 }
 
 /* Apparatus strip */
@@ -5289,7 +5751,7 @@ button.ems-row {
 
 @media (max-width: 760px) {
   .console {
-    grid-template-rows: auto auto minmax(0, 1fr) 24px;
+    grid-template-rows: auto auto auto minmax(0, 1fr) 24px;
   }
 
   .topbar {

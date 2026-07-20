@@ -25,6 +25,8 @@ import { splashFxBed } from "./audio/splashFxBed";
 import { ShellSplash } from "./components/ShellSplash";
 import { ZuluClock } from "./components/ZuluClock";
 import { ChannelBank, type RrChannel } from "./components/ChannelBank";
+import { ActivityLog } from "./components/ActivityLog";
+import { TxPresentStrip } from "./components/TxPresentStrip";
 import { type FireToneEvent } from "./components/ApparatusStrip";
 import { AgencyDesk } from "./components/AgencyDesk";
 import { MapWorkspace } from "./components/MapWorkspace";
@@ -1376,36 +1378,26 @@ export function App() {
 
         <div className="panel bottom-rail instrument-panel instrument-rail">
           <div className="bottom-rail-grid">
-            <div className="br-col">
-              <h2>
-                <span className="h2-title">
-                  Radio log ·{" "}
-                  {watchChannel?.alpha ??
-                    (radioJson as { channelPrimary: string }).channelPrimary}
-                </span>
-              </h2>
-              {watchChannel && (
-                <div className="watch-ch mono">
-                  {watchChannel.freqMHz?.toFixed(4)} MHz · {watchChannel.mode} ·{" "}
-                  {watchChannel.tone || "CSQ"} · {watchChannel.tag}
-                </div>
-              )}
-              <div className="radio-log">
-                {state.radioLog.length === 0 && (
-                  <div className="radio-line">Channel quiet</div>
-                )}
-                {state.radioLog.map((r) => (
-                  <div key={r.id} className="radio-line">
-                    +{(r.atMs / 1000).toFixed(1)}s {r.from}→{r.to ?? "ALL"}{" "}
-                    <span className="cap">{r.caption}</span>
-                    {r.requiresReadback && !r.readbackSatisfiedAtMs
-                      ? " ⚠ READBACK"
-                      : r.readbackSatisfiedAtMs
-                        ? " · ACK"
-                        : ""}
-                  </div>
-                ))}
-              </div>
+            <div className="br-col br-activity">
+              <ActivityLog
+                events={state.radioLog}
+                resourceLabel={
+                  watchChannel?.alpha ??
+                  (radioJson as { channelPrimary: string }).channelPrimary
+                }
+                watchMeta={
+                  watchChannel
+                    ? `${watchChannel.tone || "CSQ"} · ${watchChannel.mode} · ${watchChannel.tag}`
+                    : null
+                }
+              />
+              <TxPresentStrip
+                radioLog={state.radioLog}
+                resourceLabel={
+                  watchChannel?.alpha ??
+                  (radioJson as { channelPrimary: string }).channelPrimary
+                }
+              />
             </div>
             <div className="br-col">
               <h2>Live grades</h2>

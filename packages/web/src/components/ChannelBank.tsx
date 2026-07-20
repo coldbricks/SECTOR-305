@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export type RrChannel = {
   freqMHz: number | null;
@@ -12,6 +12,8 @@ export type RrChannel = {
   role: "pri" | "tac" | "svc" | string;
 };
 
+export type ResourceDiscipline = "pd" | "fire" | "ems" | "svc";
+
 type Pack = {
   id: string;
   disclaimer: string;
@@ -19,14 +21,46 @@ type Pack = {
   channels: RrChannel[];
 };
 
-/** Fictional SECTOR 305 channel bank. */
+type FolderId = "pd" | "fire" | "ems" | "all";
+
+const FOLDERS: { id: FolderId; label: string; short: string }[] = [
+  { id: "pd", label: "POLICE", short: "PD" },
+  { id: "fire", label: "FIRE", short: "FIRE" },
+  { id: "ems", label: "EMS", short: "EMS" },
+  { id: "all", label: "ALL", short: "ALL" },
+];
+
+/** Map channel metadata → discipline for modern resource-tile chrome. */
+export function channelDiscipline(ch: RrChannel): ResourceDiscipline {
+  const blob = `${ch.tag} ${ch.agency} ${ch.alpha} ${ch.desc}`.toLowerCase();
+  if (/\bems\b|rescue|med|hospital/.test(blob)) return "ems";
+  if (/\bfire\b|fg\b|fireground/.test(blob)) return "fire";
+  if (/\blaw\b|police|tac|ocean|central|pri|admin/.test(blob)) return "pd";
+  return "svc";
+}
+
+function folderMatch(ch: RrChannel, folder: FolderId): boolean {
+  if (folder === "all") return true;
+  return channelDiscipline(ch) === folder;
+}
+
+function tgBadge(tone: string): string {
+  const m = tone.match(/(\d{3,})/);
+  if (m) return m[1]!;
+  return tone.replace(/^TG\s*/i, "").slice(0, 8) || "—";
+}
+
+/** Fictional SECTOR 305 resource bank — AXS-era tile grid (original chrome). */
 export function ChannelBank(props: {
   activeAlpha?: string;
   onSelect?: (ch: RrChannel) => void;
 }) {
   const [pack, setPack] = useState<Pack | null>(null);
-  const [filter, setFilter] = useState<"all" | "pri" | "tac" | "fire" | "law">("pri");
-  const [selected, setSelected] = useState<string | null>(props.activeAlpha ?? null);
+  const [folder, setFolder] = useState<FolderId>("pd");
+  const [selected, setSelected] = useState<string | null>(
+    props.activeAlpha ?? null
+  );
+  const [muted, setMuted] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const ac = new AbortController();
@@ -37,75 +71,126 @@ export function ChannelBank(props: {
     return () => ac.abort();
   }, []);
 
+  useEffect(() => {
+    if (props.activeAlpha) setSelected(props.activeAlpha);
+  }, [props.activeAlpha]);
+
+  const list = useMemo(() => {
+    if (!pack) return [] as RrChannel[];
+    return pack.channels.filter((c) => folderMatch(c, folder));
+  }, [pack, folder]);
+
   if (!pack) {
     return (
-      <div className="channel-bank" role="region" aria-label="Fictional channel bank">
+      <div
+        className="channel-bank channel-bank--tiles"
+        role="region"
+        aria-label="Fictional resource bank"
+      >
         <div className="cb-head">
-          <span>CHAN BANK</span>
+          <span>RESOURCE BANK</span>
           <span className="mono dim">SIM · …</span>
         </div>
       </div>
     );
   }
 
-  const list = pack.channels.filter((c) => {
-    if (filter === "all") return true;
-    if (filter === "pri") return c.role === "pri" || c.tag.includes("Dispatch");
-    if (filter === "tac") return c.role === "tac" || c.tag.includes("Tac");
-    if (filter === "fire") return c.tag.toLowerCase().includes("fire");
-    if (filter === "law") return c.tag.toLowerCase().includes("law") || c.tag === "Interop";
-    return true;
-  });
-
   return (
     <div
-      className="channel-bank"
+      className="channel-bank channel-bank--tiles"
       role="region"
-      aria-label="Fictional channel bank"
+      aria-label="Fictional resource bank"
       title={pack.disclaimer}
     >
       <div className="cb-head">
-        <span>CHAN BANK</span>
+        <span>RESOURCE BANK</span>
         <span className="mono dim">SIM · A07</span>
       </div>
-      <div className="cb-filters">
-        {(["pri", "tac", "fire", "law", "all"] as const).map((f) => (
+
+      <div className="cb-softrow mono" aria-label="Radio soft controls">
+        <span className="cb-soft-key">TX</span>
+        <span className="cb-soft-key">TONE</span>
+        <span className="cb-soft-key">FREQ</span>
+        <span className="cb-soft-meta">
+          {selected ? selected : "NO RESOURCE"}
+        </span>
+      </div>
+
+      <div className="cb-folders" role="tablist" aria-label="Resource folders">
+        {FOLDERS.map((f) => (
           <button
-            key={f}
+            key={f.id}
             type="button"
-            className={filter === f ? "on" : ""}
-            onClick={() => setFilter(f)}
+            role="tab"
+            aria-selected={folder === f.id}
+            className={`cb-folder cb-folder--${f.id} ${folder === f.id ? "on" : ""}`}
+            onClick={() => setFolder(f.id)}
           >
-            {f.toUpperCase()}
+            {f.short}
           </button>
         ))}
       </div>
-      <ul className="cb-list">
+
+      <div className="cb-tile-grid">
         {list.map((ch, i) => {
-          const id = `${ch.alpha}-${ch.freqMHz}-${i}`;
+          const disc = channelDiscipline(ch);
+          const id = `${ch.alpha}-${ch.tone || ch.freqMHz}-${i}`;
           const on = selected === ch.alpha;
+          const isMuted = !!muted[ch.alpha];
           return (
-            <li key={id}>
+            <div
+              key={id}
+              className={`cb-tile disc-${disc} role-${ch.role} ${on ? "on" : ""} ${isMuted ? "is-muted" : ""}`}
+            >
+              <span className="cb-tile-rail" aria-hidden />
               <button
                 type="button"
-                className={`cb-row role-${ch.role} ${on ? "on" : ""}`}
+                className="cb-tile-main"
                 onClick={() => {
                   setSelected(ch.alpha);
                   props.onSelect?.(ch);
                 }}
+                title={`${ch.desc} · ${ch.tone || "CSQ"} · ${ch.mode}`}
               >
-                <span className="cb-alpha mono">{ch.alpha}</span>
-                <span className="cb-freq mono">
-                  {ch.freqMHz != null ? ch.freqMHz.toFixed(4) : "—"}
+                <span className="cb-tile-top">
+                  <span className="cb-tile-bolt" aria-hidden>
+                    ⚡
+                  </span>
+                  <span className="cb-tile-alpha mono">{ch.alpha}</span>
+                  <span className="cb-tile-badge mono">{tgBadge(ch.tone)}</span>
                 </span>
-                <span className="cb-tag">{ch.tag.replace("Fire ", "F ").replace("Law ", "L ")}</span>
-                <span className="cb-desc">{ch.desc}</span>
-                {ch.tone && <span className="cb-tone mono">{ch.tone}</span>}
+                <span className="cb-tile-sub">{ch.desc}</span>
+                <span className="cb-tile-meta mono">
+                  <span className="cb-tile-tag">
+                    {ch.tag.replace("Fire ", "F ").replace("Law ", "L ")}
+                  </span>
+                  <span className="cb-tile-role">
+                    {String(ch.role).toUpperCase()}
+                  </span>
+                </span>
               </button>
-            </li>
+              <button
+                type="button"
+                className={`cb-mute ${isMuted ? "on" : ""}`}
+                aria-label={isMuted ? "Unmute resource" : "Mute resource"}
+                title="Training mute (local chrome only)"
+                onClick={() => {
+                  setMuted((prev) => ({
+                    ...prev,
+                    [ch.alpha]: !prev[ch.alpha],
+                  }));
+                }}
+              >
+                {isMuted ? "M" : "V"}
+              </button>
+            </div>
           );
         })}
-      </ul>
+        {list.length === 0 && (
+          <div className="cb-empty mono">No resources in folder</div>
+        )}
+      </div>
+
       <div className="cb-foot mono">FICTIONAL PLAN · TRAINING ONLY</div>
     </div>
   );
