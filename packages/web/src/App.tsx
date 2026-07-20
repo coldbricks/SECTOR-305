@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Runtime,
   A07_SCENARIO_CATALOG,
@@ -33,10 +33,16 @@ import { LiveGradeStrip } from "./components/LiveGradeStrip";
 import { CueWindowHud } from "./components/CueWindowHud";
 import { ScoreControlPanel } from "./components/ScoreControlPanel";
 import { CfsCadSheet } from "./components/CfsCadSheet";
+import { OpsPressureStrip } from "./components/OpsPressureStrip";
 import {
   HOTKEY_HELP_ROWS,
   useConsoleHotkeys,
 } from "./hooks/useConsoleHotkeys";
+import {
+  computeSla,
+  formatMs,
+  visibleIncidents,
+} from "./gameplay/opsDesk";
 import { HELO_LAYER_ID, TRAF_LAYER_ID } from "./geo/miamiBasemap";
 import {
   loadMasteryProfile,
@@ -244,6 +250,19 @@ export function App() {
   const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
   const [hotkeyHelp, setHotkeyHelp] = useState(false);
   const [scoreControlsOpen, setScoreControlsOpen] = useState(false);
+  /** Real-time sim clock — pause is first-class training control. */
+  const [liveSim, setLiveSim] = useState(false);
+  /** Field unit radio scripts fire at sim clock (ACK / enroute / on-scene). */
+  const fieldScriptRef = useRef<
+    Array<{
+      id: string;
+      fireAtMs: number;
+      done: boolean;
+      run: () => void;
+    }>
+  >([]);
+  const seenRingInsRef = useRef<Set<string>>(new Set());
+  const cmdRef = useRef<(c: PlayerCommand) => void>(() => {});
   const debrief = useMemo(
     () => (phase === "debrief" ? rt.debrief() : null),
     [phase, state, rt]
@@ -345,7 +364,71 @@ export function App() {
       const latest = unique[unique.length - 1]!;
       void radioSpeech.playCallerFromNote(latest);
     }
+
+    // Schedule field radio after player dispatch (units talk on *their* clock)
+    if (c.type === "DispatchUnits") {
+      const fireClock = next.clockMs;
+      for (const uid of c.unitIds) {
+        const cs = next.units[uid]?.callsign ?? uid;
+        const base = `${c.incidentId}:${uid}:${fireClock}`;
+        fieldScriptRef.current.push(
+          {
+            id: `${base}:ack`,
+            fireAtMs: fireClock + 2800,
+            done: false,
+            run: () => {
+              cmdRef.current({
+                type: "UnitRadioRx",
+                unitId: uid,
+                incidentId: c.incidentId,
+                caption: `${cs}, responding.`,
+                kind: "ACK",
+              });
+            },
+          },
+          {
+            id: `${base}:er`,
+            fireAtMs: fireClock + 14000,
+            done: false,
+            run: () => {
+              cmdRef.current({
+                type: "UnitRadioRx",
+                unitId: uid,
+                incidentId: c.incidentId,
+                caption: `${cs}, en route.`,
+                kind: "STATUS",
+              });
+            },
+          },
+          {
+            id: `${base}:os`,
+            fireAtMs: fireClock + 42000,
+            done: false,
+            run: () => {
+              cmdRef.current({
+                type: "UnitRadioRx",
+                unitId: uid,
+                incidentId: c.incidentId,
+                caption: `${cs} on scene`,
+                kind: "STATUS",
+              });
+            },
+          }
+        );
+      }
+    }
+
+    // Drain field scripts due by new clock
+    const due = fieldScriptRef.current.filter(
+      (e) => !e.done && next.clockMs >= e.fireAtMs
+    );
+    for (const e of due) {
+      e.done = true;
+      // defer so we don't re-enter apply mid-stack
+      queueMicrotask(() => e.run());
+    }
   }
+  cmdRef.current = cmd;
 
   function exportSession() {
     consoleAudio.play("export");
@@ -432,10 +515,45 @@ export function App() {
   }
 
   const selected = selectedId ? state.incidents[selectedId] : null;
-  const incidents = Object.values(state.incidents).sort(
-    (a, b) => a.receivedAtMs - b.receivedAtMs
+  const packPri = browserPack().priorities;
+  /** Staged ring-in: only CFS that have arrived by sim clock. */
+  const incidents = useMemo(
+    () =>
+      visibleIncidents(Object.values(state.incidents), state.clockMs),
+    [state.incidents, state.clockMs]
   );
   const units = Object.values(state.units);
+
+  // LIVE sim cadence — 1s real → 1s sim; pause is first-class
+  useEffect(() => {
+    if (phase !== "console" || !liveSim) return;
+    const id = window.setInterval(() => {
+      cmdRef.current({ type: "Advance", ms: 1000 });
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [phase, liveSim]);
+
+  // Seed ring-in set on watch open so t=0 CFS don't all "ring"
+  useEffect(() => {
+    if (phase !== "console") return;
+    for (const inc of Object.values(rt.snapshot().incidents)) {
+      if (inc.receivedAtMs <= rt.snapshot().clockMs) {
+        seenRingInsRef.current.add(inc.id);
+      }
+    }
+  }, [phase, rt]);
+
+  // New CFS ring-in SFX when staged arrival crosses clock
+  useEffect(() => {
+    if (phase !== "console") return;
+    for (const inc of Object.values(state.incidents)) {
+      if (inc.receivedAtMs > state.clockMs) continue;
+      if (seenRingInsRef.current.has(inc.id)) continue;
+      seenRingInsRef.current.add(inc.id);
+      consoleAudio.play("alertHi");
+      window.setTimeout(() => consoleAudio.play("ding"), 180);
+    }
+  }, [state.clockMs, state.incidents, phase]);
 
   const robberyNatureCode = useMemo(() => {
     const hit = NATURES.find(
@@ -521,24 +639,38 @@ export function App() {
   // Keyboard-first M16 path (UI_ACCEPTANCE #20) — ? toggles help
   useConsoleHotkeys(phase === "console", {
     onSelectIndex: (i: number) => {
-      const list = Object.values(rt.snapshot().incidents).sort(
-        (a, b) => a.receivedAtMs - b.receivedAtMs
+      const snap = rt.snapshot();
+      const list = visibleIncidents(
+        Object.values(snap.incidents),
+        snap.clockMs
       );
       const hit = list[i];
       if (hit) selectCfs(hit.id);
     },
     onVerify: () => {
       if (!selectedId) return;
+      const inc = rt.snapshot().incidents[selectedId];
+      if (!inc) return;
+      // Scenario-general: verify to this CFS truth location (not Ocean-only macros)
+      const truth = inc.truth?.actualLocation;
       cmd({
         type: "VerifyLocation",
         incidentId: selectedId,
         confidence: "verified",
-        location: {
-          freeform: "1400 block Ocean Drive",
-          block: "1400",
-          street: "Ocean Drive",
-          zoneId: "Z-OCEAN",
-        },
+        location: truth
+          ? {
+              freeform: truth.freeform,
+              block: truth.block,
+              street: truth.street,
+              zoneId: truth.zoneId,
+              city: truth.city,
+            }
+          : {
+              freeform: inc.location.freeform,
+              block: inc.location.block,
+              street: inc.location.street,
+              zoneId: inc.location.zoneId,
+            },
       });
     },
     onPriorityP1: () => {
@@ -582,8 +714,36 @@ export function App() {
     onToggleHelp: () => setHotkeyHelp((v) => !v),
   });
 
+  // Space = LIVE/PAUSE (not while typing)
+  useEffect(() => {
+    if (phase !== "console") return;
+    function onKey(e: KeyboardEvent) {
+      if (e.code !== "Space" && e.key !== " ") return;
+      const t = e.target as HTMLElement | null;
+      if (
+        t &&
+        (t.tagName === "INPUT" ||
+          t.tagName === "TEXTAREA" ||
+          t.tagName === "SELECT" ||
+          t.isContentEditable)
+      )
+        return;
+      e.preventDefault();
+      setLiveSim((v) => {
+        const next = !v;
+        consoleAudio.play(next ? "channelUp" : "ui");
+        return next;
+      });
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [phase]);
+
   async function openWatch() {
     await consoleAudio.unlock();
+    fieldScriptRef.current = [];
+    seenRingInsRef.current = new Set();
+    setLiveSim(false);
     // Warm radio/phone buses before glass (manifests + hot clip decode)
     void radioSpeech.ensureLoaded().then(() => {
       void radioSpeech.prewarmHot(56);
@@ -962,6 +1122,20 @@ export function App() {
         scoreTitle={scoreTitle}
       />
 
+      <OpsPressureStrip
+        clockMs={state.clockMs}
+        incidents={incidents}
+        liveSim={liveSim}
+        packPriorities={packPri}
+        onToggleLive={() => {
+          setLiveSim((v) => {
+            const next = !v;
+            consoleAudio.play(next ? "channelUp" : "ui");
+            return next;
+          });
+        }}
+      />
+
       {hotkeyHelp ? (
         <div className="hotkey-help" role="dialog" aria-label="Keyboard map">
           <div className="hotkey-help-inner">
@@ -997,7 +1171,10 @@ export function App() {
               CAD · PRI THEN AGE · ACK SUPPRESSES
             </span>
           </h2>
-          <CueWindowHud clockMs={state.clockMs} />
+          <CueWindowHud
+            clockMs={state.clockMs}
+            schedule={selected?.truth?.knowableSchedule}
+          />
           {(
             [
               ["pending", "PENDING · UNAKED"],
@@ -1024,18 +1201,34 @@ export function App() {
                 {rows.map((inc) => {
                   const age = (state.clockMs - inc.receivedAtMs) / 1000;
                   const assigned = (inc.assignedUnitIds?.length ?? 0) > 0;
+                  const sla = computeSla(inc, state.clockMs, packPri);
+                  const pct = Math.min(100, Math.round(sla.ratio * 100));
                   return (
                     <button
                       type="button"
                       key={inc.id}
-                      className={`queue-item lane-${lane} ${selectedId === inc.id ? "active" : ""} ${lane === "pending" ? "is-new" : ""}`}
+                      className={`queue-item lane-${lane} sla-${sla.band} ${selectedId === inc.id ? "active" : ""} ${lane === "pending" && sla.band !== "na" && sla.ratio < 0.15 ? "is-new" : ""}`}
                       onClick={() => selectCfs(inc.id)}
                     >
                       <div className="qi-top">
                         <span className={`pri pri-${inc.priority}`}>{inc.priority}</span>
                         <strong>{inc.cfsNumber}</strong>
-                        <span className="qi-age mono">{age.toFixed(0)}s</span>
+                        <span className="qi-age mono">
+                          {sla.band === "na"
+                            ? `${age.toFixed(0)}s`
+                            : sla.band === "breach"
+                              ? "BREACH"
+                              : formatMs(sla.remainMs)}
+                        </span>
                       </div>
+                      {sla.band !== "na" ? (
+                        <div
+                          className={`qi-sla-bar band-${sla.band}`}
+                          title={`Dispatch SLA ${formatMs(sla.slaMs)} · age ${formatMs(sla.ageMs)}`}
+                        >
+                          <i style={{ width: `${pct}%` }} />
+                        </div>
+                      ) : null}
                       <div className="qi-nature">{inc.natureText}</div>
                       <div className="qi-loc">{inc.location.freeform}</div>
                       <div className="qi-meta mono">
@@ -1255,14 +1448,14 @@ export function App() {
 
       <div className="footer mono">
         <span className="ft-main">
-          SECTOR 305 · A-CONSOLE · INSTRUMENT CHECKRIDE
+          SECTOR 305 · A-CONSOLE · {liveSim ? "LIVE SIM" : "PAUSED"}
         </span>
         <span className="ft-sep">·</span>
         <span>
-          KEYS <kbd>?</kbd>
+          SPACE LIVE · KEYS <kbd>?</kbd>
         </span>
         <span className="ft-sep">·</span>
-        <span>CAD ACK</span>
+        <span>FIELD RADIO AUTO AFTER DISPATCH</span>
         <span className="ft-sep">·</span>
         <span className="ft-dim">TRAINING FICTION ONLY · NOT A REAL CERT</span>
       </div>

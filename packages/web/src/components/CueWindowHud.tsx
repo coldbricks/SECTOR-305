@@ -1,47 +1,71 @@
 /**
- * Pedagogical knowable-window HUD for ocean checkride.
- * Does NOT reveal truth content — only that the scenario timeline has opened
- * the window when the trainee may act on cues (info-set fairness law).
- *
- * Matches checkride_a07_ocean_robbery_v1 schedule: weapons/nature @15s, loc @25s.
+ * Pedagogical knowable-window HUD.
+ * Does NOT reveal truth content — only facet names + when the schedule opens.
+ * Information-set fairness (C10).
  */
+
+import { cueWindowsFromSchedule, type CueFacet } from "../gameplay/opsDesk";
 
 type Props = {
   clockMs: number;
+  /** From selected incident truth.knowableSchedule when present */
+  schedule?: CueFacet[];
+  /** Legacy ocean defaults if no schedule */
   weaponsAtMs?: number;
   locationAtMs?: number;
 };
 
 export function CueWindowHud({
   clockMs,
+  schedule,
   weaponsAtMs = 15000,
   locationAtMs = 25000,
 }: Props) {
-  const weaponsOpen = clockMs >= weaponsAtMs;
-  const locOpen = clockMs >= locationAtMs;
+  const rows =
+    schedule && schedule.length
+      ? cueWindowsFromSchedule(schedule, clockMs)
+      : cueWindowsFromSchedule(
+          [
+            {
+              atMs: weaponsAtMs,
+              facet: "weapons",
+              summary: "Weapons / nature cues (legacy default)",
+            },
+            {
+              atMs: weaponsAtMs,
+              facet: "nature",
+              summary: "Nature reclass window",
+            },
+            {
+              atMs: locationAtMs,
+              facet: "location",
+              summary: "Location facet",
+            },
+          ],
+          clockMs
+        );
 
   return (
     <div className="cue-window-hud" aria-label="Knowable cue windows">
       <div className="cwh-kicker mono">INFO-SET · CUE WINDOWS</div>
       <div className="cwh-rows">
-        <div className={`cwh-row ${weaponsOpen ? "open" : "closed"}`}>
-          <span className="cwh-dot" />
-          <span className="cwh-label">Weapons / nature</span>
-          <span className="cwh-gate mono">
-            {weaponsOpen ? "KNOWABLE" : `OPENS T+${(weaponsAtMs / 1000).toFixed(0)}s`}
-          </span>
-        </div>
-        <div className={`cwh-row ${locOpen ? "open" : "closed"}`}>
-          <span className="cwh-dot" />
-          <span className="cwh-label">Location facet</span>
-          <span className="cwh-gate mono">
-            {locOpen ? "KNOWABLE" : `OPENS T+${(locationAtMs / 1000).toFixed(0)}s`}
-          </span>
-        </div>
+        {rows.map((r) => (
+          <div
+            key={`${r.facet}-${r.atMs}`}
+            className={`cwh-row ${r.open ? "open" : "closed"}`}
+            title={r.summary}
+          >
+            <span className="cwh-dot" />
+            <span className="cwh-label">{r.facet}</span>
+            <span className="cwh-gate mono">
+              {r.open ? "KNOWABLE" : `OPENS T+${(r.atMs / 1000).toFixed(0)}s`}
+            </span>
+          </div>
+        ))}
       </div>
       <p className="cwh-hint">
-        Hard fails only after a cue is knowable. Advancing sim is training, not
-        cheating.
+        Hard fails only after a cue is knowable. LIVE sim or [ ] advance the
+        clock — training, not cheating.
       </p>
     </div>
   );

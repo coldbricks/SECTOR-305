@@ -144,14 +144,15 @@ export function useConsoleHotkeys(enabled: boolean, h: HotkeyHandlers) {
 }
 
 export const HOTKEY_HELP_ROWS: Array<{ keys: string; action: string }> = [
-  { keys: "1–9", action: "Select CFS by queue order" },
-  { keys: "V", action: "Verify → 1400 Ocean" },
+  { keys: "1–9", action: "Select CFS by queue order (arrived only)" },
+  { keys: "Space", action: "LIVE sim / PAUSE (continuous clock)" },
+  { keys: "V", action: "Verify location (selected CFS truth loc)" },
   { keys: "P / N", action: "Priority P1 / nature robbery-IP" },
   { keys: "W / B", action: "Flag WEAPONS / BACKUP" },
-  { keys: "D", action: "Dispatch 2× AVL patrol" },
-  { keys: "A / O", action: "Sim ACKs / on scene" },
+  { keys: "D", action: "Dispatch 2× AVL · field radio auto-follows" },
+  { keys: "A / O", action: "Force sim ACKs / on scene (manual override)" },
   { keys: "C", action: "Clear GOA" },
-  { keys: "[ / ]", action: "+5s / +30s sim" },
+  { keys: "[ / ]", action: "+5s / +30s sim (or use LIVE)" },
   { keys: "E / X", action: "End debrief / export" },
   { keys: "?", action: "Toggle this help" },
 ];
