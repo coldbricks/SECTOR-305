@@ -112,7 +112,20 @@ function writePlayableManifest(catalog, clips, { generated, skipped, dryRun, cha
   return playable.length;
 }
 
-async function tts({ apiKey, voiceId, text, modelId, outputFormat, settings }) {
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+function isRetryableError(err) {
+  const msg = String(err?.message || err || "");
+  const cause = String(err?.cause?.code || err?.cause?.message || "");
+  if (/ECONNRESET|ETIMEDOUT|EAI_AGAIN|ENOTFOUND|fetch failed|network/i.test(msg + cause))
+    return true;
+  if (/ElevenLabs (429|500|502|503|504)/.test(msg)) return true;
+  return false;
+}
+
+async function ttsOnce({ apiKey, voiceId, text, modelId, outputFormat, settings }) {
   const url = `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=${encodeURIComponent(outputFormat)}`;
   // v3: audio tags like [calm] [dispatch] live in `text`. Keep voice_settings light.
   const body = {
@@ -144,6 +157,26 @@ async function tts({ apiKey, voiceId, text, modelId, outputFormat, settings }) {
   return Buffer.from(await res.arrayBuffer());
 }
 
+/** Retry transient network / rate-limit failures so a single ECONNRESET cannot kill the matrix. */
+async function tts(opts) {
+  const maxAttempts = 6;
+  let lastErr;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await ttsOnce(opts);
+    } catch (err) {
+      lastErr = err;
+      if (!isRetryableError(err) || attempt === maxAttempts) throw err;
+      const backoff = Math.min(30_000, 800 * 2 ** (attempt - 1)) + Math.floor(Math.random() * 400);
+      console.warn(
+        `  ↻ retry ${attempt}/${maxAttempts - 1} in ${backoff}ms (${String(err?.message || err).slice(0, 120)})`
+      );
+      await sleep(backoff);
+    }
+  }
+  throw lastErr;
+}
+
 async function main() {
   const catalog = loadLines();
   const apiKey = process.env.ELEVENLABS_API_KEY || process.env.XI_API_KEY || "";
@@ -163,6 +196,7 @@ ELEVENLABS_API_KEY is not set.
   mkdirSync(outDir, { recursive: true });
 
   const clips = [];
+  const failures = [];
   let charTotal = 0;
   let generated = 0;
   let skipped = 0;
@@ -254,53 +288,66 @@ ELEVENLABS_API_KEY is not set.
     }
 
     process.stdout.write(`TTS ${line.id} (${text.length} chars)… `);
-    const buf = await tts({
-      apiKey,
-      voiceId,
-      text,
-      modelId: catalog.model_id || "eleven_v3",
-      outputFormat: catalog.output_format || "mp3_44100_128",
-      settings: voice.settings,
-    });
-    writeFileSync(abs, buf);
-    writeFileSync(
-      metaPath,
-      JSON.stringify(
-        { id: line.id, textFp: textFingerprint, text, voiceId, updatedAt: new Date().toISOString() },
-        null,
-        2
-      ) + "\n",
-      "utf8"
-    );
-    generated += 1;
-    console.log(`${buf.length} bytes${textChanged ? " (text changed)" : ""}`);
-    clips.push({
-      id: line.id,
-      file: `/audio/radio-voice/${file}`,
-      voice: line.voice,
-      voiceId,
-      kind: line.kind,
-      text,
-      plainText: plain,
-      match: matchKeys,
-      scenarioIds: line.scenarioIds ?? ["*"],
-      channel: line.channel,
-      bytes: buf.length,
-      status: textChanged ? "regenerated" : "generated",
-      sha256: createHash("sha256").update(buf).digest("hex").slice(0, 16),
-      textFp: textFingerprint,
-    });
-
-    // Crash-safe: flush playable manifest every N new clips (merge prior)
-    if (generated % FLUSH_EVERY === 0) {
-      const n = writePlayableManifest(catalog, clips, {
-        generated,
-        skipped,
-        dryRun: false,
-        charTotal,
-        partial: true,
+    try {
+      const buf = await tts({
+        apiKey,
+        voiceId,
+        text,
+        modelId: catalog.model_id || "eleven_v3",
+        outputFormat: catalog.output_format || "mp3_44100_128",
+        settings: voice.settings,
       });
-      console.log(`  ↳ checkpoint manifest ${n} playable`);
+      writeFileSync(abs, buf);
+      writeFileSync(
+        metaPath,
+        JSON.stringify(
+          {
+            id: line.id,
+            textFp: textFingerprint,
+            text,
+            voiceId,
+            updatedAt: new Date().toISOString(),
+          },
+          null,
+          2
+        ) + "\n",
+        "utf8"
+      );
+      generated += 1;
+      console.log(`${buf.length} bytes${textChanged ? " (text changed)" : ""}`);
+      clips.push({
+        id: line.id,
+        file: `/audio/radio-voice/${file}`,
+        voice: line.voice,
+        voiceId,
+        kind: line.kind,
+        text,
+        plainText: plain,
+        match: matchKeys,
+        scenarioIds: line.scenarioIds ?? ["*"],
+        channel: line.channel,
+        bytes: buf.length,
+        status: textChanged ? "regenerated" : "generated",
+        sha256: createHash("sha256").update(buf).digest("hex").slice(0, 16),
+        textFp: textFingerprint,
+      });
+
+      // Crash-safe: flush playable manifest every N new clips (merge prior)
+      if (generated % FLUSH_EVERY === 0) {
+        const n = writePlayableManifest(catalog, clips, {
+          generated,
+          skipped,
+          dryRun: false,
+          charTotal,
+          partial: true,
+        });
+        console.log(`  ↳ checkpoint manifest ${n} playable`);
+      }
+    } catch (err) {
+      const reason = String(err?.message || err).slice(0, 200);
+      console.log(`FAIL ${reason}`);
+      failures.push({ id: line.id, reason });
+      // Keep going — one hard fail must not abandon the matrix
     }
 
     // polite pacing
@@ -322,17 +369,33 @@ ELEVENLABS_API_KEY is not set.
     );
   }
 
+  if (failures.length) {
+    const failPath = join(outDir, "BAKE_FAILURES.json");
+    writeFileSync(
+      failPath,
+      JSON.stringify(
+        { at: new Date().toISOString(), count: failures.length, failures },
+        null,
+        2
+      ) + "\n",
+      "utf8"
+    );
+    console.log(`  failures:  ${failures.length} (see ${failPath})`);
+  }
+
   console.log(`
 Radio voice bake complete
   lines:      ${catalog.lines.length}
   characters: ${charTotal} (estimate; credits depend on your ElevenLabs plan)
   generated:  ${generated}
   cached:     ${skipped}
+  failed:     ${failures.length}
   playable:   ${playableCount}
   dry-run:    ${dryRun}
   order:      priority (trainer→caller→dispatch→responding→ack→status)
   manifest:   ${manifestPath}
 `);
+  if (failures.length) process.exitCode = 1;
 }
 
 main().catch((err) => {
